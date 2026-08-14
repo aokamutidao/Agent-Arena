@@ -278,7 +278,7 @@ export default function ProfilePage() {
                         {agent.wins}{t("agent.wins")} {agent.losses}{t("agent.losses")}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {agent.is_listed ? "✅ {t("agent.listed")}" : "❌ {t("agent.notListed")}"}
+                        {agent.is_listed ? `✅ ${t("agent.listed")}` : `❌ ${t("agent.notListed")}`}
                       </div>
                     </div>
                   </div>
