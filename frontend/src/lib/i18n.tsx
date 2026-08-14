@@ -196,6 +196,11 @@ const translations = {
     "pve.tacticianDesc": "Tactical master, controls distance, ranged skills, patient",
     "pve.hard": "Hard",
     "pve.tricksterDesc": "Deceptive, fake retreat then charge, uses obstacles",
+    "pve.difficulty": "Difficulty",
+    "pve.challengeFee": "Challenge Fee",
+    "pve.winReward": "Win Reward",
+    "pve.defenderDesc": "Iron defense, waits for opponent overextension, counter-attack expert",
+    "pve.easy": "Easy",
 
     // 登录
     "login.connect": "Connect Wallet",
@@ -395,6 +400,11 @@ const translations = {
     "pve.tacticianDesc": "战术大师，控制距离，远程技能，耐心等待",
     "pve.hard": "困难",
     "pve.tricksterDesc": "诡计多端，假撤退真蓄力，利用障碍物",
+    "pve.difficulty": "难度",
+    "pve.challengeFee": "挑战费用",
+    "pve.winReward": "胜利奖励",
+    "pve.defenderDesc": "铁壁防守，等待对手过度延伸，反击专家",
+    "pve.easy": "简单",
 
     // 登录
     "login.connect": "连接钱包",

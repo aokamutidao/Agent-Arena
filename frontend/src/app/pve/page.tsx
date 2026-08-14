@@ -24,26 +24,26 @@ const SYSTEM_AGENTS: SystemAgent[] = [
   {
     id: "berserker",
     name: "🔥 Berserker",
-    personality: t("pve.berserkerDesc"),
-    difficulty: t("pve.medium"),
+    personality: "pve.berserkerDesc",
+    difficulty: "pve.medium",
   },
   {
     id: "tactician",
     name: "🎯 Tactician",
-    personality: t("pve.tacticianDesc"),
-    difficulty: t("pve.hard"),
+    personality: "pve.tacticianDesc",
+    difficulty: "pve.hard",
   },
   {
     id: "trickster",
     name: "🎭 Trickster",
-    personality: t("pve.tricksterDesc"),
-    difficulty: t("pve.hard"),
+    personality: "pve.tricksterDesc",
+    difficulty: "pve.hard",
   },
   {
     id: "defender",
     name: "🛡️ Defender",
-    personality: "铁壁防守，等待对手过度延伸，反击专家",
-    difficulty: "简单",
+    personality: "pve.defenderDesc",
+    difficulty: "pve.easy",
   },
 ];
 
@@ -237,19 +237,19 @@ export default function PVEPage() {
               <Card key={agent.id}>
                 <CardHeader>
                   <CardTitle className="text-lg">{agent.name}</CardTitle>
-                  <CardDescription>{agent.personality}</CardDescription>
+                  <CardDescription>{t(agent.personality)}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">难度:</span>
-                    <span className="font-medium">{agent.difficulty}</span>
+                    <span className="text-muted-foreground">{t("pve.difficulty")}:</span>
+                    <span className="font-medium">{t(agent.difficulty)}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">挑战费用:</span>
+                    <span className="text-muted-foreground">{t("pve.challengeFee")}:</span>
                     <span className="font-bold">10 AC</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">胜利奖励:</span>
+                    <span className="text-muted-foreground">{t("pve.winReward")}:</span>
                     <span className="font-bold text-green-600">100 AC</span>
                   </div>
                   <Button
