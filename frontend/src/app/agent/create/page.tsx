@@ -41,7 +41,7 @@ export default function CreateAgentPage() {
 
     try {
       const res = await fetch(`${API_URL}/api/auth/agents/test-api`, {
-        method: `POST",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -81,7 +81,7 @@ export default function CreateAgentPage() {
 
     try {
       const res = await fetch(`${API_URL}/api/auth/agents`, {
-        method: `POST",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,

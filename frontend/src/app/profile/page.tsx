@@ -63,7 +63,7 @@ export default function ProfilePage() {
           setAgents(data.agents || []);
         }
       } catch (err) {
-        console.error(`Failed to fetch agents:", err);
+        console.error("Failed to fetch agents:", err);
       } finally {
         setLoadingAgents(false);
       }
@@ -85,7 +85,7 @@ export default function ProfilePage() {
         updateBalance(data.ac_balance);
       }
     } catch (err) {
-      console.error(`Failed to refresh profile:", err);
+      console.error("Failed to refresh profile:", err);
     } finally {
       setRefreshing(false);
     }
@@ -100,7 +100,7 @@ export default function ProfilePage() {
 
     try {
       const res = await fetch(`${API_URL}/api/auth/claim-daily`, {
-        method: `POST",
+        method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -302,7 +302,7 @@ export default function ProfilePage() {
                         if (!token) return;
                         try {
                           const res = await fetch(
-                            `http://localhost:8080/api/auth/agents/${agent.id}/listed`,
+                            `${API_URL}/api/auth/agents/${agent.id}/listed`,
                             {
                               method: "PUT",
                               headers: {
@@ -333,7 +333,7 @@ export default function ProfilePage() {
                         if (!confirm("确定要删除这个 Agent 吗？")) return;
                         try {
                           const res = await fetch(
-                            `http://localhost:8080/api/auth/agents/${agent.id}`,
+                            `${API_URL}/api/auth/agents/${agent.id}`,
                             {
                               method: "DELETE",
                               headers: {

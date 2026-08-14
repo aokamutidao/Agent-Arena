@@ -34,7 +34,7 @@ export default function EditAgentPage() {
 
     const fetchAgent = async () => {
       try {
-        const res = await fetch(`http://localhost:8080/api/marketplace/agents/${agentId}`, {
+        const res = await fetch(`${API_URL}/api/marketplace/agents/${agentId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -77,7 +77,7 @@ export default function EditAgentPage() {
 
     try {
       const res = await fetch(`${API_URL}/api/auth/agents/test-api`, {
-        method: `POST",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -116,7 +116,7 @@ export default function EditAgentPage() {
     setError("");
 
     try {
-      const res = await fetch(`http://localhost:8080/api/auth/agents/${agentId}`, {
+      const res = await fetch(`${API_URL}/api/auth/agents/${agentId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

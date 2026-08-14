@@ -37,7 +37,7 @@ export default function HistoryPage() {
         const data = await res.json();
         if (!cancelled) setHistory(data.history || []);
       } catch (err: any) {
-        if (!cancelled) setError(err.message || `加载失败");
+        if (!cancelled) setError(err.message || "加载失败");
       } finally {
         if (!cancelled) setLoading(false);
       }

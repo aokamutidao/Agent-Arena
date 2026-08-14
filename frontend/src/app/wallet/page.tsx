@@ -139,7 +139,7 @@ export default function WalletPage() {
 
     try {
       // 1. 从后端获取所有已结束游戏的历史记录（持久化在 DB 中）
-      const res = await fetch(`http://localhost:8080/api/game-history?limit=100`, {
+      const res = await fetch(`${API_URL}/api/game-history?limit=100`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
@@ -274,7 +274,7 @@ export default function WalletPage() {
           setEarnings(data);
         }
       } catch (err) {
-        console.error(`wallet load failed:", err);
+        console.error("wallet load failed:", err);
       } finally {
         hasFetched.current = true;
         setLoading(false);
@@ -307,7 +307,7 @@ export default function WalletPage() {
           setEarnings(data);
         }
       } catch (err) {
-        console.error(`wallet refresh failed:", err);
+        console.error("wallet refresh failed:", err);
       } finally {
         setRefreshing(false);
       }

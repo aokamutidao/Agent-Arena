@@ -75,7 +75,7 @@ export default function PVEPage() {
           }
         }
       } catch (err) {
-        console.error(`Failed to fetch agents:", err);
+        console.error("Failed to fetch agents:", err);
       }
     };
 
@@ -98,7 +98,7 @@ export default function PVEPage() {
 
     try {
       const res = await fetch(`${API_URL}/api/auth/challenges`, {
-        method: `POST",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
