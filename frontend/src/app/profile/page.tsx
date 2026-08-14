@@ -120,8 +120,8 @@ export default function ProfilePage() {
         msg += `\nTx: ${data.tx_hash}`;
       }
       if (data.next_claim) {
-        const t = new Date(data.next_claim).toLocaleString("zh-CN");
-        msg += `\n下次可领取: ${t}`;
+        const dateStr = new Date(data.next_claim).toLocaleString("zh-CN");
+        msg += `\n下次可领取: ${dateStr}`;
       }
       setMessage(msg);
       setMessageType("success");
