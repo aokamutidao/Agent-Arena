@@ -39,13 +39,13 @@ export default function HistoryPage() {
         const data = await res.json();
         if (!cancelled) setHistory(data.history || []);
       } catch (err: any) {
-        if (!cancelled) setError(err.message || "加载失败");
+        if (!cancelled) setError(err.message || t("history.loadFailed"));
       } finally {
         if (!cancelled) setLoading(false);
       }
     };
     load();
-    // 自动轮询：若有任意记录尚缺链上 tx，每 5 秒刷新一次；全部同步后降级为 30 秒
+    // 自动轮询：若有任意记录尚缺链上 tx，每 5 秒{t("history.refresh")}一次；全部同步后降级为 30 秒
     const interval = setInterval(load, 5000);
     return () => {
       cancelled = true;
@@ -53,7 +53,7 @@ export default function HistoryPage() {
     };
   }, []);
 
-  // 是否所有记录都已有链上 tx（用于判断是否需要频繁刷新）
+  // 是否所有记录都已有链上 tx（用于判断是否需要频繁{t("history.refresh")}）
   const allSynced = history.length > 0 && history.every((h) => !!h.finish_tx_hash);
 
   const winnerBadge = (item: GameHistoryItem) => {
@@ -67,7 +67,7 @@ export default function HistoryPage() {
           isRed ? "bg-red-500/20 text-red-400" : "bg-blue-500/20 text-blue-400"
         }`}
       >
-        {isRed ? "🔴 红胜" : "🔵 蓝胜"}
+        {isRed ? t("history.redWins") : t("history.blueWins")}
       </span>
     );
   };
@@ -82,7 +82,7 @@ export default function HistoryPage() {
           onClick={() => window.location.reload()}
           disabled={loading}
         >
-          刷新
+          {t("history.refresh")}
         </Button>
       </div>
 
@@ -100,7 +100,7 @@ export default function HistoryPage() {
       {!loading && !error && history.length === 0 && (
         <Card>
           <CardContent className="pt-6 text-center text-muted-foreground">
-            暂无对局记录。完成一局对战后将在此显示。
+            {t("history.noRecords")}
           </CardContent>
         </Card>
       )}
@@ -132,7 +132,7 @@ export default function HistoryPage() {
                       HP: {item.final_hp_red} / {item.final_hp_blue}
                     </span>
                     <span className="text-muted-foreground">
-                      {item.total_rounds} 回合
+                      {item.total_rounds} {t("game.round")}
                     </span>
                     <span className="text-xs text-muted-foreground">
                       {new Date(item.created_at).toLocaleString()}
@@ -153,7 +153,7 @@ export default function HistoryPage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-green-400 hover:underline"
-                      title="在 Sepolia Etherscan 查看链上交易"
+                      title=t("history.viewOnEtherscan")
                     >
                       ⛓️ 链上记录
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -161,11 +161,11 @@ export default function HistoryPage() {
                       </svg>
                     </a>
                   ) : new Date(item.created_at) < new Date("2026-08-12T03:14:00") ? (
-                    <span className="text-gray-500" title="合约重部署前的历史记录，未上链">
+                    <span className="text-gray-500" title=t("history.offChainDesc")>
                       📝 未上链（历史遗留）
                     </span>
                   ) : (
-                    <span className="text-yellow-500" title="链上交易正在打包，稍后刷新">
+                    <span className="text-yellow-500" title="链上交易正在打包，稍后{t("history.refresh")}">
                       ⏳ 链上同步中
                     </span>
                   )}

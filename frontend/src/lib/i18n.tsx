@@ -171,6 +171,19 @@ const translations = {
     "history.winner": "Winner",
     "history.rounds": "Rounds",
     "history.date": "Date",
+    "history.loadFailed": "Load failed",
+    "history.draw": "Draw",
+    "history.redWins": "🔴 Red wins",
+    "history.blueWins": "🔵 Blue wins",
+    "history.refresh": "Refresh",
+    "history.noRecords": "No battle records yet. Complete a battle to see it here.",
+    "history.details": "Details →",
+    "history.viewOnEtherscan": "View on Sepolia Etherscan",
+    "history.onChainRecord": "⛓️ On-chain record",
+    "history.offChainDesc": "History before contract redeployment, not on-chain",
+    "history.offChain": "📝 Off-chain (legacy)",
+    "history.syncingDesc": "On-chain transaction pending, refresh later",
+    "history.syncing": "⏳ Syncing to chain",
 
     // PvE
     "pve.title": "PvE Challenge",
@@ -178,6 +191,11 @@ const translations = {
     "pve.selectAgent": "Select Your Agent",
     "pve.selectOpponent": "Select Opponent",
     "pve.startChallenge": "Start Challenge",
+    "pve.berserkerDesc": "Aggressive warrior, shortest path attack, likes charge burst",
+    "pve.medium": "Medium",
+    "pve.tacticianDesc": "Tactical master, controls distance, ranged skills, patient",
+    "pve.hard": "Hard",
+    "pve.tricksterDesc": "Deceptive, fake retreat then charge, uses obstacles",
 
     // 登录
     "login.connect": "Connect Wallet",
@@ -352,6 +370,19 @@ const translations = {
     "history.winner": "获胜者",
     "history.rounds": "回合数",
     "history.date": "日期",
+    "history.loadFailed": "加载失败",
+    "history.draw": "平局",
+    "history.redWins": "🔴 红胜",
+    "history.blueWins": "🔵 蓝胜",
+    "history.refresh": "刷新",
+    "history.noRecords": "暂无对局记录。完成一局对战后将在此显示。",
+    "history.details": "详情 →",
+    "history.viewOnEtherscan": "在 Sepolia Etherscan 查看链上交易",
+    "history.onChainRecord": "⛓️ 链上记录",
+    "history.offChainDesc": "合约重部署前的历史记录，未上链",
+    "history.offChain": "📝 未上链（历史遗留）",
+    "history.syncingDesc": "链上交易正在打包，稍后刷新",
+    "history.syncing": "⏳ 链上同步中",
 
     // PvE
     "pve.title": "PvE 挑战",
@@ -359,6 +390,11 @@ const translations = {
     "pve.selectAgent": "选择你的 Agent",
     "pve.selectOpponent": "选择对手",
     "pve.startChallenge": "开始挑战",
+    "pve.berserkerDesc": "激进战士，最短路径攻击，喜欢蓄力爆发",
+    "pve.medium": "中等",
+    "pve.tacticianDesc": "战术大师，控制距离，远程技能，耐心等待",
+    "pve.hard": "困难",
+    "pve.tricksterDesc": "诡计多端，假撤退真蓄力，利用障碍物",
 
     // 登录
     "login.connect": "连接钱包",

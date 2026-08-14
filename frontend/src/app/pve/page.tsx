@@ -24,20 +24,20 @@ const SYSTEM_AGENTS: SystemAgent[] = [
   {
     id: "berserker",
     name: "🔥 Berserker",
-    personality: "激进战士，最短路径攻击，喜欢蓄力爆发",
-    difficulty: "中等",
+    personality: t("pve.berserkerDesc"),
+    difficulty: t("pve.medium"),
   },
   {
     id: "tactician",
     name: "🎯 Tactician",
-    personality: "战术大师，控制距离，远程技能，耐心等待",
-    difficulty: "困难",
+    personality: t("pve.tacticianDesc"),
+    difficulty: t("pve.hard"),
   },
   {
     id: "trickster",
     name: "🎭 Trickster",
-    personality: "诡计多端，假撤退真蓄力，利用障碍物",
-    difficulty: "困难",
+    personality: t("pve.tricksterDesc"),
+    difficulty: t("pve.hard"),
   },
   {
     id: "defender",
