@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useAccount, useReadContract, useReadContracts, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { formatUnits, parseUnits } from "viem";
 import { POOL_ADDRESS, POOL_ABI, USDC_ADDRESS, USDC_ABI } from "@/lib/contracts";
+import { useI18n } from "@/lib/i18n";
 
 interface EarningEntry {
   challenge_id: string;

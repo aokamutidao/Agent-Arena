@@ -12,6 +12,7 @@ import { TurnLog } from "@/components/game/TurnLog";
 import { BetPanel } from "@/components/betting/BetPanel";
 import { StrategyVote } from "@/components/betting/StrategyVote";
 import { api } from "@/lib/api";
+import { useI18n } from "@/lib/i18n";
 
 export default function GamePage() {
   const params = useParams();
@@ -19,6 +20,7 @@ export default function GamePage() {
 
   const { game, loading, error, wsConnected, gameFinished, balanceUpdate } = useGame(gameId);
   const { refreshUser, user } = useAuth();
+  const { t } = useI18n();
   const [starting, setStarting] = useState(false);
   const [creating, setCreating] = useState(false);
   const router = useRouter();
@@ -74,7 +76,7 @@ export default function GamePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-muted-foreground">加载中...</p>
+        <p className="text-muted-foreground">{t("common.loading")}</p>
       </div>
     );
   }
@@ -82,7 +84,7 @@ export default function GamePage() {
   if (error || !game) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-destructive">{error || "对局不存在"}</p>
+        <p className="text-destructive">{error || t("game.notFound")}</p>
       </div>
     );
   }
@@ -92,15 +94,15 @@ export default function GamePage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">
-          对局 #{game.game_id}
+          {t("game.gameId")}{game.game_id}
           {game.status === "finished" && (
             <span className="ml-3 text-sm font-normal text-muted-foreground">
-              已结束
+              {t("game.finished")}
             </span>
           )}
           {game.status === "betting" && (
             <span className="ml-3 text-sm font-normal text-yellow-500">
-              等待开始
+              {t("game.waiting")}
             </span>
           )}
         </h1>
@@ -112,7 +114,7 @@ export default function GamePage() {
               size="sm"
               className="bg-green-600 hover:bg-green-700"
             >
-              {starting ? "启动中..." : "⚔️ 开始对局"}
+              {starting ? t("common.loading") : t("game.start")}
             </Button>
           )}
           <div className="flex items-center gap-2 text-sm">
@@ -122,7 +124,7 @@ export default function GamePage() {
               }`}
             />
             <span className="text-muted-foreground">
-              {wsConnected ? "实时连接" : "未连接"}
+              {wsConnected ? t("game.connected") : t("game.disconnected")}
             </span>
           </div>
         </div>
@@ -133,21 +135,21 @@ export default function GamePage() {
         <Card className="border-green-500/30 bg-green-500/5">
           <CardContent className="pt-6 text-center space-y-3">
             <p className="text-lg font-semibold">
-              🏆 {game.winner === "red" ? "红方" : game.winner === "blue" ? "蓝方" : ""}获胜！
+              🏆 {game.winner === "red" ? t("game.red") : game.winner === "blue" ? t("game.blue") : ""} {t("game.wins")}
             </p>
             <p className="text-muted-foreground">
-              胜者: {gameFinished?.winner_name || game.winner || "—"} |
-              共 {gameFinished?.total_rounds || game.current_round} 回合
+              {t("game.winner")}: {gameFinished?.winner_name || game.winner || "—"} |
+              {t("game.totalRounds")} {gameFinished?.total_rounds || game.current_round} {t("game.round")}
             </p>
             <p className="text-sm text-muted-foreground mt-1">
-              最终 HP — 红方: {game.agent_red_state?.hp ?? 0} / 蓝方: {game.agent_blue_state?.hp ?? 0}
+              {t("game.finalHp")} — {t("game.red")}: {game.agent_red_state?.hp ?? 0} / {t("game.blue")}: {game.agent_blue_state?.hp ?? 0}
             </p>
             <Button
               onClick={handleCreateGame}
               disabled={creating}
               className="mt-2"
             >
-              {creating ? "创建中..." : "🆕 新建对局"}
+              {creating ? t("common.loading") : t("game.newGame")}
             </Button>
           </CardContent>
         </Card>
@@ -157,9 +159,9 @@ export default function GamePage() {
       {game?.overtime && !gameFinished && (
         <Card className="border-orange-500/30 bg-orange-500/5">
           <CardContent className="pt-6 text-center">
-            <p className="text-lg font-semibold text-orange-500">⚡ 加时赛！</p>
+            <p className="text-lg font-semibold text-orange-500">{t("game.overtime")}</p>
             <p className="text-sm text-muted-foreground">
-              双方 HP 相同，进入 Sudden Death — 每回合双方各受 10 点伤害
+              {t("game.overtimeDesc")}
             </p>
           </CardContent>
         </Card>
@@ -170,11 +172,11 @@ export default function GamePage() {
         <Card className="border-yellow-500/30 bg-yellow-500/5">
           <CardContent className="pt-6 text-center">
             <p className="text-base font-semibold text-yellow-500">
-              🗄️ 已归档（后端重启）
+              {t("game.archived")}
             </p>
             <p className="text-sm text-muted-foreground mt-1">
-              最终结果来自数据库，回合明细在重启前未持久化。
-              完整链上记录请前往 <a href="/history" className="text-blue-400 hover:underline">对局记录</a> 查看。
+              {t("game.archivedDesc")}
+              {t("game.viewHistory")} <a href="/history" className="text-blue-400 hover:underline">{t("game.battleHistory")}</a>
             </p>
           </CardContent>
         </Card>
@@ -201,7 +203,7 @@ export default function GamePage() {
             <ArenaBoard gameState={game} />
           </div>
           <div className="text-center mt-4 text-sm text-muted-foreground">
-            第 {game.current_round} / {game.max_rounds} 回合
+            {t("game.round")} {game.current_round} / {game.max_rounds}
           </div>
         </CardContent>
       </Card>
@@ -224,7 +226,7 @@ export default function GamePage() {
       {/* Turn Log */}
       <Card>
         <CardContent className="pt-6">
-          <h3 className="text-lg font-semibold mb-3">📜 回合日志</h3>
+          <h3 className="text-lg font-semibold mb-3">{t("game.turnLog")}</h3>
           <TurnLog turns={game.history} />
         </CardContent>
       </Card>

@@ -6,10 +6,12 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { api } from "@/lib/api";
+import { useI18n } from "@/lib/i18n";
 import type { GameListItem } from "@/types/game";
 
 export default function HomePage() {
   const router = useRouter();
+  const { t } = useI18n();
   const [games, setGames] = useState<GameListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -34,8 +36,8 @@ export default function HomePage() {
       const res = await api.createGame();
       router.push(`/game/${res.game_id}`);
     } catch (err) {
-      console.error("创建对局失败:", err);
-      alert("创建对局失败，请检查后端是否运行");
+      console.error("Create game failed:", err);
+      alert(t("common.error"));
     } finally {
       setCreating(false);
     }
@@ -53,7 +55,7 @@ export default function HomePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-muted-foreground">加载中...</p>
+        <p className="text-muted-foreground">{t("common.loading")}</p>
       </div>
     );
   }
@@ -61,9 +63,9 @@ export default function HomePage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">对局列表</h1>
+        <h1 className="text-3xl font-bold">{t("nav.home")}</h1>
         <Button onClick={handleCreateGame} disabled={creating}>
-          {creating ? "创建中..." : "🎮 创建新对局"}
+          {creating ? t("common.loading") : "🎮 " + t("home.startGame")}
         </Button>
       </div>
 
@@ -71,18 +73,18 @@ export default function HomePage() {
       <section>
         <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
           <span className="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-          正在进行 ({playing.length})
+          {t("game.inProgress")} ({playing.length})
         </h2>
         {playing.length === 0 ? (
           <Card>
             <CardContent className="pt-6">
-              <p className="text-sm text-muted-foreground">暂无进行中的对局</p>
+              <p className="text-sm text-muted-foreground">{t("home.noGames")}</p>
             </CardContent>
           </Card>
         ) : (
           <div className="grid gap-4">
             {playing.map((game) => (
-              <GameCard key={game.game_id} game={game} formatUSDC={formatUSDC} live />
+              <GameCard key={game.game_id} game={game} formatUSDC={formatUSDC} live t={t} />
             ))}
           </div>
         )}
@@ -90,17 +92,17 @@ export default function HomePage() {
 
       {/* UPCOMING */}
       <section>
-        <h2 className="text-lg font-semibold mb-3">即将开始 ({betting.length})</h2>
+        <h2 className="text-lg font-semibold mb-3">{t("game.waiting")} ({betting.length})</h2>
         {betting.length === 0 ? (
           <Card>
             <CardContent className="pt-6">
-              <p className="text-sm text-muted-foreground">暂无即将开始的对局</p>
+              <p className="text-sm text-muted-foreground">{t("home.noGames")}</p>
             </CardContent>
           </Card>
         ) : (
           <div className="grid gap-4">
             {betting.map((game) => (
-              <GameCard key={game.game_id} game={game} formatUSDC={formatUSDC} />
+              <GameCard key={game.game_id} game={game} formatUSDC={formatUSDC} t={t} />
             ))}
           </div>
         )}
@@ -108,17 +110,17 @@ export default function HomePage() {
 
       {/* FINISHED */}
       <section>
-        <h2 className="text-lg font-semibold mb-3">已结束 ({finished.length})</h2>
+        <h2 className="text-lg font-semibold mb-3">{t("game.finished")} ({finished.length})</h2>
         {finished.length === 0 ? (
           <Card>
             <CardContent className="pt-6">
-              <p className="text-sm text-muted-foreground">暂无已结束的对局</p>
+              <p className="text-sm text-muted-foreground">{t("home.noGames")}</p>
             </CardContent>
           </Card>
         ) : (
           <div className="grid gap-4">
             {finished.map((game) => (
-              <GameCard key={game.game_id} game={game} formatUSDC={formatUSDC} />
+              <GameCard key={game.game_id} game={game} formatUSDC={formatUSDC} t={t} />
             ))}
           </div>
         )}
@@ -131,10 +133,12 @@ function GameCard({
   game,
   formatUSDC,
   live,
+  t,
 }: {
   game: GameListItem;
   formatUSDC: (wei: string) => string;
   live?: boolean;
+  t: (key: string) => string;
 }) {
   const redPool = formatUSDC(game.total_bet_red);
   const bluePool = formatUSDC(game.total_bet_blue);
@@ -157,24 +161,24 @@ function GameCard({
           <div>
             {game.status === "playing" ? (
               <p className="text-muted-foreground">
-                第 {game.current_round} / {game.max_rounds} 回合
+                {t("game.round")} {game.current_round} / {game.max_rounds}
               </p>
             ) : game.status === "finished" ? (
               <p className="text-muted-foreground">
-                胜者: {game.agent_red.name === game.winner ? "🔴" : "🔵"}{" "}
+                {t("game.winner")}: {game.agent_red.name === game.winner ? "🔴" : "🔵"}{" "}
                 {game.winner || "none"}
               </p>
             ) : (
-              <p className="text-muted-foreground">等待开始</p>
+              <p className="text-muted-foreground">{t("game.waiting")}</p>
             )}
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-muted-foreground">池: {totalPool} USDC</span>
+            <span className="text-muted-foreground">Pool: {totalPool} USDC</span>
             <Link
               href={`/game/${game.game_id}`}
               className="text-primary hover:underline font-medium"
             >
-              {game.status === "playing" ? "观战" : "查看"} →
+              {game.status === "playing" ? t("game.title") : t("common.confirm")} →
             </Link>
           </div>
         </div>

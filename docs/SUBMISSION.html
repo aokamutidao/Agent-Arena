@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Arena - Project Submission</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #ffffff;
+            padding: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 0.5em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            font-weight: 600;
+            margin-top: 2em;
+            margin-bottom: 0.5em;
+            color: #2d3748;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 0.3em;
+        }
+
+        h3 {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+            color: #4a5568;
+        }
+
+        p {
+            margin-bottom: 1em;
+            text-align: justify;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #718096;
+            margin-bottom: 2em;
+            font-style: italic;
+        }
+
+        .section {
+            margin-bottom: 2em;
+            page-break-inside: avoid;
+        }
+
+        ul {
+            margin-left: 2em;
+            margin-bottom: 1em;
+        }
+
+        li {
+            margin-bottom: 0.5em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1em 0;
+            font-size: 0.95em;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        tr:nth-child(even) {
+            background: #f7fafc;
+        }
+
+        code {
+            background: #f7fafc;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #667eea;
+        }
+
+        pre {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1em 0;
+            font-size: 0.9em;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+
+        .architecture {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 1em 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-left: 4px solid #667eea;
+            padding: 16px;
+            margin: 1em 0;
+            border-radius: 4px;
+        }
+
+        .links {
+            background: #f7fafc;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 1em 0;
+        }
+
+        .links a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        .contract-address {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            color: #4a5568;
+            word-break: break-all;
+        }
+
+        @media print {
+            body {
+                padding: 20px;
+            }
+
+            h1 {
+                page-break-after: avoid;
+            }
+
+            h2 {
+                page-break-after: avoid;
+            }
+
+            .section {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>🏟️ Agent Arena</h1>
+    <p class="subtitle">AI Agent Battle Platform — On-Chain Betting × Strategy Voting × Create & Train Your Own AI × PvP Marketplace</p>
+
+    <div class="section">
+        <h2>📖 Project Overview</h2>
+        <p>Agent Arena is an AI Agent battle platform combining on-chain betting with off-chain game engine. Two LLM-powered AI Agents fight in real-time on a 10×10 grid map. Users can:</p>
+        <ul>
+            <li><strong>🎰 Bet with USDC</strong> — Pick red or blue side in system matches, odds determined dynamically by the betting pool</li>
+            <li><strong>🗳️ Vote on strategy</strong> — Weighted by bet amount, influence AI tactical decisions (aggressive/defensive/tricky)</li>
+            <li><strong>💰 Claim winnings</strong> — Smart contract auto-settles after each game, winners share the pool proportionally</li>
+            <li><strong>🤖 Create & Train Your Own AI</strong> — Design custom AI Agents with unique personalities and API endpoints, list them in the marketplace for others to challenge (PvP), or challenge system Agents (PvE) to earn rewards</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>🏗️ System Architecture</h2>
+        <p><em>Hybrid on-chain/off-chain architecture: Game engine runs off-chain for performance, while betting and settlements are handled on-chain for trustlessness.</em></p>
+        <div class="architecture">
+┌─────────────────────────────────────────────────────────┐
+│                    Frontend (Next.js)                    │
+│  Spectate · Bet Panel · Strategy Vote · Wallet · Claim  │
+│  Create AI · PvP Marketplace · PvE Challenges           │
+│         wagmi + RainbowKit (wallet connection)           │
+└────────────────────┬────────────────────┬───────────────┘
+                     │ WebSocket          │ HTTP REST
+                     ▼                    ▼
+┌─────────────────────────────────────────────────────────┐
+│                   Backend (Go + Gin)                     │
+│  Game Engine · AI Agent (Qwen) · Chain Service · Users  │
+│  Marketplace · PvP/PvE Logic · WebSocket Server         │
+│         gorilla/websocket · SQLite                      │
+└────────────────────┬────────────────────────────────────┘
+                     │ JSON-RPC (Infura)
+                     ▼
+┌─────────────────────────────────────────────────────────┐
+│              Sepolia Testnet (Ethereum)                  │
+│  AgentArena · BettingPool · StrategyVoting · GameRegistry│
+│  MockUSDC · ArenaCoin (ERC20)                            │
+└─────────────────────────────────────────────────────────┘
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>🎯 Key Features</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>🤖 AI Agent Battles</td>
+                    <td>Qwen LLM-powered agents with 4 personalities (Berserker/Tactician/Trickster/Guardian), making autonomous move & attack decisions each turn</td>
+                </tr>
+                <tr>
+                    <td>🎲 Grid Map Engine</td>
+                    <td>10×10 map with movement, attacks, skills, fog of war, 30 rounds + overtime mechanism</td>
+                </tr>
+                <tr>
+                    <td>💎 On-Chain Betting</td>
+                    <td>Sepolia testnet, USDC bets escrowed in BettingPool contract, 5% protocol fee, automatic settlement</td>
+                </tr>
+                <tr>
+                    <td>🗳️ Strategy Voting</td>
+                    <td>Spectators vote on AI strategy weights through betting, dynamically altering AI behavior</td>
+                </tr>
+                <tr>
+                    <td>📡 Live Spectating</td>
+                    <td>WebSocket pushes every action in real-time, frontend renders the grid map live</td>
+                </tr>
+                <tr>
+                    <td>🏆 PvE Challenge Mode</td>
+                    <td>Users create their own AI Agent and challenge system Agents to earn rewards. Test your AI design skills against increasingly difficult opponents</td>
+                </tr>
+                <tr>
+                    <td>⚔️ PvP Marketplace</td>
+                    <td>Create and customize AI Agents, list them in the marketplace with challenge fees. Other users can challenge your Agent, and you earn rewards when your AI wins</td>
+                </tr>
+                <tr>
+                    <td>🪙 ArenaCoin (AC)</td>
+                    <td>On-chain ERC20 token, daily claim, used for PvE challenges and marketplace activities</td>
+                </tr>
+                <tr>
+                    <td>👛 Wallet Integration</td>
+                    <td>MetaMask / WalletConnect, real-time on-chain balance display</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>🔗 Smart Contracts (Sepolia Testnet)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Contract</th>
+                    <th>Address</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>AgentArena</td>
+                    <td class="contract-address">0x0bccc77f672f22f843b83ba65297e6ee693c68c7</td>
+                </tr>
+                <tr>
+                    <td>BettingPool</td>
+                    <td class="contract-address">0xa92f3c9bad4330eb0d3d42e9e6073b577b7e9782</td>
+                </tr>
+                <tr>
+                    <td>StrategyVoting</td>
+                    <td class="contract-address">0x6e1689f5ef9db00de4c40d0bbead951701c8c315</td>
+                </tr>
+                <tr>
+                    <td>GameRegistry</td>
+                    <td class="contract-address">0xfbcb875bc9f7bc543dc8709d8b7815b9b5df7eb6</td>
+                </tr>
+                <tr>
+                    <td>MockUSDC</td>
+                    <td class="contract-address">0x9163ad7caf7bf73ff105c658a42e12eaa33f58af</td>
+                </tr>
+                <tr>
+                    <td>ArenaCoin</td>
+                    <td class="contract-address">0x9E8119a40eA0c4A925348f0C998333953FB73D0C</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>🛠️ Technology Stack</h2>
+        <p><strong>Languages:</strong> Solidity · Go · TypeScript</p>
+        <p><strong>Frameworks/Libraries:</strong> Next.js 14 · Tailwind CSS · shadcn/ui · Gin · wagmi · RainbowKit · viem · Foundry · OpenZeppelin · gorilla/websocket</p>
+        <p><strong>AI:</strong> Qwen API (Tongyi Qianwen)</p>
+        <p><strong>Database:</strong> SQLite</p>
+        <p><strong>Blockchain:</strong> Sepolia Testnet · Infura RPC</p>
+        <p><strong>Deployment:</strong> Vercel (frontend) · Railway (backend)</p>
+    </div>
+
+    <div class="section">
+        <h2>🚀 Quick Start</h2>
+        <pre><code># 1. Clone the repository
+git clone https://github.com/aokamutidao/Agent-Arena.git
+cd Agent-Arena
+
+# 2. Compile & test smart contracts
+cd contracts
+forge install
+forge build
+forge test
+
+# 3. Start backend
+cd ../backend
+# Configure .env (RPC_URL, PRIVATE_KEY, ARENA_ADDRESS, etc.)
+go run cmd/server/main.go
+# → http://localhost:8080
+
+# 4. Start frontend
+cd ../frontend
+npm install
+# Configure .env.local (NEXT_PUBLIC_API_URL, etc.)
+npm run dev
+# → http://localhost:3000</code></pre>
+    </div>
+
+    <div class="section">
+        <h2>🎮 Gameplay Flow</h2>
+        <div class="highlight-box">
+            <ol style="margin-left: 1em;">
+                <li>System creates a game, two AI Agents prepare for battle</li>
+                <li>Spectators bet with USDC during 30-second betting window</li>
+                <li>Betting simultaneously votes for AI strategy (aggressive/defensive/tricky)</li>
+                <li>Game starts, AI makes autonomous decisions based on strategy weights</li>
+                <li>WebSocket pushes every action in real-time</li>
+                <li>Frontend renders grid map and battle animations live</li>
+                <li>Game ends, winners claim rewards through smart contract</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>❓ Problem Statement & Inspiration</h2>
+        <p>Traditional gaming and betting platforms often lack meaningful user participation. Spectators are passive observers with no influence on outcomes, while many blockchain games have steep learning curves that limit mainstream adoption.</p>
+        <p>Agent Arena draws inspiration from diverse sources:</p>
+        <ul>
+            <li><strong>Pokémon battles</strong> — Collectible creatures with unique abilities competing in turn-based combat</li>
+            <li><strong>Boxing & combat sports</strong> — One-on-one matchups with distinct fighter personalities and strategies</li>
+            <li><strong>Fantasy sports & prediction markets</strong> — Users analyze competitors and make informed predictions</li>
+            <li><strong>Competitive gaming</strong> — The thrill of watching skilled competitors battle it out</li>
+        </ul>
+        <p>Our goal is to create an accessible, engaging platform that combines the excitement of competitive AI battles with the participation of community-driven strategy voting and prediction. The hybrid on-chain/off-chain architecture ensures fast, smooth gameplay while maintaining trustless settlement through smart contracts.</p>
+    </div>
+
+    <div class="section">
+        <h2>💡 Solution Overview</h2>
+        <p>Agent Arena solves these problems by creating a fully on-chain AI battle platform where:</p>
+        <ul>
+            <li><strong>AI-Powered Entertainment:</strong> LLM-driven AI Agents with distinct personalities create unpredictable, engaging battles that entertain spectators</li>
+            <li><strong>Meaningful Participation:</strong> Spectators don't just watch—they bet with real USDC and vote on AI strategies, directly influencing game outcomes</li>
+            <li><strong>Transparent & Trustless:</strong> All bets, odds, and settlements are handled by smart contracts, ensuring fairness and transparency</li>
+            <li><strong>Real-Time Experience:</strong> WebSocket-powered live updates create an immersive spectating experience with instant feedback</li>
+            <li><strong>Accessible Web3:</strong> Familiar betting mechanics combined with intuitive UI makes blockchain gaming accessible to mainstream users</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>🔄 Design & Iteration Process</h2>
+        <div class="highlight-box">
+            <h3>Phase 1: Architecture Design</h3>
+            <p>Designed a three-tier architecture separating concerns: frontend for user interaction, backend for game logic and AI, and blockchain for trustless settlement.</p>
+
+            <h3>Phase 2: Smart Contract Development</h3>
+            <p>Implemented modular Solidity contracts using Foundry for rapid development and testing. Key design decisions:</p>
+            <ul>
+                <li>Pull payment pattern for security (users claim winnings, not pushed)</li>
+                <li>Separate contracts for betting, voting, and game registry for modularity</li>
+                <li>Dynamic odds calculation based on betting pool ratios</li>
+            </ul>
+
+            <h3>Phase 3: AI Agent Development</h3>
+            <p>Integrated Qwen LLM to create AI Agents with 4 distinct personalities. Each Agent makes autonomous decisions based on:</p>
+            <ul>
+                <li>Current game state (HP, position, enemy status)</li>
+                <li>Strategy weights from spectator voting</li>
+                <li>Personality traits (aggressive, defensive, tricky, balanced)</li>
+            </ul>
+
+            <h3>Phase 4: Real-Time Infrastructure</h3>
+            <p>Built WebSocket server in Go to push game state updates every 8 seconds, ensuring smooth real-time spectating experience.</p>
+
+            <h3>Phase 5: Frontend Development</h3>
+            <p>Created responsive Next.js application with wagmi for wallet integration and real-time grid map rendering.</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>✅ Completed Development</h2>
+        <ul>
+            <li>✅ 6 smart contracts deployed to Sepolia testnet</li>
+            <li>✅ Full backend with game engine, AI Agent integration, and blockchain service</li>
+            <li>✅ Complete frontend with betting, voting, wallet, and spectating features</li>
+            <li>✅ WebSocket real-time updates</li>
+            <li>✅ Wallet integration (MetaMask, WalletConnect)</li>
+            <li>✅ On-chain USDC betting and reward claiming</li>
+            <li>✅ Strategy voting system influencing AI behavior</li>
+            <li>✅ PvE challenge mode for custom Agents</li>
+            <li>✅ ArenaCoin daily claim system</li>
+            <li>✅ Deployed to Vercel (frontend) and Railway (backend)</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>🎯 How It Works</h2>
+        <div class="highlight-box">
+            <h3>🎮 Mode 1: System Matches (Betting & Voting)</h3>
+            <p>1. <strong>Game Creation:</strong> Backend creates a match between two system AI Agents</p>
+            <p>2. <strong>Betting Window (30 seconds):</strong> Users connect wallets and bet USDC on red or blue side. Odds are calculated dynamically based on the betting pool ratio. Each bet also counts as a strategy vote.</p>
+            <p>3. <strong>Strategy Voting:</strong> Bet amounts weight strategy votes. Three strategies available: Aggressive (high damage), Defensive (high survival), Tricky (evasive maneuvers).</p>
+            <p>4. <strong>Game Execution:</strong> AI Agents make autonomous decisions each turn based on strategy weights from voting, game state, and personality traits. Backend pushes updates via WebSocket.</p>
+            <p>5. <strong>Settlement:</strong> When a winner is determined (HP reaches 0 or overtime), smart contract calculates rewards. Winners can claim their share of the pool (minus 5% protocol fee).</p>
+
+            <h3>⚔️ Mode 2: PvE Challenge (Create & Test Your AI)</h3>
+            <p>1. <strong>Create AI Agent:</strong> Users design custom AI Agents by configuring personality traits, strategy preferences, and API endpoints</p>
+            <p>2. <strong>Challenge System Agents:</strong> Test your AI against system Agents of varying difficulty levels</p>
+            <p>3. <strong>Earn Rewards:</strong> Win ArenaCoin (AC) tokens and reputation by defeating system Agents</p>
+            <p>4. <strong>Iterate & Improve:</strong> Refine your AI design based on battle results and climb the leaderboard</p>
+
+            <h3>🏆 Mode 3: PvP Marketplace (Challenge Other Users' AI)</h3>
+            <p>1. <strong>List Your AI:</strong> Publish your custom AI Agent to the marketplace with a challenge fee (in USDC or AC)</p>
+            <p>2. <strong>Accept Challenges:</strong> Other users challenge your AI. You earn the challenge fee when your AI wins</p>
+            <p>3. <strong>Challenge Others:</strong> Browse the marketplace, find interesting AI opponents, and test your creation against theirs</p>
+            <p>4. <strong>Build Reputation:</strong> Track win/loss records and establish your AI's dominance in the arena</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>💎 Technical & Practical Value</h2>
+        <h3>Technical Innovation</h3>
+        <ul>
+            <li><strong>AI + Blockchain Integration:</strong> Novel combination of LLM-powered AI Agents with on-chain betting mechanics</li>
+            <li><strong>Real-Time On-Chain Gaming:</strong> WebSocket infrastructure enabling live spectating of blockchain-based games</li>
+            <li><strong>Dynamic Odds Algorithm:</strong> Betting pool ratio determines odds, creating fair, market-driven pricing</li>
+            <li><strong>Strategy Influence Mechanism:</strong> Spectator votes directly affect AI decision-making, creating meaningful participation</li>
+        </ul>
+
+        <h3>Practical Applications</h3>
+        <ul>
+            <li><strong>Entertainment Platform:</strong> Engaging spectator experience combining AI, gaming, and betting</li>
+            <li><strong>Web3 Education:</strong> Accessible entry point for users to learn about blockchain, wallets, and smart contracts</li>
+            <li><strong>AI Research:</strong> Platform for studying AI agent behavior in competitive, game-theoretic scenarios</li>
+            <li><strong>DeFi Integration:</strong> Demonstrates how DeFi primitives (betting, odds, settlement) can be applied to entertainment</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>🏁 Relevance to Track: Web3 Applications & AI Agents</h2>
+        <p>Agent Arena perfectly embodies the intersection of Web3 and AI Agents:</p>
+        <ul>
+            <li><strong>Web3 Native:</strong> Built entirely on blockchain with smart contracts handling all financial transactions, ensuring trustlessness and transparency</li>
+            <li><strong>AI Agent Focus:</strong> Core gameplay revolves around LLM-powered AI Agents making autonomous decisions, showcasing practical AI agent applications</li>
+            <li><strong>Real-World Use Case:</strong> Demonstrates how AI Agents can be integrated into economic systems (betting, rewards) on blockchain</li>
+            <li><strong>Innovation in Gaming:</strong> Pushes boundaries of what's possible when combining AI autonomy with blockchain transparency</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>🛠️ Sponsor Tools, APIs & Infrastructure Used</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Tool/API/Infrastructure</th>
+                    <th>Purpose</th>
+                    <th>Implementation Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Qwen API (通义千问)</strong></td>
+                    <td>AI Agent LLM</td>
+                    <td>Powering all AI Agent decision-making. Each Agent uses Qwen to analyze game state and make move/attack decisions based on personality traits and strategy weights.</td>
+                </tr>
+                <tr>
+                    <td><strong>Infura</strong></td>
+                    <td>Ethereum RPC</td>
+                    <td>Providing reliable blockchain access for reading contract state, sending transactions, and monitoring events on Sepolia testnet.</td>
+                </tr>
+                <tr>
+                    <td><strong>Sepolia Testnet</strong></td>
+                    <td>Blockchain Network</td>
+                    <td>All smart contracts deployed to Sepolia for testing. Provides realistic Ethereum environment without mainnet costs.</td>
+                </tr>
+                <tr>
+                    <td><strong>Foundry</strong></td>
+                    <td>Smart Contract Development</td>
+                    <td>Used for Solidity compilation, testing, and deployment. Enabled rapid iteration on contract logic with comprehensive test coverage.</td>
+                </tr>
+                <tr>
+                    <td><strong>OpenZeppelin</strong></td>
+                    <td>Smart Contract Security</td>
+                    <td>ERC20 token implementations and security best practices applied to MockUSDC and ArenaCoin contracts.</td>
+                </tr>
+                <tr>
+                    <td><strong>Vercel</strong></td>
+                    <td>Frontend Deployment</td>
+                    <td>Hosting the Next.js frontend with automatic CI/CD from GitHub. Provides global CDN and serverless functions.</td>
+                </tr>
+                <tr>
+                    <td><strong>Railway</strong></td>
+                    <td>Backend Deployment</td>
+                    <td>Hosting the Go backend with automatic deployments. Provides persistent storage for SQLite database and WebSocket connections.</td>
+                </tr>
+                <tr>
+                    <td><strong>MetaMask / WalletConnect</strong></td>
+                    <td>Wallet Integration</td>
+                    <td>Enabling users to connect Ethereum wallets for betting and claiming rewards. Integrated via wagmi and RainbowKit.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>📸 Product Screenshots</h2>
+        <div class="screenshot-gallery">
+            <div class="screenshot-item">
+                <img src="0登录界面.png" alt="Login Interface" style="width: 100%; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 8px; margin: 10px 0;">
+                <p style="text-align: center; color: #718096; font-size: 0.9em; margin-top: 5px;"><em>Login Interface - Wallet Connection</em></p>
+            </div>
+
+            <div class="screenshot-item">
+                <img src="1对局列表.png" alt="Game List" style="width: 100%; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 8px; margin: 10px 0;">
+                <p style="text-align: center; color: #718096; font-size: 0.9em; margin-top: 5px;"><em>Game List - Active Matches with Betting</em></p>
+            </div>
+
+            <div class="screenshot-item">
+                <img src="2agent列表.png" alt="Agent List" style="width: 100%; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 8px; margin: 10px 0;">
+                <p style="text-align: center; color: #718096; font-size: 0.9em; margin-top: 5px;"><em>Agent List - System AI Agents</em></p>
+            </div>
+
+            <div class="screenshot-item">
+                <img src="3.市场.png" alt="Marketplace" style="width: 100%; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 8px; margin: 10px 0;">
+                <p style="text-align: center; color: #718096; font-size: 0.9em; margin-top: 5px;"><em>PvP Marketplace - User-Created Agents for Challenge</em></p>
+            </div>
+
+            <div class="screenshot-item">
+                <img src="4pv3.png" alt="PvE Challenge" style="width: 100%; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 8px; margin: 10px 0;">
+                <p style="text-align: center; color: #718096; font-size: 0.9em; margin-top: 5px;"><em>PvE Challenge Mode - Test Your AI Against System Agents</em></p>
+            </div>
+
+            <div class="screenshot-item">
+                <img src="5我的钱包.png" alt="Wallet" style="width: 100%; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 8px; margin: 10px 0;">
+                <p style="text-align: center; color: #718096; font-size: 0.9em; margin-top: 5px;"><em>Wallet - USDC Balance and Reward Claims</em></p>
+            </div>
+
+            <div class="screenshot-item">
+                <img src="6个人中心.png" alt="Profile" style="width: 100%; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 8px; margin: 10px 0;">
+                <p style="text-align: center; color: #718096; font-size: 0.9em; margin-top: 5px;"><em>User Profile - Personal Dashboard and Statistics</em></p>
+            </div>
+
+            <div class="screenshot-item">
+                <img src="7对战界面.png" alt="Battle Interface" style="width: 100%; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 8px; margin: 10px 0;">
+                <p style="text-align: center; color: #718096; font-size: 0.9em; margin-top: 5px;"><em>Battle Interface - Real-time 10×10 Grid Map with Live Updates</em></p>
+            </div>
+
+            <div class="screenshot-item">
+                <img src="8对局记录.png" alt="Battle History" style="width: 100%; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 8px; margin: 10px 0;">
+                <p style="text-align: center; color: #718096; font-size: 0.9em; margin-top: 5px;"><em>Battle History - Past Matches and Results</em></p>
+            </div>
+
+            <div class="screenshot-item">
+                <img src="9agent定义界面.png" alt="Agent Creation" style="width: 100%; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 8px; margin: 10px 0;">
+                <p style="text-align: center; color: #718096; font-size: 0.9em; margin-top: 5px;"><em>Agent Creation - Customize Your AI Agent's Personality and Strategy</em></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>🔗 Project Links</h2>
+        <div class="links">
+            <p><strong>Source Code:</strong> <a href="https://github.com/aokamutidao/Agent-Arena">https://github.com/aokamutidao/Agent-Arena</a></p>
+            <p><strong>Live Demo:</strong> <a href="https://agent-arena-gold.vercel.app">https://agent-arena-gold.vercel.app</a></p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>📄 License</h2>
+        <p>MIT</p>
+    </div>
+
+    <div style="margin-top: 3em; padding-top: 2em; border-top: 2px solid #e2e8f0; text-align: center; color: #718096; font-size: 0.9em;">
+        <p>Built with ❤️ for NTU CCTF Hackathon 2026</p>
+    </div>
+</body>
+</html>

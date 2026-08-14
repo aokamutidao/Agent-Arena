@@ -3,12 +3,15 @@
 import Link from "next/link";
 import { WalletConnect } from "./WalletConnect";
 import { LoginButton } from "@/components/auth/LoginButton";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 import { Swords, Coins, Gem, Wallet } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { useI18n } from "@/lib/i18n";
 import { formatUnits } from "viem";
 
 export function Navbar() {
   const { user, isAuthenticated } = useAuth();
+  const { t } = useI18n();
 
   return (
     <nav className="border-b bg-background">
@@ -24,57 +27,51 @@ export function Navbar() {
               href="/"
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
-              对局列表
-            </Link>
-            <Link
-              href="/agents"
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Agent
+              {t("nav.agents")}
             </Link>
             <Link
               href="/marketplace"
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
-              市场
+              {t("nav.marketplace")}
             </Link>
             <Link
               href="/pve"
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
-              PVE
+              {t("nav.pve")}
             </Link>
             <Link
               href="/history"
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
-              对局记录
+              {t("nav.history")}
             </Link>
             <Link
               href="/wallet"
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
-              我的钱包
+              {t("nav.wallet")}
             </Link>
             <Link
               href="/profile"
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
-              个人中心
+              {t("nav.profile")}
             </Link>
           </div>
         </div>
 
-        {/* Balance + Login + Wallet Connect */}
+        {/* Balance + Login + Wallet Connect + Language Switcher */}
         <div className="flex items-center gap-3">
           {isAuthenticated && user && (
             <Link
               href="/wallet"
               className="flex items-center gap-2 rounded-lg border bg-muted/50 px-3 py-1.5 text-sm hover:bg-muted transition-colors"
-              title="我的钱包"
+              title={t("nav.wallet")}
             >
               <Wallet className="h-4 w-4 text-muted-foreground" />
-              <span className="flex items-center gap-1" title="USDC（链上）">
+              <span className="flex items-center gap-1" title="USDC">
                 <Coins className="h-3.5 w-3.5 text-yellow-500" />
                 <span className="font-mono">
                   {user.usdc_balance_raw
@@ -85,7 +82,7 @@ export function Navbar() {
                 </span>
               </span>
               <span className="text-muted-foreground">|</span>
-              <span className="flex items-center gap-1" title="AC（链上余额）">
+              <span className="flex items-center gap-1" title="AC">
                 <Gem className="h-3.5 w-3.5 text-purple-500" />
                 <span className="font-mono">
                   {(user.ac_on_chain_balance ?? user.ac_balance ?? 0).toLocaleString()}
@@ -95,6 +92,7 @@ export function Navbar() {
           )}
           <LoginButton />
           <WalletConnect />
+          <LanguageSwitcher />
         </div>
       </div>
     </nav>
