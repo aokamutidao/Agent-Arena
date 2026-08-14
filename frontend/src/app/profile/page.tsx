@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
 import { LoginPage } from "@/components/auth/LoginButton";
+import { useI18n } from "@/lib/i18n";
 
 interface CustomAgent {
   id: string;
@@ -33,6 +34,7 @@ interface ProfileUser {
 }
 
 export default function ProfilePage() {
+  const { t } = useI18n();
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
   const { user, token, isAuthenticated, updateBalance } = useAuth();
   const router = useRouter();
@@ -137,7 +139,7 @@ export default function ProfilePage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">个人中心</h1>
+      <h1 className="text-3xl font-bold">{t("profile.title")}</h1>
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* 用户信息 */}
@@ -151,7 +153,7 @@ export default function ProfilePage() {
               <div className="font-medium">{user.username}</div>
             </div>
             <div>
-              <div className="text-sm text-muted-foreground">钱包地址</div>
+              <div className="text-sm text-muted-foreground">钱包{t("profile.address")}</div>
               <div className="font-mono text-sm">{user.address}</div>
             </div>
             <div>
@@ -240,10 +242,10 @@ export default function ProfilePage() {
         </Card>
       </div>
 
-      {/* 我的 Agent */}
+      {/* {t("profile.myAgents")} */}
       <Card>
         <CardHeader>
-          <CardTitle>🤖 我的 Agent</CardTitle>
+          <CardTitle>🤖 {t("profile.myAgents")}</CardTitle>
           <CardDescription>创建和管理你的自定义 Agent</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -252,10 +254,10 @@ export default function ProfilePage() {
           </Button>
 
           {loadingAgents ? (
-            <p className="text-sm text-muted-foreground">加载中...</p>
+            <p className="text-sm text-muted-foreground">{t("common.loading")}...</p>
           ) : agents.length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              还没有创建 Agent，点击上方按钮创建你的第一个 Agent！
+              还没有{t("agent.create")}，点击上方按钮创建你的第一个 Agent！
             </p>
           ) : (
             <div className="space-y-3">
@@ -273,10 +275,10 @@ export default function ProfilePage() {
                     </div>
                     <div className="text-right">
                       <div className="text-sm font-medium">
-                        {agent.wins}胜 {agent.losses}负
+                        {agent.wins}{t("agent.wins")} {agent.losses}{t("agent.losses")}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {agent.is_listed ? "✅ 已上架" : "❌ 未上架"}
+                        {agent.is_listed ? "✅ {t("agent.listed")}" : "❌ {t("agent.notListed")}"}
                       </div>
                     </div>
                   </div>
@@ -293,7 +295,7 @@ export default function ProfilePage() {
                       variant="outline"
                       onClick={() => router.push(`/agent/edit/${agent.id}`)}
                     >
-                      编辑
+                      {t("common.edit")}
                     </Button>
                     <Button
                       size="sm"

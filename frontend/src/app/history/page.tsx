@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
+import { useI18n } from "@/lib/i18n";
 
 interface GameHistoryItem {
   game_id: number;
@@ -22,6 +23,7 @@ interface GameHistoryItem {
 const ETHERSCAN_BASE = "https://sepolia.etherscan.io/tx";
 
 export default function HistoryPage() {
+  const { t } = useI18n();
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
   const { token } = useAuth();
   const [history, setHistory] = useState<GameHistoryItem[]>([]);
@@ -85,7 +87,7 @@ export default function HistoryPage() {
       </div>
 
       {loading && (
-        <div className="text-center py-12 text-muted-foreground">加载中...</div>
+        <div className="text-center py-12 text-muted-foreground">{t("common.loading")}...</div>
       )}
       {error && (
         <Card className="border-red-500/30 bg-red-500/5">
@@ -143,7 +145,7 @@ export default function HistoryPage() {
                     href={`/game/${item.game_id}`}
                     className="text-blue-400 hover:underline"
                   >
-                    查看对局详情 →
+                    {t("wallet.viewGame")}详情 →
                   </Link>
                   {item.finish_tx_hash ? (
                     <a

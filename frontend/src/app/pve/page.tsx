@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
+import { useI18n } from "@/lib/i18n";
 
 interface SystemAgent {
   id: string;
@@ -47,6 +48,7 @@ const SYSTEM_AGENTS: SystemAgent[] = [
 ];
 
 export default function PVEPage() {
+  const { t } = useI18n();
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
   const router = useRouter();
   const { user, token, isAuthenticated } = useAuth();
@@ -153,10 +155,10 @@ export default function PVEPage() {
         </div>
       </div>
 
-      {/* 选择你的 Agent */}
+      {/* {t("pve.selectAgent")} */}
       <Card>
         <CardHeader>
-          <CardTitle>选择你的 Agent</CardTitle>
+          <CardTitle>{t("pve.selectAgent")}</CardTitle>
           <CardDescription>选择你要派出的自定义 Agent 进行挑战</CardDescription>
         </CardHeader>
         <CardContent>

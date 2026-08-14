@@ -54,6 +54,7 @@ export default function WalletPage() {
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
   const { user, token, isAuthenticated, refreshUser } = useAuth();
   const { address, isConnected } = useAccount();
+  const { t } = useI18n();
   const [earnings, setEarnings] = useState<EarningsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -91,7 +92,7 @@ export default function WalletPage() {
     }
   }, [mintSuccess, refetchUsdcBalance, refreshUser]);
 
-  // ===== 可领取的 USDC 赌注 =====
+  // ===== 可{t("wallet.claim")}的 USDC 赌注 =====
   // 架构：后端返回用户的下注 gameID 列表 → 前端查链上 bets() + games() 手动计算奖励
   // （因为 deployed BettingPool 没有 getReward 函数）
   const [userBetGameIds, setUserBetGameIds] = useState<number[]>([]);
@@ -158,7 +159,7 @@ export default function WalletPage() {
     setQueryEnabled(true);
   };
 
-  // 解析链上数据：找出可领取的赌注
+  // 解析链上数据：找出可{t("wallet.claim")}的赌注
   // 手动计算奖励（因为 deployed BettingPool 没有 getReward 函数）
   // 公式：reward = bet.amount * (totalPool - fee) / winnerPool
   // 其中 fee = totalPool * 5% = totalPool * 500 / 10000
@@ -238,7 +239,7 @@ export default function WalletPage() {
   // 监听 claim 交易结果
   useEffect(() => {
     if (claimConfirmed) {
-      setClaimMessage(`✅ Game #${claimGameId} 领取成功！`);
+      setClaimMessage(`✅ Game #${claimGameId} {t("wallet.claim")}成功！`);
       setClaimGameId(null);
       // 延迟清除消息
       setTimeout(() => setClaimMessage(""), 4000);
@@ -247,7 +248,7 @@ export default function WalletPage() {
 
   useEffect(() => {
     if (claimWriteError) {
-      setClaimMessage(`❌ 领取失败: ${claimWriteError.message}`);
+      setClaimMessage(`❌ {t("wallet.claim")}失败: ${claimWriteError.message}`);
       setTimeout(() => setClaimMessage(""), 5000);
     }
   }, [claimWriteError]);
@@ -332,10 +333,10 @@ export default function WalletPage() {
       <div>
         <h1 className="text-3xl font-bold flex items-center gap-2">
           <Wallet className="h-8 w-8" />
-          我的钱包
+          {t("wallet.title")}
         </h1>
         <p className="text-muted-foreground mt-1">
-          地址：<span className="font-mono">{user.address}</span>
+          {t("profile.address")}<span className="font-mono">{user.address}</span>
         </p>
       </div>
 
@@ -358,7 +359,7 @@ export default function WalletPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="text-xs text-muted-foreground space-y-2">
-            <div>用于链上下注 / 挑战押金</div>
+            <div>{t("wallet.forBetting")}</div>
             <Button
               size="sm"
               variant="outline"
@@ -366,7 +367,7 @@ export default function WalletPage() {
               disabled={!isConnected || mintPending || mintConfirming}
               className="w-full"
             >
-              {mintPending || mintConfirming ? "铸造中..." : "🚰 领 100 测试 USDC"}
+              {mintPending || mintConfirming ? "{t("wallet.minting")}" : "{t("wallet.mintTest")}"}
             </Button>
           </CardContent>
         </Card>
@@ -382,7 +383,7 @@ export default function WalletPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="text-xs text-muted-foreground">
-            ERC20 代币，每日登录领取 100 AC
+            {t("wallet.erc20Desc")}
           </CardContent>
         </Card>
 
@@ -390,7 +391,7 @@ export default function WalletPage() {
           <CardHeader className="pb-2">
             <CardDescription className="flex items-center gap-2">
               <Trophy className="h-4 w-4 text-green-500" />
-              累计收益
+              {t("wallet.totalEarnings")}
             </CardDescription>
             <CardTitle className="text-3xl font-mono">
               {earnings
@@ -401,19 +402,19 @@ export default function WalletPage() {
           <CardContent className="text-xs text-muted-foreground">
             {earnings
               ? `+${earnings.total_reward_usdc.toLocaleString()} USDC`
-              : "完成挑战获得奖励"}
+              : "{t("wallet.challengeReward")}"}
           </CardContent>
         </Card>
       </div>
 
-      {/* 可领取的 USDC 赌注 */}
+      {/* 可{t("wallet.claim")}的 USDC 赌注 */}
       <Card>
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <div>
               <CardDescription className="flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-blue-500" />
-                可领取的赌注赢利（USDC）
+                {t("wallet.claimableBets")}
               </CardDescription>
               <CardTitle className="text-2xl font-mono mt-1">
                 {queryEnabled ? `${formatUnits(totalClaimable, 6)} USDC` : "— USDC"}
@@ -425,7 +426,7 @@ export default function WalletPage() {
               onClick={handleQueryClaimable}
               disabled={!address || querying}
             >
-              {querying ? "查询中..." : "查询可领取赌注"}
+              {querying ? "{t("wallet.querying")}" : "{t("wallet.queryClaimable")}"}
             </Button>
           </div>
         </CardHeader>
@@ -436,16 +437,16 @@ export default function WalletPage() {
             </div>
           )}
           {!address ? (
-            <p className="text-muted-foreground text-sm">请连接钱包以查看可领取的赌注</p>
+            <p className="text-muted-foreground text-sm">{t("wallet.connectToView")}</p>
           ) : !queryEnabled ? (
             <p className="text-muted-foreground text-sm">
-              点击「查询可领取赌注」按钮，查询链上可领取的赢利。
+              点击「{t("wallet.queryClaimable")}」按钮，查询链上可{t("wallet.claim")}的赢利。
             </p>
           ) : querying ? (
-            <p className="text-muted-foreground text-sm">正在查询链上数据，请稍候...</p>
+            <p className="text-muted-foreground text-sm">{t("wallet.queryingChain")}</p>
           ) : claimableBets.length === 0 ? (
             <p className="text-muted-foreground text-sm">
-              暂无可领取的赌注。参与下注并获胜后可在此领取赢利。
+              {t("wallet.noClaimable")}。参与下注并获胜后可在此{t("wallet.claim")}赢利。
             </p>
           ) : (
             <div className="space-y-2">
@@ -459,7 +460,7 @@ export default function WalletPage() {
                       Game #{bet.gameId}
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      可领取: <span className="font-mono text-green-600">{formatUnits(bet.reward, 6)} USDC</span>
+                      {t("wallet.canClaim")}: <span className="font-mono text-green-600">{formatUnits(bet.reward, 6)} USDC</span>
                     </div>
                   </div>
                   <Button
@@ -468,8 +469,8 @@ export default function WalletPage() {
                     disabled={isClaimPending || claimGameId === bet.gameId}
                   >
                     {claimGameId === bet.gameId && (isClaimPending || isClaimConfirming)
-                      ? "领取中..."
-                      : "领取"}
+                      ? "{t("wallet.claiming")}"
+                      : "{t("wallet.claim")}"}
                   </Button>
                 </div>
               ))}
@@ -482,33 +483,33 @@ export default function WalletPage() {
       <div className="flex gap-3">
         <Button variant="outline" onClick={handleRefresh} disabled={refreshing}>
           <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-          {refreshing ? '刷新中...' : '刷新数据'}
+          {refreshing ? '{t("wallet.refreshing")}' : '{t("wallet.refresh")}'}
         </Button>
         <Link href="/profile">
           <Button variant="outline">
             <ArrowUpRight className="h-4 w-4 mr-2" />
-            领取每日 AC
+            {t("wallet.claim")}每日 AC
           </Button>
         </Link>
         <Link href="/pve">
           <Button>
             <Swords className="h-4 w-4 mr-2" />
-            开始挑战
+            {t("wallet.startChallenge")}
           </Button>
         </Link>
       </div>
 
-      {/* 收益历史 */}
+      {/* {t("wallet.history")} */}
       <Card>
         <CardHeader>
-          <CardTitle>收益历史</CardTitle>
-          <CardDescription>最近 50 条挑战记录</CardDescription>
+          <CardTitle>{t("wallet.history")}</CardTitle>
+          <CardDescription>{t("wallet.recentRecords")}</CardDescription>
         </CardHeader>
         <CardContent>
           {loading ? (
-            <p className="text-muted-foreground">加载中...</p>
+            <p className="text-muted-foreground">{t("common.loading")}</p>
           ) : !earnings || earnings.earnings.length === 0 ? (
-            <p className="text-muted-foreground">暂无记录。完成第一次挑战吧！</p>
+            <p className="text-muted-foreground">{t("wallet.noRecords")}。完成第一次挑战吧！</p>
           ) : (
             <div className="space-y-2">
               {earnings.earnings.map((e) => {
@@ -555,14 +556,14 @@ export default function WalletPage() {
                       </div>
                       {e.status !== "finished" && (
                         <div className="text-xs text-muted-foreground">
-                          {e.status === "playing" ? "进行中" : e.status}
+                          {e.status === "playing" ? "{t("wallet.playing")}" : e.status}
                         </div>
                       )}
                       <Link
                         href={`/game/${e.game_id}`}
                         className="text-xs text-blue-500 hover:underline"
                       >
-                        查看对局 →
+                        {t("wallet.viewGame")}
                       </Link>
                     </div>
                   </div>

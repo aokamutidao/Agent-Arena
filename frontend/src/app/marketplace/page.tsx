@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
+import { useI18n } from "@/lib/i18n";
 
 interface CustomAgent {
   id: string;
@@ -20,6 +21,7 @@ interface CustomAgent {
 }
 
 export default function MarketplacePage() {
+  const { t } = useI18n();
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
   const router = useRouter();
   const { user, token, isAuthenticated } = useAuth();
@@ -53,7 +55,7 @@ export default function MarketplacePage() {
     setMessage("");
 
     try {
-      // 使用用户的第一个自定义 Agent 作为挑战者（如果没有则提示创建）
+      // 使用用户的第一个自定义 Agent 作为{t("marketplace.challenge")}者（如果没有则提示创建）
       const myAgentsRes = await fetch(`${API_URL}/api/auth/agents/my`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -66,7 +68,7 @@ export default function MarketplacePage() {
       const myAgents = myAgentsData.agents || [];
 
       if (myAgents.length === 0) {
-        throw new Error("请先创建一个自定义 Agent 才能挑战");
+        throw new Error("请先创建一个自定义 Agent 才能{t("marketplace.challenge")}");
       }
 
       const challengerAgentId = myAgents[0].id;
@@ -88,11 +90,11 @@ export default function MarketplacePage() {
 
       if (!res.ok) {
         const err = await res.json();
-        throw new Error(err.error || "挑战失败");
+        throw new Error(err.error || "{t("marketplace.challenge")}失败");
       }
 
       const challenge = await res.json();
-      setMessage(`✅ 挑战已创建！即将跳转到对局页面...`);
+      setMessage(`✅ {t("marketplace.challenge")}已创建！即将跳转到对局页面...`);
       setTimeout(() => {
         router.push(`/game/${challenge.game_id}`);
       }, 800);
@@ -106,7 +108,7 @@ export default function MarketplacePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-muted-foreground">加载中...</p>
+        <p className="text-muted-foreground">{t("common.loading")}...</p>
       </div>
     );
   }
@@ -114,7 +116,7 @@ export default function MarketplacePage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Agent 市场</h1>
+        <h1 className="text-3xl font-bold">{t("marketplace.title")}</h1>
         <Link href="/agent/create">
           <Button>创建我的 Agent</Button>
         </Link>
@@ -132,7 +134,7 @@ export default function MarketplacePage() {
         <Card>
           <CardContent className="pt-6">
             <p className="text-center text-muted-foreground py-8">
-              暂无上架的 Agent
+              {t("marketplace.noAgents")}
             </p>
           </CardContent>
         </Card>
@@ -178,7 +180,7 @@ function AgentCard({ agent, onChallenge, challenging }: {
 
         <div className="flex items-center justify-between text-sm">
           <div>
-            <span className="text-muted-foreground">胜率: </span>
+            <span className="text-muted-foreground">{t("agent.winRate")}: </span>
             <span className="font-medium">{winRate}%</span>
           </div>
           <div>
@@ -191,7 +193,7 @@ function AgentCard({ agent, onChallenge, challenging }: {
 
         <div className="flex items-center justify-between pt-2 border-t">
           <div>
-            <span className="text-xs text-muted-foreground">挑战费用: </span>
+            <span className="text-xs text-muted-foreground">{t("marketplace.challenge")}费用: </span>
             <span className="font-bold text-primary">
               {agent.challenge_fee} {agent.currency_type.toUpperCase()}
             </span>
@@ -202,7 +204,7 @@ function AgentCard({ agent, onChallenge, challenging }: {
             onClick={() => onChallenge(agent.id, agent.challenge_fee, agent.currency_type)}
             disabled={challenging}
           >
-            {challenging ? "创建中..." : "挑战"}
+            {challenging ? "创建中..." : "{t("marketplace.challenge")}"}
           </Button>
         </div>
 
