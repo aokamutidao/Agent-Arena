@@ -42,12 +42,12 @@ export default function MarketplacePage() {
 
   const handleChallenge = async (agentId: string, fee: number, currency: string) => {
     if (!isAuthenticated || !token) {
-      setMessage("请先登录");
+      setMessage("Please login first");
       return;
     }
 
     if (!user) {
-      setMessage("用户信息加载失败");
+      setMessage("Failed to load user info");
       return;
     }
 
@@ -55,20 +55,20 @@ export default function MarketplacePage() {
     setMessage("");
 
     try {
-      // 使用用户的第一个自定义 Agent 作为{t("marketplace.challenge")}者（如果没有则提示创建）
+      // 使用用户的第一个自定义 Agent 作为挑战者（如果没有则提示创建）
       const myAgentsRes = await fetch(`${API_URL}/api/auth/agents/my`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!myAgentsRes.ok) {
-        throw new Error("获取你的 Agent 列表失败");
+        throw new Error("Failed to get your agent list");
       }
 
       const myAgentsData = await myAgentsRes.json();
       const myAgents = myAgentsData.agents || [];
 
       if (myAgents.length === 0) {
-        throw new Error("请先创建一个自定义 Agent 才能{t("marketplace.challenge")}");
+        throw new Error(t("error.createAgentFirst"));
       }
 
       const challengerAgentId = myAgents[0].id;
@@ -90,11 +90,11 @@ export default function MarketplacePage() {
 
       if (!res.ok) {
         const err = await res.json();
-        throw new Error(err.error || "{t("marketplace.challenge")}失败");
+        throw new Error(err.error || "Challenge failed");
       }
 
       const challenge = await res.json();
-      setMessage(`✅ {t("marketplace.challenge")}已创建！即将跳转到对局页面...`);
+      setMessage(`✅ ${t("marketplace.challenge")} created! Redirecting to game...`);
       setTimeout(() => {
         router.push(`/game/${challenge.game_id}`);
       }, 800);
@@ -118,7 +118,7 @@ export default function MarketplacePage() {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">{t("marketplace.title")}</h1>
         <Link href="/agent/create">
-          <Button>创建我的 Agent</Button>
+          <Button>{t("agent.create")}</Button>
         </Link>
       </div>
 
@@ -159,6 +159,7 @@ function AgentCard({ agent, onChallenge, challenging }: {
   onChallenge: (agentId: string, fee: number, currency: string) => void;
   challenging: boolean;
 }) {
+  const { t } = useI18n();
   const winRate = agent.wins + agent.losses > 0
     ? ((agent.wins / (agent.wins + agent.losses)) * 100).toFixed(1)
     : "0.0";
@@ -184,16 +185,16 @@ function AgentCard({ agent, onChallenge, challenging }: {
             <span className="font-medium">{winRate}%</span>
           </div>
           <div>
-            <span className="text-muted-foreground">战绩: </span>
+            <span className="text-muted-foreground">Record: </span>
             <span className="font-medium">
-              {agent.wins}胜 {agent.losses}负
+              {agent.wins}{t("agent.wins")} {agent.losses}{t("agent.losses")}
             </span>
           </div>
         </div>
 
         <div className="flex items-center justify-between pt-2 border-t">
           <div>
-            <span className="text-xs text-muted-foreground">{t("marketplace.challenge")}费用: </span>
+            <span className="text-xs text-muted-foreground">{t("marketplace.challenge")} Fee: </span>
             <span className="font-bold text-primary">
               {agent.challenge_fee} {agent.currency_type.toUpperCase()}
             </span>
@@ -204,12 +205,12 @@ function AgentCard({ agent, onChallenge, challenging }: {
             onClick={() => onChallenge(agent.id, agent.challenge_fee, agent.currency_type)}
             disabled={challenging}
           >
-            {challenging ? "创建中..." : "{t("marketplace.challenge")}"}
+            {challenging ? t("common.loading") : t("marketplace.challenge")}
           </Button>
         </div>
 
         <div className="text-xs text-muted-foreground">
-          创建者: {agent.owner_address.slice(0, 6)}...{agent.owner_address.slice(-4)}
+          Creator: {agent.owner_address.slice(0, 6)}...{agent.owner_address.slice(-4)}
         </div>
       </CardContent>
     </Card>

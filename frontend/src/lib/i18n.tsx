@@ -192,6 +192,7 @@ const translations = {
     "error.invalidAmount": "Invalid amount",
     "error.connectionFailed": "Connection failed",
     "error.transactionFailed": "Transaction failed",
+    "error.createAgentFirst": "Please create a custom Agent first",
   },
 
   zh: {
@@ -372,6 +373,7 @@ const translations = {
     "error.invalidAmount": "金额无效",
     "error.connectionFailed": "连接失败",
     "error.transactionFailed": "交易失败",
+    "error.createAgentFirst": "请先创建一个自定义 Agent",
   },
 };
 
