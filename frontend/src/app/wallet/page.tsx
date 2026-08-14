@@ -50,6 +50,7 @@ const opponentLabel = (e: EarningEntry) => {
 };
 
 export default function WalletPage() {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
   const { user, token, isAuthenticated, refreshUser } = useAuth();
   const { address, isConnected } = useAccount();
   const [earnings, setEarnings] = useState<EarningsResponse | null>(null);
@@ -257,10 +258,10 @@ export default function WalletPage() {
       if (!hasFetched.current) setLoading(true);
       try {
         const [profileRes, earnRes] = await Promise.all([
-          fetch("http://localhost:8080/api/auth/profile", {
+          fetch(`${API_URL}/api/auth/profile`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("http://localhost:8080/api/auth/earnings", {
+          fetch(`${API_URL}/api/auth/earnings`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
@@ -273,7 +274,7 @@ export default function WalletPage() {
           setEarnings(data);
         }
       } catch (err) {
-        console.error("wallet load failed:", err);
+        console.error(`wallet load failed:", err);
       } finally {
         hasFetched.current = true;
         setLoading(false);
@@ -291,10 +292,10 @@ export default function WalletPage() {
     const load = async () => {
       try {
         const [profileRes, earnRes] = await Promise.all([
-          fetch("http://localhost:8080/api/auth/profile", {
+          fetch(`${API_URL}/api/auth/profile`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("http://localhost:8080/api/auth/earnings", {
+          fetch(`${API_URL}/api/auth/earnings`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
@@ -306,7 +307,7 @@ export default function WalletPage() {
           setEarnings(data);
         }
       } catch (err) {
-        console.error("wallet refresh failed:", err);
+        console.error(`wallet refresh failed:", err);
       } finally {
         setRefreshing(false);
       }

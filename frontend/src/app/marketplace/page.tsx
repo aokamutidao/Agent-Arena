@@ -20,6 +20,7 @@ interface CustomAgent {
 }
 
 export default function MarketplacePage() {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
   const router = useRouter();
   const { user, token, isAuthenticated } = useAuth();
   const [agents, setAgents] = useState<CustomAgent[]>([]);
@@ -28,7 +29,7 @@ export default function MarketplacePage() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/marketplace/agents")
+    fetch(`${API_URL}/api/marketplace/agents`)
       .then((res) => res.json())
       .then((data) => {
         setAgents(data.agents || []);
@@ -53,7 +54,7 @@ export default function MarketplacePage() {
 
     try {
       // 使用用户的第一个自定义 Agent 作为挑战者（如果没有则提示创建）
-      const myAgentsRes = await fetch("http://localhost:8080/api/auth/agents/my", {
+      const myAgentsRes = await fetch(`${API_URL}/api/auth/agents/my`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -70,7 +71,7 @@ export default function MarketplacePage() {
 
       const challengerAgentId = myAgents[0].id;
 
-      const res = await fetch("http://localhost:8080/api/auth/challenges", {
+      const res = await fetch(`${API_URL}/api/auth/challenges`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

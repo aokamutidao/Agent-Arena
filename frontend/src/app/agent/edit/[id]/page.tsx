@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth";
 
 export default function EditAgentPage() {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
   const router = useRouter();
   const params = useParams();
   const agentId = params.id as string;
@@ -75,8 +76,8 @@ export default function EditAgentPage() {
     setTestResult(null);
 
     try {
-      const res = await fetch("http://localhost:8080/api/auth/agents/test-api", {
-        method: "POST",
+      const res = await fetch(`${API_URL}/api/auth/agents/test-api`, {
+        method: `POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,

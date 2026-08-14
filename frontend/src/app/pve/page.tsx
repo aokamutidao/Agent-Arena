@@ -47,6 +47,7 @@ const SYSTEM_AGENTS: SystemAgent[] = [
 ];
 
 export default function PVEPage() {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
   const router = useRouter();
   const { user, token, isAuthenticated } = useAuth();
   const [challenging, setChallenging] = useState<string | null>(null);
@@ -60,7 +61,7 @@ export default function PVEPage() {
     // 获取用户的 Agent 列表
     const fetchAgents = async () => {
       try {
-        const res = await fetch("http://localhost:8080/api/auth/agents/my", {
+        const res = await fetch(`${API_URL}/api/auth/agents/my`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -74,7 +75,7 @@ export default function PVEPage() {
           }
         }
       } catch (err) {
-        console.error("Failed to fetch agents:", err);
+        console.error(`Failed to fetch agents:", err);
       }
     };
 
@@ -96,8 +97,8 @@ export default function PVEPage() {
     setMessage("");
 
     try {
-      const res = await fetch("http://localhost:8080/api/auth/challenges", {
-        method: "POST",
+      const res = await fetch(`${API_URL}/api/auth/challenges`, {
+        method: `POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,

@@ -58,7 +58,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [connectedAddress, user]);
 
   const login = async (address: string, message: string, signature: string) => {
-    const res = await fetch("http://localhost:8080/api/auth/login", {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+    const res = await fetch(`${apiUrl}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ address, message, signature }),
@@ -95,7 +96,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const savedToken = localStorage.getItem("auth_token");
     if (!savedToken) return;
     try {
-      const res = await fetch("http://localhost:8080/api/auth/profile", {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+      const res = await fetch(`${apiUrl}/api/auth/profile`, {
         headers: { Authorization: `Bearer ${savedToken}` },
       });
       if (res.ok) {

@@ -33,6 +33,7 @@ interface ProfileUser {
 }
 
 export default function ProfilePage() {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
   const { user, token, isAuthenticated, updateBalance } = useAuth();
   const router = useRouter();
   const [claiming, setClaiming] = useState(false);
@@ -52,7 +53,7 @@ export default function ProfilePage() {
     // 获取用户的 Agent 列表
     const fetchAgents = async () => {
       try {
-        const res = await fetch("http://localhost:8080/api/auth/agents/my", {
+        const res = await fetch(`${API_URL}/api/auth/agents/my`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -62,7 +63,7 @@ export default function ProfilePage() {
           setAgents(data.agents || []);
         }
       } catch (err) {
-        console.error("Failed to fetch agents:", err);
+        console.error(`Failed to fetch agents:", err);
       } finally {
         setLoadingAgents(false);
       }
@@ -76,7 +77,7 @@ export default function ProfilePage() {
     if (!token) return;
     setRefreshing(true);
     try {
-      const res = await fetch("http://localhost:8080/api/auth/profile", {
+      const res = await fetch(`${API_URL}/api/auth/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
@@ -84,7 +85,7 @@ export default function ProfilePage() {
         updateBalance(data.ac_balance);
       }
     } catch (err) {
-      console.error("Failed to refresh profile:", err);
+      console.error(`Failed to refresh profile:", err);
     } finally {
       setRefreshing(false);
     }
@@ -98,8 +99,8 @@ export default function ProfilePage() {
     setMessageType("");
 
     try {
-      const res = await fetch("http://localhost:8080/api/auth/claim-daily", {
-        method: "POST",
+      const res = await fetch(`${API_URL}/api/auth/claim-daily`, {
+        method: `POST",
         headers: {
           Authorization: `Bearer ${token}`,
         },

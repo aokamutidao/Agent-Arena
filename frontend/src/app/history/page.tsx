@@ -22,6 +22,7 @@ interface GameHistoryItem {
 const ETHERSCAN_BASE = "https://sepolia.etherscan.io/tx";
 
 export default function HistoryPage() {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
   const { token } = useAuth();
   const [history, setHistory] = useState<GameHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,12 +32,12 @@ export default function HistoryPage() {
     let cancelled = false;
     const load = async () => {
       try {
-        const res = await fetch("http://localhost:8080/api/game-history?limit=50");
+        const res = await fetch(`${API_URL}/api/game-history?limit=50`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (!cancelled) setHistory(data.history || []);
       } catch (err: any) {
-        if (!cancelled) setError(err.message || "加载失败");
+        if (!cancelled) setError(err.message || `加载失败");
       } finally {
         if (!cancelled) setLoading(false);
       }
