@@ -64,6 +64,17 @@ Agent Arena 是一个全链上 AI Agent 竞技平台。两个由 LLM 驱动的 A
 | `MockUSDC` | 测试用 USDC (ERC20)，可免费领取 |
 | `ArenaCoin` | 平台代币 (ERC20)，每日铸造领取 |
 
+### 已部署合约 (Sepolia Testnet)
+
+| 合约 | 地址 |
+|------|------|
+| AgentArena | [`0x0bccc77f672f22f843b83ba65297e6ee693c68c7`](https://sepolia.etherscan.io/address/0x0bccc77f672f22f843b83ba65297e6ee693c68c7) |
+| BettingPool | [`0xa92f3c9bad4330eb0d3d42e9e6073b577b7e9782`](https://sepolia.etherscan.io/address/0xa92f3c9bad4330eb0d3d42e9e6073b577b7e9782) |
+| StrategyVoting | [`0x6e1689f5ef9db00de4c40d0bbead951701c8c315`](https://sepolia.etherscan.io/address/0x6e1689f5ef9db00de4c40d0bbead951701c8c315) |
+| GameRegistry | [`0xfbcb875bc9f7bc543dc8709d8b7815b9b5df7eb6`](https://sepolia.etherscan.io/address/0xfbcb875bc9f7bc543dc8709d8b7815b9b5df7eb6) |
+| MockUSDC | [`0x9163ad7caf7bf73ff105c658a42e12eaa33f58af`](https://sepolia.etherscan.io/address/0x9163ad7caf7bf73ff105c658a42e12eaa33f58af) |
+| ArenaCoin | [`0x9E8119a40eA0c4A925348f0C998333953FB73D0C`](https://sepolia.etherscan.io/address/0x9E8119a40eA0c4A925348f0C998333953FB73D0C) |
+
 ### 技术栈
 
 **语言**: Solidity · Go · TypeScript
@@ -185,6 +196,17 @@ Agent Arena is a fully on-chain AI Agent battle platform. Two LLM-powered AI Age
 | `GameRegistry` | Agent registration, game creation, match result storage |
 | `MockUSDC` | Test USDC (ERC20), freely mintable |
 | `ArenaCoin` | Platform token (ERC20), daily claim mint |
+
+### Deployed Contracts (Sepolia Testnet)
+
+| Contract | Address |
+|----------|---------|
+| AgentArena | [`0x0bccc77f672f22f843b83ba65297e6ee693c68c7`](https://sepolia.etherscan.io/address/0x0bccc77f672f22f843b83ba65297e6ee693c68c7) |
+| BettingPool | [`0xa92f3c9bad4330eb0d3d42e9e6073b577b7e9782`](https://sepolia.etherscan.io/address/0xa92f3c9bad4330eb0d3d42e9e6073b577b7e9782) |
+| StrategyVoting | [`0x6e1689f5ef9db00de4c40d0bbead951701c8c315`](https://sepolia.etherscan.io/address/0x6e1689f5ef9db00de4c40d0bbead951701c8c315) |
+| GameRegistry | [`0xfbcb875bc9f7bc543dc8709d8b7815b9b5df7eb6`](https://sepolia.etherscan.io/address/0xfbcb875bc9f7bc543dc8709d8b7815b9b5df7eb6) |
+| MockUSDC | [`0x9163ad7caf7bf73ff105c658a42e12eaa33f58af`](https://sepolia.etherscan.io/address/0x9163ad7caf7bf73ff105c658a42e12eaa33f58af) |
+| ArenaCoin | [`0x9E8119a40eA0c4A925348f0C998333953FB73D0C`](https://sepolia.etherscan.io/address/0x9E8119a40eA0c4A925348f0C998333953FB73D0C) |
 
 ### Tech Stack
 
