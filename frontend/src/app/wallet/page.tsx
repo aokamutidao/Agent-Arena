@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Coins, Gem, Wallet, ArrowUpRight, Trophy, Swords, RefreshCw, DollarSign, TrendingUp } from "lucide-react";
+import { Coins, Gem, Wallet, ArrowUpRight, Trophy, Swords, RefreshCw, TrendingUp } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { LoginPage } from "@/components/auth/LoginButton";
 import Link from "next/link";
@@ -367,7 +367,7 @@ export default function WalletPage() {
               disabled={!isConnected || mintPending || mintConfirming}
               className="w-full"
             >
-              {mintPending || mintConfirming ? "{t("wallet.minting")}" : "{t("wallet.mintTest")}"}
+              {mintPending || mintConfirming ? t("wallet.minting") : t("wallet.mintTest")}
             </Button>
           </CardContent>
         </Card>
@@ -402,7 +402,7 @@ export default function WalletPage() {
           <CardContent className="text-xs text-muted-foreground">
             {earnings
               ? `+${earnings.total_reward_usdc.toLocaleString()} USDC`
-              : "{t("wallet.challengeReward")}"}
+              : t("wallet.challengeReward")}
           </CardContent>
         </Card>
       </div>
@@ -426,7 +426,7 @@ export default function WalletPage() {
               onClick={handleQueryClaimable}
               disabled={!address || querying}
             >
-              {querying ? "{t("wallet.querying")}" : "{t("wallet.queryClaimable")}"}
+              {querying ? t("wallet.querying") : t("wallet.queryClaimable")}
             </Button>
           </div>
         </CardHeader>
@@ -469,8 +469,8 @@ export default function WalletPage() {
                     disabled={isClaimPending || claimGameId === bet.gameId}
                   >
                     {claimGameId === bet.gameId && (isClaimPending || isClaimConfirming)
-                      ? "{t("wallet.claiming")}"
-                      : "{t("wallet.claim")}"}
+                      ? t("wallet.claiming")
+                      : t("wallet.claim")}
                   </Button>
                 </div>
               ))}
@@ -556,7 +556,7 @@ export default function WalletPage() {
                       </div>
                       {e.status !== "finished" && (
                         <div className="text-xs text-muted-foreground">
-                          {e.status === "playing" ? "{t("wallet.playing")}" : e.status}
+                          {e.status === "playing" ? t("wallet.playing") : e.status}
                         </div>
                       )}
                       <Link
