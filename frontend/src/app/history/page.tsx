@@ -45,7 +45,7 @@ export default function HistoryPage() {
       }
     };
     load();
-    // 自动轮询：若有任意记录尚缺链上 tx，每 5 秒{t("history.refresh")}一次；全部同步后降级为 30 秒
+    // 自动轮询：若有任意记录尚缺链上 tx，每 5 秒刷新一次；全部同步后降级为 30 秒
     const interval = setInterval(load, 5000);
     return () => {
       cancelled = true;
@@ -53,12 +53,12 @@ export default function HistoryPage() {
     };
   }, []);
 
-  // 是否所有记录都已有链上 tx（用于判断是否需要频繁{t("history.refresh")}）
+  // 是否所有记录都已有链上 tx（用于判断是否需要频繁刷新）
   const allSynced = history.length > 0 && history.every((h) => !!h.finish_tx_hash);
 
   const winnerBadge = (item: GameHistoryItem) => {
     if (item.winner === "draw") {
-      return <span className="px-2 py-0.5 text-xs rounded bg-gray-500/20 text-gray-400">平局</span>;
+      return <span className="px-2 py-0.5 text-xs rounded bg-gray-500/20 text-gray-400">{t("history.draw")}</span>;
     }
     const isRed = item.winner === "red";
     return (
@@ -75,7 +75,7 @@ export default function HistoryPage() {
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">📜 对局记录</h1>
+        <h1 className="text-2xl font-bold">{t("history.title")}</h1>
         <Button
           variant="outline"
           size="sm"
@@ -145,7 +145,7 @@ export default function HistoryPage() {
                     href={`/game/${item.game_id}`}
                     className="text-blue-400 hover:underline"
                   >
-                    {t("wallet.viewGame")}详情 →
+                    {t("history.details")}
                   </Link>
                   {item.finish_tx_hash ? (
                     <a
@@ -153,20 +153,20 @@ export default function HistoryPage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-green-400 hover:underline"
-                      title=t("history.viewOnEtherscan")
+                      title={t("history.viewOnEtherscan")}
                     >
-                      ⛓️ 链上记录
+                      {t("history.onChainRecord")}
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M7 17L17 7M17 7H8M17 7V16" />
                       </svg>
                     </a>
                   ) : new Date(item.created_at) < new Date("2026-08-12T03:14:00") ? (
-                    <span className="text-gray-500" title=t("history.offChainDesc")>
-                      📝 未上链（历史遗留）
+                    <span className="text-gray-500" title={t("history.offChainDesc")}>
+                      {t("history.offChain")}
                     </span>
                   ) : (
-                    <span className="text-yellow-500" title="链上交易正在打包，稍后{t("history.refresh")}">
-                      ⏳ 链上同步中
+                    <span className="text-yellow-500" title={t("history.syncingDesc")}>
+                      {t("history.syncing")}
                     </span>
                   )}
                 </div>
