@@ -143,6 +143,14 @@ func NewServer() (*Server, error) {
 func (s *Server) registerRoutes() {
 	api := s.router.Group("/api")
 	{
+		// CORS 预检请求处理
+		api.OPTIONS("/auth/login", func(c *gin.Context) {
+			c.Status(http.StatusOK)
+		})
+		api.OPTIONS("/auth/*path", func(c *gin.Context) {
+			c.Status(http.StatusOK)
+		})
+
 		// 认证（公开）
 		api.POST("/auth/login", s.authHandlers.Login)
 
