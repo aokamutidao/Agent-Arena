@@ -109,7 +109,7 @@ func NewServer() (*Server, error) {
 
 	// CORS
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:3001", "https://agent-arena-gold.vercel.app"},
+		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:3001", "https://agent-arena-gold.vercel.app", "https://agent-arena-ku9l39y85-aokamutidao.vercel.app"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		AllowCredentials: true,
