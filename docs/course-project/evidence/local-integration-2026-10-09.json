@@ -1,0 +1,163 @@
+{
+  "checked_at": "2026-10-09T10:54:05.531Z",
+  "chain_id": 31337,
+  "manager": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+  "mode": "deterministic_simulation",
+  "outcome": "blue",
+  "nonce_replay_rejected": true,
+  "unauthorized_run_rejected": true,
+  "evidence_verified": true,
+  "actual_erc20_balances_verified": true,
+  "escrow_zero_liability_verified": true,
+  "dispute_refund_verified": true,
+  "review_notes_verified": true,
+  "completed_rerun_rejected": true,
+  "restart_verified": true,
+  "flow_ms": 1048.8,
+  "local_http_latency": {
+    "/api/dashboard": {
+      "samples": 30,
+      "concurrency": 1,
+      "p50_ms": 0.497,
+      "p95_ms": 1.494
+    },
+    "/api/tournaments/1/evidence": {
+      "samples": 30,
+      "concurrency": 1,
+      "p50_ms": 1.181,
+      "p95_ms": 1.664
+    }
+  },
+  "measurement_limits": "Loopback, 30 sequential samples per endpoint, deterministic simulation, Anvil time-warp; not a production load test or real-world payout duration.",
+  "dashboard": {
+    "active_tournaments": 0,
+    "chain_head": 27,
+    "completed_tournaments": 1,
+    "escrow_in_raw": "125000000",
+    "event_count": 21,
+    "indexed_block": 27,
+    "ledger_entries": 4,
+    "observed_at": 1791543245,
+    "prizes_paid_raw": "100000000",
+    "refunds_paid_raw": "25000000",
+    "registered_participants": 4,
+    "tournaments_total": 2
+  },
+  "transactions": [
+    {
+      "operation": "deploy CourseToken",
+      "gas_used": "621940",
+      "tx_hash": "0x8f751293da06183b0113d3dfed30a5ac61880e5bc357490013b9ae86e40b7a2f"
+    },
+    {
+      "operation": "deploy TournamentManager",
+      "gas_used": "5625112",
+      "tx_hash": "0xa929fe68055c2b0b20e95e70951310a4489bdd76116d081495b04dd03ac1e96c"
+    },
+    {
+      "operation": "grantRole",
+      "gas_used": "51517",
+      "tx_hash": "0x356aa909af94f25581270568f7f941d30c931e967ec572b962534ac993cc22af"
+    },
+    {
+      "operation": "grantRole",
+      "gas_used": "51505",
+      "tx_hash": "0xed02d6d6cfea0403e5b1be67e837668ffbfd4484b72eeb668f299902c94f4e03"
+    },
+    {
+      "operation": "mint",
+      "gas_used": "70677",
+      "tx_hash": "0x63a5cad44919800a5589549502bb1dccce75631de293b0de1a1b01feab171fe1"
+    },
+    {
+      "operation": "approve",
+      "gas_used": "46331",
+      "tx_hash": "0x0a2e2dc0c577cb8afd5e20f6c91ebb7c9391008f427952da514b1e488aea03ae"
+    },
+    {
+      "operation": "createTournament",
+      "gas_used": "230380",
+      "tx_hash": "0xf5f4bb83b85aefa0349f2a416da8597b7d2ce136dc18dc46a804d94f38e2c228"
+    },
+    {
+      "operation": "fundTournament",
+      "gas_used": "192196",
+      "tx_hash": "0x724db406db44ba1a373ab4da0933625860bf00d0a3a6b6cdd8a727d094b833eb"
+    },
+    {
+      "operation": "registerParticipant",
+      "gas_used": "112520",
+      "tx_hash": "0x500033464cfdaba022d173b9a1e1ff97dc922bfe9c40c5cd0afcb67949a57fec"
+    },
+    {
+      "operation": "registerParticipant",
+      "gas_used": "112654",
+      "tx_hash": "0x62f47468b45bec62665c3140c867c808a4f8ffc5213531c3f268f75c71416aee"
+    },
+    {
+      "operation": "startTournament",
+      "gas_used": "88526",
+      "tx_hash": "0xe451c429f8df35352af3ca06991e7de68563972bd57fc9a5b84fe41948148753"
+    },
+    {
+      "operation": "submitResult",
+      "gas_used": "238117",
+      "tx_hash": "0xd9e25ef59856d8199ad00eae0de807659cfc2683c08ccae13e63dfeff8a109d2"
+    },
+    {
+      "operation": "approveResult",
+      "gas_used": "152699",
+      "tx_hash": "0x713cd22189cda4b70244368877c819814c0bc9efdaae5d9dd5ecc568b125179c"
+    },
+    {
+      "operation": "claimPrize",
+      "gas_used": "136106",
+      "tx_hash": "0x5663aaeda514f15bf9be9072f14af9d1dc3f7f9116ec6a2ca4084fe32b3bc4ba"
+    },
+    {
+      "operation": "createTournament",
+      "gas_used": "230404",
+      "tx_hash": "0x286c047b5595c46afde3b6984d53f46e168b30f0858cf1aff1882014d33793ad"
+    },
+    {
+      "operation": "fundTournament",
+      "gas_used": "192208",
+      "tx_hash": "0xf78e920e8be06ed578f7fec14baed442b2154fa5d492b06be51e0a92320f62b7"
+    },
+    {
+      "operation": "registerParticipant",
+      "gas_used": "112520",
+      "tx_hash": "0xf4dbbded36f4440de23fefc317885c209bbfb97dbdabf64b29f3d343b31bfd48"
+    },
+    {
+      "operation": "registerParticipant",
+      "gas_used": "112654",
+      "tx_hash": "0x0954d5ea9c89b12cc9015e767ad5a8c2616ee2659687741462b1766dc9a5c78d"
+    },
+    {
+      "operation": "startTournament",
+      "gas_used": "88526",
+      "tx_hash": "0x14d27c6913a501f19f2fc34d467a86d58023d060caf5c038b2c299f0b1036235"
+    },
+    {
+      "operation": "submitResult",
+      "gas_used": "238075",
+      "tx_hash": "0xa0cf724b016b087e36f196916b123ac171bb37bf6377fbec1b274edb84247784"
+    },
+    {
+      "operation": "disputeResult",
+      "gas_used": "124506",
+      "tx_hash": "0xa70b48a920c556d2fa22e5f9fd8505622aea68a3c6a9f2fa7dd49873faf86b57"
+    },
+    {
+      "operation": "resolveDispute",
+      "gas_used": "135170",
+      "tx_hash": "0x1a9c04cb33a89cf244a95fd9774e7aa040dd5f8f4fceea50ab6f2a9f900d33a2"
+    },
+    {
+      "operation": "claimRefund",
+      "gas_used": "114020",
+      "tx_hash": "0xbdac3976d37baa04e1045faa0d7eeba7c186157ff2e8f0764714c1f295a75019"
+    }
+  ]
+}

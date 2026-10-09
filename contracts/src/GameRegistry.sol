@@ -55,18 +55,18 @@ contract GameRegistry {
     }
 
     function setArena(address _arena) external onlyOwner {
+        require(arena == address(0) && _arena != address(0), "arena already set");
         arena = _arena;
     }
 
     /// @notice 注册 Agent
     function registerAgent(address agentId, string calldata name, string calldata personality) external onlyArena {
-        agents[agentId] = AgentInfo({
-            name: name,
-            personality: personality,
-            wins: 0,
-            losses: 0,
-            exists: true
-        });
+        require(agentId != address(0) && !agents[agentId].exists, "invalid agent");
+        require(
+            bytes(name).length > 0 && bytes(name).length <= 64 && bytes(personality).length <= 64,
+            "invalid agent metadata"
+        );
+        agents[agentId] = AgentInfo({name: name, personality: personality, wins: 0, losses: 0, exists: true});
         emit AgentRegistered(agentId, name, personality);
     }
 
@@ -76,6 +76,8 @@ contract GameRegistry {
         onlyArena
         returns (uint256 gameId)
     {
+        require(agentRed != agentBlue && agents[agentRed].exists && agents[agentBlue].exists, "invalid agents");
+        require(bettingDeadline > block.timestamp, "invalid deadline");
         gameId = nextGameId++;
         gameRecords[gameId] = GameRecord({
             gameId: gameId,
@@ -91,6 +93,7 @@ contract GameRegistry {
 
     /// @notice 提交对局结果
     function submitResult(uint256 gameId, bool redWins, bytes32 actionsHash) external onlyArena {
+        require(actionsHash != bytes32(0), "zero result hash");
         GameRecord storage record = gameRecords[gameId];
         require(record.exists, "game not found");
         require(record.endTimestamp == 0, "already submitted");

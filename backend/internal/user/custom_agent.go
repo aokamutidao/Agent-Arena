@@ -9,20 +9,20 @@ import (
 
 // CustomAgent 用户自定义 Agent
 type CustomAgent struct {
-	ID            string    `json:"id"`
-	OwnerID       string    `json:"owner_id"`
-	OwnerAddress  string    `json:"owner_address"`
-	Name          string    `json:"name"`
-	Personality   string    `json:"personality"`   // 性格描述（≤500 字）
-	APIEndpoint   string    `json:"api_endpoint"`  // 必填：外部 AI API endpoint
-	APIKey        string    `json:"api_key"`       // 必填：API key（加密存储）
-	Model         string    `json:"model"`         // 必填：模型名称（如 gpt-4, gpt-3.5-turbo）
-	ChallengeFee  uint64    `json:"challenge_fee"` // 挑战费用（AC）
-	CurrencyType  string    `json:"currency_type"` // "ac" 或 "usdc"
-	IsListed      bool      `json:"is_listed"`     // 是否上架到市场
-	Wins          uint32    `json:"wins"`
-	Losses        uint32    `json:"losses"`
-	CreatedAt     time.Time `json:"created_at"`
+	ID           string    `json:"id"`
+	OwnerID      string    `json:"owner_id"`
+	OwnerAddress string    `json:"owner_address"`
+	Name         string    `json:"name"`
+	Personality  string    `json:"personality"`   // 性格描述（≤500 字）
+	APIEndpoint  string    `json:"api_endpoint"`  // 必填：外部 AI API endpoint
+	APIKey       string    `json:"-"`             // 历史数据仅内部读取，禁止序列化到任何 API 响应
+	Model        string    `json:"model"`         // 必填：模型名称（如 gpt-4, gpt-3.5-turbo）
+	ChallengeFee uint64    `json:"challenge_fee"` // 挑战费用（AC）
+	CurrencyType string    `json:"currency_type"` // "ac" 或 "usdc"
+	IsListed     bool      `json:"is_listed"`     // 是否上架到市场
+	Wins         uint32    `json:"wins"`
+	Losses       uint32    `json:"losses"`
+	CreatedAt    time.Time `json:"created_at"`
 }
 
 // AgentStore 自定义 Agent 存储（SQLite）

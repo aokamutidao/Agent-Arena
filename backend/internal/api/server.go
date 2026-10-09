@@ -2,7 +2,6 @@ package api
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"time"
@@ -16,29 +15,35 @@ import (
 
 // Server HTTP 服务器
 type Server struct {
-	router          *gin.Engine
-	handlers        *Handlers
-	authHandlers    *AuthHandlers
-	agentHandlers   *CustomAgentHandlers
+	router            *gin.Engine
+	handlers          *Handlers
+	authHandlers      *AuthHandlers
+	agentHandlers     *CustomAgentHandlers
 	challengeHandlers *ChallengeHandlers
-	store           *MemoryStore
-	userStore       *user.Store
-	agentStore      *user.AgentStore
-	challengeStore  *user.ChallengeStore
-	gameHistory     *user.GameHistoryStore
-	wsHub           *WSHub
-	gameRunner      *GameRunner
-	chain           blockchain.ChainService
-	acService       *blockchain.ACService // ArenaCoin 链上服务
-	usdcService     *blockchain.USDCService // USDC 只读服务（余额查询）
+	store             *MemoryStore
+	userStore         *user.Store
+	agentStore        *user.AgentStore
+	challengeStore    *user.ChallengeStore
+	gameHistory       *user.GameHistoryStore
+	wsHub             *WSHub
+	gameRunner        *GameRunner
+	chain             blockchain.ChainService
+	acService         *blockchain.ACService   // ArenaCoin 链上服务
+	usdcService       *blockchain.USDCService // USDC 只读服务（余额查询）
 }
 
 // NewServer 创建 HTTP 服务器
 func NewServer() (*Server, error) {
-	store := NewMemoryStore()
+	dbPath := os.Getenv("LEGACY_DATABASE_PATH")
+	if dbPath == "" {
+		dbPath = "arena.db"
+	}
+	return newServerWithDBPath(dbPath)
+}
 
-	// 初始化数据库（所有 store 共享同一个 SQLite 文件）
-	dbPath := "arena.db"
+// newServerWithDBPath opens the historical read-only HTTP service.
+func newServerWithDBPath(dbPath string) (*Server, error) {
+	store := NewMemoryStore()
 	userStore, err := user.NewStore(dbPath)
 	if err != nil {
 		return nil, fmt.Errorf("init user store: %w", err)
@@ -59,42 +64,10 @@ func NewServer() (*Server, error) {
 		return nil, fmt.Errorf("init game history store: %w", err)
 	}
 
-	// 初始化 ArenaCoin 链上服务（可选，失败时降级为 DB-only）
+	// Legacy HTTP no longer creates transaction signers or loads wallet secrets.
+	// Use cmd/course-server for the course application.
 	var acService *blockchain.ACService
-	rpcURL := os.Getenv("RPC_URL")
-	deployerKey := os.Getenv("PRIVATE_KEY")     // 合约 deployer（签名链上管理操作）
-	ownerKey := os.Getenv("OWNER_PRIVATE_KEY")  // 合约 owner/treasury（mint/转账 AC）
-	acAddress := os.Getenv("AC_ADDRESS")        // 可选，默认使用 Sepolia 已部署地址
-	if rpcURL != "" && deployerKey != "" {
-		acSvc, err := blockchain.NewACService(rpcURL, deployerKey, ownerKey, acAddress)
-		if err != nil {
-			log.Printf("WARNING: ACService init failed: %v, falling back to DB-only", err)
-		} else {
-			acService = acSvc
-			log.Printf("ACService initialized (token=%s, treasury=%s)",
-				acSvc.TokenAddress().Hex(), acSvc.TreasuryAddress().Hex())
-			if ownerKey != "" {
-				log.Printf("  Treasury (owner) ≠ Deployer — separate accounts")
-			} else {
-				log.Printf("  Treasury = Deployer (OWNER_PRIVATE_KEY not set)")
-			}
-		}
-	} else {
-		log.Println("ACService disabled (no RPC_URL/PRIVATE_KEY), using DB-only AC")
-	}
-
-	// 初始化 USDC 只读服务（可选，用于显示用户 USDC 余额）
 	var usdcService *blockchain.USDCService
-	usdcAddress := os.Getenv("USDC_ADDRESS")
-	if rpcURL != "" {
-		usdcSvc, err := blockchain.NewUSDCService(rpcURL, usdcAddress)
-		if err != nil {
-			log.Printf("WARNING: USDCService init failed: %v", err)
-		} else {
-			usdcService = usdcSvc
-			log.Printf("USDCService initialized (token=%s)", usdcSvc.TokenAddress().Hex())
-		}
-	}
 
 	wsHub := NewWSHub()
 	handlers := NewHandlers(store, wsHub)
@@ -123,6 +96,18 @@ func NewServer() (*Server, error) {
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
+
+	// Historical finance writes are retired. POST estimate is a pure read.
+	router.Use(func(c *gin.Context) {
+		if c.Request.Method != http.MethodGet && c.Request.Method != http.MethodHead &&
+			c.Request.Method != http.MethodOptions && c.Request.URL.Path != "/api/bets/estimate" {
+			c.AbortWithStatusJSON(http.StatusGone, gin.H{
+				"error": "legacy writes are retired; start cmd/course-server for tournament escrow",
+			})
+			return
+		}
+		c.Next()
+	})
 
 	server := &Server{
 		router:            router,

@@ -1,0 +1,326 @@
+[
+  {
+    "type": "constructor",
+    "inputs": [
+      {
+        "name": "_manager",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "cancel",
+    "inputs": [
+      {
+        "name": "tournamentId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "createTournament",
+    "inputs": [
+      {
+        "name": "organizer",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "auditor",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "title",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "metadataURI",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "registrationDeadline",
+        "type": "uint64",
+        "internalType": "uint64"
+      },
+      {
+        "name": "settlementDeadline",
+        "type": "uint64",
+        "internalType": "uint64"
+      },
+      {
+        "name": "reviewPeriod",
+        "type": "uint64",
+        "internalType": "uint64"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "tournamentId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "disputeResult",
+    "inputs": [
+      {
+        "name": "tournamentId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "finalize",
+    "inputs": [
+      {
+        "name": "tournamentId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "winner",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "getTournament",
+    "inputs": [
+      {
+        "name": "tournamentId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct CourseTypes.TournamentInfo",
+        "components": [
+          {
+            "name": "id",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "organizer",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "auditor",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "registrationDeadline",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "settlementDeadline",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "reviewPeriod",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "status",
+            "type": "uint8",
+            "internalType": "enum CourseTypes.Status"
+          },
+          {
+            "name": "participant1",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "participant2",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "participant1AgentHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "participant2AgentHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "proposedWinner",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "winner",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "resultHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "reviewDeadline",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "title",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "metadataURI",
+            "type": "string",
+            "internalType": "string"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "manager",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "nextTournamentId",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "registerParticipant",
+    "inputs": [
+      {
+        "name": "tournamentId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "participant",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "agentHash",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "slot",
+        "type": "uint8",
+        "internalType": "uint8"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "startTournament",
+    "inputs": [
+      {
+        "name": "tournamentId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "submitResult",
+    "inputs": [
+      {
+        "name": "tournamentId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "proposedWinner",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "resultHash",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "reviewDeadline",
+        "type": "uint64",
+        "internalType": "uint64"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "withdrawParticipant",
+    "inputs": [
+      {
+        "name": "tournamentId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "participant",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  }
+]

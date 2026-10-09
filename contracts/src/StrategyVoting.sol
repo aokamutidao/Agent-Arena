@@ -10,6 +10,7 @@ contract StrategyVoting {
 
     // gameId => StrategyVoteRecord
     mapping(uint256 => ArenaTypes.StrategyVoteRecord) public votes;
+    mapping(uint256 => uint256) public bettingDeadlines;
 
     // gameId => user => (strategy, amount)
     struct UserVote {
@@ -36,13 +37,23 @@ contract StrategyVoting {
     }
 
     function setArena(address _arena) external onlyOwner {
+        require(arena == address(0) && _arena != address(0), "arena already set");
         arena = _arena;
     }
 
+    function initGame(uint256 gameId, uint256 deadline) external onlyArena {
+        require(bettingDeadlines[gameId] == 0 && deadline > block.timestamp, "invalid game");
+        bettingDeadlines[gameId] = deadline;
+    }
+
     /// @notice 投票（下注时调用）
-    function vote(uint256 gameId, ArenaTypes.Strategy strategy, uint256 amount) external onlyArena {
+    function vote(uint256 gameId, address user, ArenaTypes.Strategy strategy, uint256 amount) external onlyArena {
+        require(user != address(0) && amount > 0, "invalid vote");
+        require(bettingDeadlines[gameId] > block.timestamp, "voting closed");
         ArenaTypes.StrategyVoteRecord storage record = votes[gameId];
         require(!record.locked, "votes locked");
+        UserVote storage userVote = userVotes[gameId][user];
+        require(userVote.amount == 0 || userVote.strategy == strategy, "cannot switch strategy");
 
         // Update totals
         if (strategy == ArenaTypes.Strategy.Aggressive) {
@@ -54,13 +65,15 @@ contract StrategyVoting {
         }
 
         // Record user vote
-        userVotes[gameId][msg.sender] = UserVote({strategy: strategy, amount: amount});
+        userVote.strategy = strategy;
+        userVote.amount += amount;
 
-        emit StrategyVoted(gameId, msg.sender, strategy, amount);
+        emit StrategyVoted(gameId, user, strategy, amount);
     }
 
     /// @notice 锁定投票（开局时）
     function lockVotes(uint256 gameId) external onlyArena {
+        require(bettingDeadlines[gameId] > 0 && block.timestamp >= bettingDeadlines[gameId], "voting still open");
         ArenaTypes.StrategyVoteRecord storage record = votes[gameId];
         require(!record.locked, "already locked");
         record.locked = true;

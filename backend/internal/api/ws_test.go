@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -13,8 +14,18 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-func setupWSServer() *Server {
-	server := NewServer()
+func setupWSServer(t *testing.T) *Server {
+	t.Helper()
+	server, err := newServerWithDBPath(filepath.Join(t.TempDir(), "legacy.db"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		server.userStore.Close()
+		server.agentStore.Close()
+		server.challengeStore.Close()
+		server.gameHistory.Close()
+	})
 
 	// 创建测试对局
 	eng := engine.NewEngine()
@@ -152,7 +163,7 @@ func TestWSHub_MultipleClients(t *testing.T) {
 }
 
 func TestWSHandler_Connect(t *testing.T) {
-	server := setupWSServer()
+	server := setupWSServer(t)
 
 	// 创建 httptest server
 	ts := httptest.NewServer(server.Router())
@@ -175,7 +186,7 @@ func TestWSHandler_Connect(t *testing.T) {
 }
 
 func TestWSHandler_InvalidGameID(t *testing.T) {
-	server := setupWSServer()
+	server := setupWSServer(t)
 
 	ts := httptest.NewServer(server.Router())
 	defer ts.Close()
@@ -195,7 +206,7 @@ func TestWSHandler_InvalidGameID(t *testing.T) {
 }
 
 func TestWSHandler_BroadcastAfterConnect(t *testing.T) {
-	server := setupWSServer()
+	server := setupWSServer(t)
 
 	ts := httptest.NewServer(server.Router())
 	defer ts.Close()

@@ -1,0 +1,132 @@
+Compiling 56 files with Solc 0.8.24
+Solc 0.8.24 finished in 10.85s
+Compiler run successful!
+Analysing contracts...
+Running tests...
+
+Ran 3 tests for test/TournamentManager.t.sol:TournamentAdversarialTest
+[PASS] testFeeOnTransferCannotCreateUnbackedLiabilities() (gas: 10659621)
+[PASS] testPayoutFailureRollsBackClaimAndCanBeRetried() (gas: 11544754)
+[PASS] testReentrantPrizeWithdrawalBlocked() (gas: 11497447)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 1.32s (369.32ms CPU time)
+
+Ran 8 tests for test/LegacySecurity.t.sol:LegacySecurityTest
+[PASS] testAbandonedGameHasPermissionlessTimeoutRefund() (gas: 529813)
+[PASS] testAnyWalletCannotBurnEscrowOrMintTestAssets() (gas: 490332)
+[PASS] testBettingDeadlineEnforcedAndEarlyLockRejected() (gas: 391133)
+[PASS] testDuplicateAgentCannotEraseStatistics() (gas: 38935)
+[PASS] testNoWinnerPoolRefundsInsteadOfDivisionByZero() (gas: 695928)
+[PASS] testSideSwitchCannotDrainOtherGames() (gas: 951972)
+[PASS] testUncreatedGameCannotAcceptFunds() (gas: 54328)
+[PASS] testVotesBelongToUserAndAggregate() (gas: 523521)
+Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 1.48s (209.26ms CPU time)
+
+Ran 6 tests for test/TournamentManager.t.sol:TournamentGasTest
+[PASS] testGasClaimOneSponsor() (gas: 888221)
+[PASS] testGasClaimSixteenSponsors() (gas: 2211732)
+[PASS] testGasClaimSixtyFourSponsors() (gas: 6753514)
+[PASS] testGasRefundOneSponsor() (gas: 436855)
+[PASS] testGasRefundSixteenSponsors() (gas: 1856080)
+[PASS] testGasRefundSixtyFourSponsors() (gas: 6397849)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 6.67s (2.74s CPU time)
+
+Ran 31 tests for test/TournamentManager.t.sol:TournamentManagerTest
+[PASS] testApprovalToWrongSpenderRevertsAndLeavesAccountingUntouched() (gas: 418390)
+[PASS] testAuditRejectsDisputedResultAndRefundsExactly() (gas: 1053908)
+[PASS] testAuditorAndOrganizerCannotCompeteOrAuditorSponsor() (gas: 311832)
+[PASS] testCreateValidatesRolesTimeAndMetadata() (gas: 117203)
+[PASS] testDemonstrationTokenCannotBeMintedByOrdinaryWallet() (gas: 20648)
+[PASS] testDirectChildMutationsRejected() (gas: 225301)
+[PASS] testDisputeCorrectsWinnerAfterFullWindow() (gas: 1149907)
+[PASS] testExpiryRefundsActiveTournamentDespiteRevokedRoles() (gas: 618330)
+[PASS] testExpiryRefundsSubmittedTournamentAndBlocksApproval() (gas: 883909)
+[PASS] testExpiryRefundsUnresolvedDispute() (gas: 947884)
+[PASS] testFullMultiSponsorPrizeLifecycle() (gas: 1091318)
+[PASS] testFullOpenEventCannotExpireUntilSettlementDeadline() (gas: 605871)
+[PASS] testFundingEmittedAtManagerAndSumsContributions() (gas: 496460)
+[PASS] testFuzzMultipleSponsorRefundConservation(uint96,uint96) (runs: 256, μ: 494323, ~: 494480)
+[PASS] testFuzzWinnerReceivesExactlyBothContributions(uint96,uint96) (runs: 256, μ: 963297, ~: 963454)
+[PASS] testInvalidWinnerAndEvidenceHashesRejected() (gas: 923419)
+[PASS] testLastReviewSecondStillAllowsDispute() (gas: 995767)
+[PASS] testLateSubmissionCannotCutReviewShort() (gas: 587145)
+[PASS] testOnlyParticipantsAndSponsorsMayDispute() (gas: 935160)
+[PASS] testOrganizerCancelsOpenEventWithPullRefunds() (gas: 568356)
+[PASS] testOrganizerCannotCancelAfterStartOrChangeResult() (gas: 992689)
+[PASS] testRegistrationFundingAndStartBoundary() (gas: 626028)
+[PASS] testReviewCannotBeShortenedAndDisputeDeadlineExclusive() (gas: 949249)
+[PASS] testRoleRevocationBlocksReviewButTimeoutRefundsRemain() (gas: 941602)
+[PASS] testRolesCannotReplaceSpecificOrganizerOrAuditor() (gas: 928165)
+[PASS] testTwoTournamentsNeverSubsidizeEachOther() (gas: 1391334)
+[PASS] testUnderfilledEventExpiresAtRegistrationDeadline() (gas: 508958)
+[PASS] testUnfundedOrUnderfilledTournamentCannotStart() (gas: 782890)
+[PASS] testUnknownIdsRejectedForEveryFinancialPath() (gas: 136654)
+[PASS] testWithdrawReplacesWalletAndHashInSameSlot() (gas: 554633)
+[PASS] testZeroHashDuplicateAndOverCapacityRejected() (gas: 476968)
+Suite result: ok. 31 passed; 0 failed; 0 skipped; finished in 6.67s (14.35s CPU time)
+
+Ran 1 test for test/TournamentInvariant.t.sol:TournamentInvariantTest
+[PASS] invariantEscrowBalanceEqualsTotalAndPerTournamentLiabilities() (runs: 64, calls: 4096, reverts: 0)
+
+╭-------------------+-------------+-------+---------+----------╮
+| Contract          | Selector    | Calls | Reverts | Discards |
++==============================================================+
+| TournamentHandler | advanceTime | 441   | 0       | 0        |
+|-------------------+-------------+-------+---------+----------|
+| TournamentHandler | cancel      | 447   | 0       | 0        |
+|-------------------+-------------+-------+---------+----------|
+| TournamentHandler | dispute     | 462   | 0       | 0        |
+|-------------------+-------------+-------+---------+----------|
+| TournamentHandler | expire      | 440   | 0       | 0        |
+|-------------------+-------------+-------+---------+----------|
+| TournamentHandler | fund        | 463   | 0       | 0        |
+|-------------------+-------------+-------+---------+----------|
+| TournamentHandler | review      | 479   | 0       | 0        |
+|-------------------+-------------+-------+---------+----------|
+| TournamentHandler | start       | 448   | 0       | 0        |
+|-------------------+-------------+-------+---------+----------|
+| TournamentHandler | submit      | 470   | 0       | 0        |
+|-------------------+-------------+-------+---------+----------|
+| TournamentHandler | withdraw    | 446   | 0       | 0        |
+╰-------------------+-------------+-------+---------+----------╯
+
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 18.27s (17.94s CPU time)
+
+Ran 5 test suites in 18.34s (34.41s CPU time): 49 tests passed, 0 failed, 0 skipped (49 total tests)
+
+╭--------------------------------+------------------+------------------+------------------+------------------╮
+| File                           | % Lines          | % Statements     | % Branches       | % Funcs          |
++============================================================================================================+
+| script/Deploy.s.sol            | 0.00% (0/24)     | 0.00% (0/27)     | 100.00% (0/0)    | 0.00% (0/1)      |
+|--------------------------------+------------------+------------------+------------------+------------------|
+| script/DeployArenaCoin.s.sol   | 0.00% (0/6)      | 0.00% (0/7)      | 100.00% (0/0)    | 0.00% (0/1)      |
+|--------------------------------+------------------+------------------+------------------+------------------|
+| script/DeployCourse.s.sol      | 0.00% (0/24)     | 0.00% (0/30)     | 0.00% (0/5)      | 0.00% (0/1)      |
+|--------------------------------+------------------+------------------+------------------+------------------|
+| src/AgentArena.sol             | 78.85% (41/52)   | 78.72% (37/47)   | 56.25% (9/16)    | 61.54% (8/13)    |
+|--------------------------------+------------------+------------------+------------------+------------------|
+| src/ArenaCoin.sol              | 0.00% (0/16)     | 0.00% (0/15)     | 0.00% (0/3)      | 0.00% (0/5)      |
+|--------------------------------+------------------+------------------+------------------+------------------|
+| src/BettingPool.sol            | 69.61% (71/102)  | 55.65% (64/115)  | 47.37% (27/57)   | 85.71% (12/14)   |
+|--------------------------------+------------------+------------------+------------------+------------------|
+| src/CourseToken.sol            | 100.00% (5/5)    | 100.00% (3/3)    | 100.00% (2/2)    | 100.00% (2/2)    |
+|--------------------------------+------------------+------------------+------------------+------------------|
+| src/GameRegistry.sol           | 75.00% (36/48)   | 72.97% (27/37)   | 59.09% (13/22)   | 72.73% (8/11)    |
+|--------------------------------+------------------+------------------+------------------+------------------|
+| src/MockUSDC.sol               | 62.50% (5/8)     | 60.00% (3/5)     | 50.00% (2/4)     | 66.67% (2/3)     |
+|--------------------------------+------------------+------------------+------------------+------------------|
+| src/PrizeEscrow.sol            | 100.00% (56/56)  | 100.00% (46/46)  | 67.86% (19/28)   | 100.00% (13/13)  |
+|--------------------------------+------------------+------------------+------------------+------------------|
+| src/ResultReview.sol           | 100.00% (19/19)  | 100.00% (13/13)  | 60.00% (6/10)    | 100.00% (6/6)    |
+|--------------------------------+------------------+------------------+------------------+------------------|
+| src/StrategyVoting.sol         | 71.74% (33/46)   | 65.79% (25/38)   | 44.00% (11/25)   | 80.00% (8/10)    |
+|--------------------------------+------------------+------------------+------------------+------------------|
+| src/TournamentManager.sol      | 98.59% (140/142) | 98.56% (137/139) | 92.50% (74/80)   | 96.30% (26/27)   |
+|--------------------------------+------------------+------------------+------------------+------------------|
+| src/TournamentRegistry.sol     | 96.72% (59/61)   | 96.00% (48/50)   | 62.96% (17/27)   | 100.00% (11/11)  |
+|--------------------------------+------------------+------------------+------------------+------------------|
+| test/TournamentInvariant.t.sol | 100.00% (66/66)  | 100.00% (89/89)  | 100.00% (13/13)  | 100.00% (11/11)  |
+|--------------------------------+------------------+------------------+------------------+------------------|
+| test/TournamentManager.t.sol   | 100.00% (65/65)  | 100.00% (55/55)  | 100.00% (4/4)    | 100.00% (16/16)  |
+|--------------------------------+------------------+------------------+------------------+------------------|
+| Total                          | 80.54% (596/740) | 76.40% (547/716) | 66.55% (197/296) | 84.83% (123/145) |
+╰--------------------------------+------------------+------------------+------------------+------------------╯

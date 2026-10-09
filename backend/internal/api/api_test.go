@@ -5,13 +5,24 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"path/filepath"
 	"testing"
 
 	"agent-arena/backend/internal/engine"
 )
 
-func setupTestServer() *Server {
-	server := NewServer()
+func setupTestServer(t *testing.T) *Server {
+	t.Helper()
+	server, err := newServerWithDBPath(filepath.Join(t.TempDir(), "legacy.db"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		server.userStore.Close()
+		server.agentStore.Close()
+		server.challengeStore.Close()
+		server.gameHistory.Close()
+	})
 
 	// 注册测试 Agent
 	server.store.RegisterAgent(AgentInfo{
@@ -53,7 +64,7 @@ func setupTestServer() *Server {
 }
 
 func TestHealthCheck(t *testing.T) {
-	server := setupTestServer()
+	server := setupTestServer(t)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/health", nil)
@@ -65,7 +76,7 @@ func TestHealthCheck(t *testing.T) {
 }
 
 func TestListGames(t *testing.T) {
-	server := setupTestServer()
+	server := setupTestServer(t)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/games", nil)
@@ -87,7 +98,7 @@ func TestListGames(t *testing.T) {
 }
 
 func TestListGames_FilterByStatus(t *testing.T) {
-	server := setupTestServer()
+	server := setupTestServer(t)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/games?status=betting", nil)
@@ -109,7 +120,7 @@ func TestListGames_FilterByStatus(t *testing.T) {
 }
 
 func TestGetGame_Found(t *testing.T) {
-	server := setupTestServer()
+	server := setupTestServer(t)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/games/2", nil)
@@ -140,7 +151,7 @@ func TestGetGame_Found(t *testing.T) {
 }
 
 func TestGetGame_NotFound(t *testing.T) {
-	server := setupTestServer()
+	server := setupTestServer(t)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/games/999", nil)
@@ -152,7 +163,7 @@ func TestGetGame_NotFound(t *testing.T) {
 }
 
 func TestGetGame_InvalidID(t *testing.T) {
-	server := setupTestServer()
+	server := setupTestServer(t)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/games/abc", nil)
@@ -164,7 +175,7 @@ func TestGetGame_InvalidID(t *testing.T) {
 }
 
 func TestEstimateBet(t *testing.T) {
-	server := setupTestServer()
+	server := setupTestServer(t)
 
 	body := EstimateRequest{
 		GameID: 2,
@@ -197,7 +208,7 @@ func TestEstimateBet(t *testing.T) {
 }
 
 func TestEstimateBet_InvalidBody(t *testing.T) {
-	server := setupTestServer()
+	server := setupTestServer(t)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/bets/estimate", bytes.NewReader([]byte(`{}`)))
@@ -210,7 +221,7 @@ func TestEstimateBet_InvalidBody(t *testing.T) {
 }
 
 func TestEstimateBet_GameNotFound(t *testing.T) {
-	server := setupTestServer()
+	server := setupTestServer(t)
 
 	body := EstimateRequest{GameID: 999, Side: "red", Amount: "10000000"}
 	jsonBody, _ := json.Marshal(body)
@@ -226,7 +237,7 @@ func TestEstimateBet_GameNotFound(t *testing.T) {
 }
 
 func TestListAgents(t *testing.T) {
-	server := setupTestServer()
+	server := setupTestServer(t)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/agents", nil)
@@ -245,7 +256,7 @@ func TestListAgents(t *testing.T) {
 }
 
 func TestGetAgent_Found(t *testing.T) {
-	server := setupTestServer()
+	server := setupTestServer(t)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/agents/berserker", nil)
@@ -267,7 +278,7 @@ func TestGetAgent_Found(t *testing.T) {
 }
 
 func TestGetAgent_NotFound(t *testing.T) {
-	server := setupTestServer()
+	server := setupTestServer(t)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/agents/unknown", nil)
@@ -279,7 +290,7 @@ func TestGetAgent_NotFound(t *testing.T) {
 }
 
 func TestGetUserBets_Empty(t *testing.T) {
-	server := setupTestServer()
+	server := setupTestServer(t)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/users/0xabc/bets", nil)
@@ -299,7 +310,7 @@ func TestGetUserBets_Empty(t *testing.T) {
 }
 
 func TestGetUserBets_WithBets(t *testing.T) {
-	server := setupTestServer()
+	server := setupTestServer(t)
 
 	server.store.CacheBet("0xabc", &BetRecord{
 		GameID:   2,

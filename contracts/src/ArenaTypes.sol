@@ -3,11 +3,24 @@ pragma solidity ^0.8.24;
 
 /// @title 共享类型定义
 library ArenaTypes {
-    enum Side { None, Red, Blue }
+    enum Side {
+        None,
+        Red,
+        Blue
+    }
 
-    enum GameStatus { Open, Locked, Finished }
+    enum GameStatus {
+        Open,
+        Locked,
+        Finished,
+        Cancelled
+    }
 
-    enum Strategy { Aggressive, Defensive, Tricky }
+    enum Strategy {
+        Aggressive,
+        Defensive,
+        Tricky
+    }
 
     struct GameInfo {
         uint256 gameId;

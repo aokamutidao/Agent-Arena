@@ -29,3 +29,14 @@ frontend/.next/
 scripts/
 FUND_DEPLOYER.md
 devlog/
+
+# Course refactor: private configuration and reproducible local outputs
+.env.course
+.local/
+.artifacts/
+*.db-wal
+*.db-shm
+# Keep this learning log visible; historical ignored logs stay ignored.
+!devlog/
+devlog/*
+!devlog/028-course-refactor.md

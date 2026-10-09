@@ -30,9 +30,9 @@ contract Deploy is Script {
         console.log("StrategyVoting:", address(arena.strategyVoting()));
         console.log("GameRegistry:", address(arena.gameRegistry()));
 
-        // 3. 给 arena 的 bettingPool approve USDC（方便测试）
-        usdc.approve(address(arena.bettingPool()), type(uint256).max);
-        console.log("Approved BettingPool for unlimited USDC");
+        // 3. AgentArena is the legacy transferFrom spender.
+        usdc.approve(address(arena), 10_000 * 1e6);
+        console.log("Approved AgentArena for 10000 test USDC");
 
         vm.stopBroadcast();
 

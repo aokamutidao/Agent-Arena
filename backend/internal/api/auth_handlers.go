@@ -317,7 +317,7 @@ func (h *AuthHandlers) ClaimDailyAC(c *gin.Context) {
 		}
 		txHash = hash
 		onChain = true
-		log.Printf("[ClaimDailyAC] on-chain mint success: %s -> %s AC, tx=%s",
+		log.Printf("[ClaimDailyAC] on-chain mint success: %s -> %d AC, tx=%s",
 			userRecord.Address, dailyAmount, txHash)
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "on-chain AC not configured"})

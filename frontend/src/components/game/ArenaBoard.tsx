@@ -27,21 +27,23 @@ export function ArenaBoard({ gameState }: ArenaBoardProps) {
   const [redPos, setRedPos] = useState({ x: 1, y: 1 });
   const [bluePos, setBluePos] = useState({ x: 8, y: 8 });
   const [shake, setShake] = useState({ x: 0, y: 0 });
+  const redX = gameState.agent_red_state?.position?.x;
+  const redY = gameState.agent_red_state?.position?.y;
+  const blueX = gameState.agent_blue_state?.position?.x;
+  const blueY = gameState.agent_blue_state?.position?.y;
 
   // 只在坐标真正变化时更新 local state（触发 framer-motion 动画）
   useEffect(() => {
-    const rp = gameState.agent_red_state?.position;
-    if (rp) {
-      setRedPos((prev) => (prev.x !== rp.x || prev.y !== rp.y ? { x: rp.x, y: rp.y } : prev));
+    if (redX !== undefined && redY !== undefined) {
+      setRedPos((prev) => (prev.x !== redX || prev.y !== redY ? { x: redX, y: redY } : prev));
     }
-  }, [gameState.agent_red_state?.position?.x, gameState.agent_red_state?.position?.y]);
+  }, [redX, redY]);
 
   useEffect(() => {
-    const bp = gameState.agent_blue_state?.position;
-    if (bp) {
-      setBluePos((prev) => (prev.x !== bp.x || prev.y !== bp.y ? { x: bp.x, y: bp.y } : prev));
+    if (blueX !== undefined && blueY !== undefined) {
+      setBluePos((prev) => (prev.x !== blueX || prev.y !== blueY ? { x: blueX, y: blueY } : prev));
     }
-  }, [gameState.agent_blue_state?.position?.x, gameState.agent_blue_state?.position?.y]);
+  }, [blueX, blueY]);
 
   const redHP = gameState.agent_red_state?.hp ?? 100;
   const blueHP = gameState.agent_blue_state?.hp ?? 100;
@@ -255,7 +257,6 @@ function AttackFX({ fromX, fromY, toX, toY, color }: {
   fromX: number; fromY: number; toX: number; toY: number; color: "red" | "blue";
 }) {
   const bg = color === "red" ? "bg-red-500" : "bg-blue-500";
-  const shadowColor = color === "red" ? "shadow-red-500" : "shadow-blue-500";
   // 计算攻击方向角度
   const dx = (toX - fromX) * CELL_SIZE;
   const dy = (fromY - toY) * CELL_SIZE;

@@ -18,6 +18,7 @@ contract BettingPool is ReentrancyGuard {
 
     // gameId => GameInfo
     mapping(uint256 => ArenaTypes.GameInfo) public games;
+    mapping(uint256 => bool) public gameExists;
 
     // gameId => user => bet info
     struct BetInfo {
@@ -34,6 +35,8 @@ contract BettingPool is ReentrancyGuard {
     event BettingLocked(uint256 indexed gameId, uint256 totalBetRed, uint256 totalBetBlue);
     event GameSettled(uint256 indexed gameId, bool redWins, uint256 totalPool, uint256 protocolFee);
     event RewardClaimed(uint256 indexed gameId, address indexed user, uint256 reward);
+    event GameCancelled(uint256 indexed gameId);
+    event BetRefunded(uint256 indexed gameId, address indexed user, uint256 amount);
 
     modifier onlyOwner() {
         require(msg.sender == owner, "not owner");
@@ -46,22 +49,21 @@ contract BettingPool is ReentrancyGuard {
     }
 
     constructor(address _usdc, address _protocolTreasury) {
+        require(_usdc.code.length > 0 && _protocolTreasury != address(0), "invalid config");
         owner = msg.sender;
         usdc = _usdc;
         protocolTreasury = _protocolTreasury;
     }
 
     function setArena(address _arena) external onlyOwner {
+        require(arena == address(0) && _arena != address(0), "arena already set");
         arena = _arena;
     }
 
     /// @notice 初始化一场对局的下注
-    function initGame(
-        uint256 gameId,
-        address agentRed,
-        address agentBlue,
-        uint256 bettingDeadline
-    ) external onlyArena {
+    function initGame(uint256 gameId, address agentRed, address agentBlue, uint256 bettingDeadline) external onlyArena {
+        require(!gameExists[gameId] && bettingDeadline > block.timestamp, "invalid game");
+        gameExists[gameId] = true;
         games[gameId] = ArenaTypes.GameInfo({
             gameId: gameId,
             agentRed: agentRed,
@@ -76,8 +78,14 @@ contract BettingPool is ReentrancyGuard {
 
     /// @notice 下注（USDC 已由 Arena 转入）
     function placeBet(uint256 gameId, address user, bool side, uint256 amount) external onlyArena {
+        require(gameExists[gameId], "game not found");
+        require(amount > 0 && user != address(0), "invalid bet");
         ArenaTypes.GameInfo storage game = games[gameId];
         require(game.status == ArenaTypes.GameStatus.Open, "betting not open");
+        require(block.timestamp < game.bettingDeadline, "betting closed");
+        BetInfo storage bet = bets[gameId][user];
+        ArenaTypes.Side selectedSide = side ? ArenaTypes.Side.Red : ArenaTypes.Side.Blue;
+        require(bet.amount == 0 || bet.side == selectedSide, "cannot switch side");
 
         // Update totals
         if (side) {
@@ -87,8 +95,7 @@ contract BettingPool is ReentrancyGuard {
         }
 
         // Record bet (aggregate per user per game)
-        BetInfo storage bet = bets[gameId][user];
-        bet.side = side ? ArenaTypes.Side.Red : ArenaTypes.Side.Blue;
+        bet.side = selectedSide;
         bet.amount += amount;
 
         emit BetPlaced(gameId, user, side, amount);
@@ -96,14 +103,17 @@ contract BettingPool is ReentrancyGuard {
 
     /// @notice 锁定下注
     function lockBetting(uint256 gameId) external onlyArena {
+        require(gameExists[gameId], "game not found");
         ArenaTypes.GameInfo storage game = games[gameId];
         require(game.status == ArenaTypes.GameStatus.Open, "not open");
+        require(block.timestamp >= game.bettingDeadline, "betting still open");
         game.status = ArenaTypes.GameStatus.Locked;
         emit BettingLocked(gameId, game.totalBetRed, game.totalBetBlue);
     }
 
     /// @notice 结算
     function settle(uint256 gameId, bool redWins) external onlyArena nonReentrant {
+        require(gameExists[gameId], "game not found");
         ArenaTypes.GameInfo storage game = games[gameId];
         require(game.status == ArenaTypes.GameStatus.Locked, "not locked");
 
@@ -113,6 +123,13 @@ contract BettingPool is ReentrancyGuard {
         uint256 totalPool = game.totalBetRed + game.totalBetBlue;
         uint256 fee = totalPool * protocolFeeBps / 10000;
         uint256 winnerPool = redWins ? game.totalBetRed : game.totalBetBlue;
+
+        // A pool with no winning stake cannot distribute; refund rather than trap funds.
+        if (winnerPool == 0) {
+            game.status = ArenaTypes.GameStatus.Cancelled;
+            emit GameCancelled(gameId);
+            return;
+        }
 
         winnerPools[gameId] = winnerPool;
 
@@ -126,6 +143,7 @@ contract BettingPool is ReentrancyGuard {
 
     /// @notice 赢家提取奖金
     function claim(uint256 gameId) external nonReentrant {
+        require(gameExists[gameId], "game not found");
         ArenaTypes.GameInfo storage game = games[gameId];
         require(game.status == ArenaTypes.GameStatus.Finished, "not finished");
 
@@ -145,13 +163,35 @@ contract BettingPool is ReentrancyGuard {
         emit RewardClaimed(gameId, msg.sender, reward);
     }
 
+    /// @notice Legacy abandonments have a finite, permissionless refund escape hatch.
+    function cancelExpired(uint256 gameId) external {
+        require(gameExists[gameId], "game not found");
+        ArenaTypes.GameInfo storage game = games[gameId];
+        require(
+            game.status == ArenaTypes.GameStatus.Open || game.status == ArenaTypes.GameStatus.Locked, "terminal game"
+        );
+        require(block.timestamp >= game.bettingDeadline + 1 days, "not expired");
+        game.status = ArenaTypes.GameStatus.Cancelled;
+        emit GameCancelled(gameId);
+    }
+
+    function claimRefund(uint256 gameId) external nonReentrant {
+        require(gameExists[gameId] && games[gameId].status == ArenaTypes.GameStatus.Cancelled, "not cancelled");
+        BetInfo storage bet = bets[gameId][msg.sender];
+        require(bet.amount > 0 && !bet.claimed, "no refund");
+        uint256 amount = bet.amount;
+        bet.claimed = true;
+        IERC20(usdc).safeTransfer(msg.sender, amount);
+        emit BetRefunded(gameId, msg.sender, amount);
+    }
+
     /// @notice 查询可提取金额
     function getReward(uint256 gameId, address user) external view returns (uint256) {
         ArenaTypes.GameInfo storage game = games[gameId];
         if (game.status != ArenaTypes.GameStatus.Finished) return 0;
 
         BetInfo storage bet = bets[gameId][user];
-        if (bet.side != game.winner || bet.claimed) return 0;
+        if (bet.amount == 0 || bet.side != game.winner || bet.claimed || winnerPools[gameId] == 0) return 0;
 
         uint256 totalPool = game.totalBetRed + game.totalBetBlue;
         uint256 fee = totalPool * protocolFeeBps / 10000;

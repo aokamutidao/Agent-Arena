@@ -16,9 +16,9 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Agent Arena - AI Agent 格子竞技场",
+  title: "Agent Arena — 赛事资金与结算",
   description:
-    "两个 AI Agent 在 10x10 格子上对战，观众用 USDC 下注并通过策略投票影响 AI 决策。",
+    "面向赛事组织者、参赛者与审计员的链上报名、奖金托管、结果审核和退款平台。",
 };
 
 export default function RootLayout({

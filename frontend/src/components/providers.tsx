@@ -1,31 +1,19 @@
 "use client";
 
-import React from "react";
-import { WagmiProvider } from "wagmi";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { config } from "@/lib/wagmi";
-import { AuthProvider } from "@/lib/auth";
-import { I18nProvider } from "@/lib/i18n";
+import dynamic from "next/dynamic";
+import type { ReactNode } from "react";
 
-import "@rainbow-me/rainbowkit/styles.css";
+// WalletConnect creates browser storage while constructing its connectors.
+// Load the wallet tree in the browser so SSR never touches IndexedDB.
+const WalletProviders = dynamic(() => import("./wallet-providers"), {
+  ssr: false,
+  loading: () => (
+    <div className="min-h-screen flex items-center justify-center px-4 text-sm text-muted-foreground" role="status">
+      正在初始化钱包与赛事资金界面…
+    </div>
+  ),
+});
 
-const queryClient = new QueryClient();
-
-interface ProvidersProps {
-  children: React.ReactNode;
-}
-
-export function Providers({ children }: ProvidersProps) {
-  return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>
-          <I18nProvider>
-            <AuthProvider>{children}</AuthProvider>
-          </I18nProvider>
-        </RainbowKitProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
-  );
+export function Providers({ children }: { children: ReactNode }) {
+  return <WalletProviders>{children}</WalletProviders>;
 }

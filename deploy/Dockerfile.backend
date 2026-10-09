@@ -1,0 +1,20 @@
+FROM golang:1.25.4-bookworm AS build
+WORKDIR /src/backend
+COPY backend/go.mod backend/go.sum ./
+RUN go mod download
+COPY backend/ ./
+RUN CGO_ENABLED=1 go build -trimpath -ldflags="-s -w" -o /course-server ./cmd/course-server
+
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates wget \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd --system --uid 10001 --create-home arena \
+    && mkdir /data && chown arena:arena /data
+WORKDIR /app
+COPY --from=build /course-server /app/course-server
+COPY contracts/abi/ /app/contracts/abi/
+ENV DATABASE_PATH=/data/course.db CONTRACT_ABI_DIR=/app/contracts/abi PORT=8080
+USER arena
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=3s CMD wget -q -O /dev/null http://127.0.0.1:8080/health || exit 1
+ENTRYPOINT ["/app/course-server"]

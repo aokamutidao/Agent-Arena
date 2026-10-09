@@ -1,0 +1,161 @@
+[
+  {
+    "type": "constructor",
+    "inputs": [
+      {
+        "name": "_manager",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "dispute",
+    "inputs": [
+      {
+        "name": "tournamentId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "challenger",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "disputeHash",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "getReview",
+    "inputs": [
+      {
+        "name": "tournamentId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct CourseTypes.ReviewInfo",
+        "components": [
+          {
+            "name": "submitter",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "proposedWinner",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "resultHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "submittedAt",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "reviewDeadline",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "challenger",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "disputeHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "decisionHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "manager",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "recordDecision",
+    "inputs": [
+      {
+        "name": "tournamentId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "decisionHash",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "submit",
+    "inputs": [
+      {
+        "name": "tournamentId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "submitter",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "proposedWinner",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "resultHash",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "reviewDeadline",
+        "type": "uint64",
+        "internalType": "uint64"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  }
+]

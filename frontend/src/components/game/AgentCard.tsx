@@ -7,9 +7,10 @@ interface AgentCardProps {
   agent: AgentInfo;
   state?: AgentState;
   side: "red" | "blue";
+  showStats?: boolean;
 }
 
-export function AgentCard({ agent, state, side }: AgentCardProps) {
+export function AgentCard({ agent, state, side, showStats = true }: AgentCardProps) {
   const hp = state?.hp ?? 100;
   const maxHp = state?.max_hp ?? 100;
   const hpPercent = Math.round((hp / maxHp) * 100);
@@ -26,7 +27,7 @@ export function AgentCard({ agent, state, side }: AgentCardProps) {
         </div>
         <div>
           <h3 className={cn("font-semibold", sideColor)}>{agent.name}</h3>
-          <p className="text-xs text-muted-foreground">{agent.personality}</p>
+          <p className="text-xs text-muted-foreground line-clamp-3" title={agent.personality}>{agent.personality}</p>
         </div>
       </div>
 
@@ -68,9 +69,9 @@ export function AgentCard({ agent, state, side }: AgentCardProps) {
       )}
 
       {/* Stats */}
-      <div className="text-xs text-muted-foreground mt-2">
+      {showStats && <div className="text-xs text-muted-foreground mt-2">
         胜率: {agent.win_rate.toFixed(1)}% ({agent.wins}W {agent.losses}L)
-      </div>
+      </div>}
     </div>
   );
 }

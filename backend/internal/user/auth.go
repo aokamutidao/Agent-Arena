@@ -12,16 +12,13 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-// JWT 配置
-var jwtSecret []byte
-
-func init() {
-	// 从环境变量读取 JWT secret，默认使用硬编码值（开发环境）
+// jwtSigningKey deliberately has no fallback. Environment is read after config load.
+func jwtSigningKey() ([]byte, error) {
 	secret := os.Getenv("JWT_SECRET")
-	if secret == "" {
-		secret = "agent-arena-dev-secret-key-change-in-production"
+	if len(secret) < 32 {
+		return nil, fmt.Errorf("JWT_SECRET must contain at least 32 bytes")
 	}
-	jwtSecret = []byte(secret)
+	return []byte(secret), nil
 }
 
 // Claims JWT payload
@@ -49,6 +46,9 @@ type LoginResponse struct {
 // signature: 签名（hex 字符串，0x 开头）
 // expectedAddress: 期望的地址
 func VerifySignature(message, signature, expectedAddress string) (bool, error) {
+	if !common.IsHexAddress(expectedAddress) || common.HexToAddress(expectedAddress) == (common.Address{}) {
+		return false, fmt.Errorf("invalid wallet address")
+	}
 	// 1. 解码签名
 	sig := common.FromHex(signature)
 	if len(sig) != 65 {
@@ -80,6 +80,10 @@ func VerifySignature(message, signature, expectedAddress string) (bool, error) {
 
 // GenerateJWT 生成 JWT token
 func GenerateJWT(userID, address string) (string, error) {
+	key, err := jwtSigningKey()
+	if err != nil {
+		return "", err
+	}
 	claims := &Claims{
 		UserID:  userID,
 		Address: strings.ToLower(address),
@@ -91,18 +95,22 @@ func GenerateJWT(userID, address string) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(jwtSecret)
+	return token.SignedString(key)
 }
 
 // ValidateJWT 验证 JWT token
 func ValidateJWT(tokenString string) (*Claims, error) {
+	key, err := jwtSigningKey()
+	if err != nil {
+		return nil, err
+	}
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		// 验证签名方法
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return jwtSecret, nil
-	})
+		return key, nil
+	}, jwt.WithValidMethods([]string{"HS256"}), jwt.WithIssuer("agent-arena"), jwt.WithExpirationRequired())
 
 	if err != nil {
 		return nil, err

@@ -1,188 +1,25 @@
 "use client";
-
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { api } from "@/lib/api";
-import { useI18n } from "@/lib/i18n";
-import type { GameListItem } from "@/types/game";
-
-export default function HomePage() {
-  const router = useRouter();
-  const { t } = useI18n();
-  const [games, setGames] = useState<GameListItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [creating, setCreating] = useState(false);
-
-  const refreshGames = () => {
-    api
-      .listGames()
-      .then((data) => {
-        setGames(data.games || []);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  };
-
-  useEffect(() => {
-    refreshGames();
-  }, []);
-
-  const handleCreateGame = async () => {
-    setCreating(true);
-    try {
-      const res = await api.createGame();
-      router.push(`/game/${res.game_id}`);
-    } catch (err) {
-      console.error("Create game failed:", err);
-      alert(t("common.error"));
-    } finally {
-      setCreating(false);
-    }
-  };
-
-  const formatUSDC = (wei: string) => {
-    const num = parseInt(wei) / 1e6;
-    return num.toFixed(2);
-  };
-
-  const playing = games.filter((g) => g.status === "playing");
-  const betting = games.filter((g) => g.status === "betting" || g.status === "pending");
-  const finished = games.filter((g) => g.status === "finished");
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <p className="text-muted-foreground">{t("common.loading")}</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">{t("nav.home")}</h1>
-        <Button onClick={handleCreateGame} disabled={creating}>
-          {creating ? t("common.loading") : "🎮 " + t("home.startGame")}
-        </Button>
-      </div>
-
-      {/* LIVE NOW */}
-      <section>
-        <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
-          <span className="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-          {t("game.inProgress")} ({playing.length})
-        </h2>
-        {playing.length === 0 ? (
-          <Card>
-            <CardContent className="pt-6">
-              <p className="text-sm text-muted-foreground">{t("home.noGames")}</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid gap-4">
-            {playing.map((game) => (
-              <GameCard key={game.game_id} game={game} formatUSDC={formatUSDC} live t={t} />
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* UPCOMING */}
-      <section>
-        <h2 className="text-lg font-semibold mb-3">{t("game.waiting")} ({betting.length})</h2>
-        {betting.length === 0 ? (
-          <Card>
-            <CardContent className="pt-6">
-              <p className="text-sm text-muted-foreground">{t("home.noGames")}</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid gap-4">
-            {betting.map((game) => (
-              <GameCard key={game.game_id} game={game} formatUSDC={formatUSDC} t={t} />
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* FINISHED */}
-      <section>
-        <h2 className="text-lg font-semibold mb-3">{t("game.finished")} ({finished.length})</h2>
-        {finished.length === 0 ? (
-          <Card>
-            <CardContent className="pt-6">
-              <p className="text-sm text-muted-foreground">{t("home.noGames")}</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid gap-4">
-            {finished.map((game) => (
-              <GameCard key={game.game_id} game={game} formatUSDC={formatUSDC} t={t} />
-            ))}
-          </div>
-        )}
-      </section>
-    </div>
-  );
-}
-
-function GameCard({
-  game,
-  formatUSDC,
-  live,
-  t,
-}: {
-  game: GameListItem;
-  formatUSDC: (wei: string) => string;
-  live?: boolean;
-  t: (key: string) => string;
-}) {
-  const redPool = formatUSDC(game.total_bet_red);
-  const bluePool = formatUSDC(game.total_bet_blue);
-  const totalPool = (parseFloat(redPool) + parseFloat(bluePool)).toFixed(2);
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base flex items-center justify-between">
-          <span>
-            🔴 {game.agent_red.name} vs {game.agent_blue.name} 🔵
-          </span>
-          {live && (
-            <span className="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-          )}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex justify-between items-center text-sm">
-          <div>
-            {game.status === "playing" ? (
-              <p className="text-muted-foreground">
-                {t("game.round")} {game.current_round} / {game.max_rounds}
-              </p>
-            ) : game.status === "finished" ? (
-              <p className="text-muted-foreground">
-                {t("game.winner")}: {game.agent_red.name === game.winner ? "🔴" : "🔵"}{" "}
-                {game.winner || "none"}
-              </p>
-            ) : (
-              <p className="text-muted-foreground">{t("game.waiting")}</p>
-            )}
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-muted-foreground">Pool: {totalPool} USDC</span>
-            <Link
-              href={`/game/${game.game_id}`}
-              className="text-primary hover:underline font-medium"
-            >
-              {game.status === "playing" ? t("game.title") : t("common.confirm")} →
-            </Link>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
+import { DeploymentNotice } from "@/components/course/DeploymentNotice";
+import { useCourseResource, useCourseConfig } from "@/hooks/useCourse";
+import { type Dashboard, type Tournament, errorMessage, money, STATUS_LABEL, dateTime } from "@/lib/course";
+export default function DashboardPage() {
+    const dashboard = useCourseResource<Dashboard>("/api/dashboard");
+    const list = useCourseResource<{
+        tournaments: Tournament[];
+        total: number;
+    }>("/api/tournaments?limit=5&offset=0");
+    const { data: config } = useCourseConfig();
+    const d = dashboard.data;
+    const funded = BigInt(d?.escrow_in_raw || "0");
+    const paid = BigInt(d?.prizes_paid_raw || "0");
+    const refunded = BigInt(d?.refunds_paid_raw || "0");
+    const remaining = funded - paid - refunded;
+    const amounts = [["已发奖金", paid, "bg-emerald-500"], ["已退赞助", refunded, "bg-amber-500"], ["待结算资金", remaining, "bg-blue-500"]] as const;
+    return <div className="space-y-6"><div className="flex flex-wrap justify-between items-end gap-4"><div><p className="text-emerald-600 text-sm">赛事资金与独立审核</p><h1 className="text-3xl font-bold mt-1">资金概览</h1><p className="text-muted-foreground mt-2">报名、赞助、结果审核与退款均通过钱包签名，在链上留下审计记录。</p></div><Link href="/tournaments" className="rounded bg-emerald-600 text-white px-4 py-2">进入赛事</Link></div><DeploymentNotice />
+    {dashboard.error && <p role="alert" className="text-red-500">{errorMessage(dashboard.error)}</p>}
+    {dashboard.isLoading && <p>正在读取已确认的账本…</p>}
+    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">{[["赛事总数", d?.tournaments_total ?? "—"], ["进行中的赛事", d?.active_tournaments ?? "—"], ["已结算赛事", d?.completed_tournaments ?? "—"], ["累计赞助 DUSD", d ? money(d.escrow_in_raw, config?.token_decimals) : "—"]].map(([title, value]) => <div key={title} className="border rounded-xl p-5"><p className="text-sm text-muted-foreground">{title}</p><p className="text-2xl font-semibold mt-2 break-all">{value}</p></div>)}</div>
+    <section className="border rounded-xl p-5 space-y-4"><h2 className="text-lg font-semibold">资金去向</h2>{remaining < BigInt(0) && <p role="alert" className="text-red-500">账本总额不一致，请检查索引状态与资金流水。</p>}<div className="h-5 rounded-full overflow-hidden flex bg-muted" role="img" aria-label="已发奖金、已退赞助和待结算资金占比">{amounts.map(([label, value, color]) => <div key={label} className={color} style={{ width: `${funded > BigInt(0) ? Number((value > BigInt(0) ? value : BigInt(0)) * BigInt(10000) / funded) / 100 : 0}%` }}/>)}</div><div className="grid sm:grid-cols-3 gap-4">{amounts.map(([label, value, color]) => <div key={label}><span className={`inline-block h-2 w-2 rounded-full mr-2 ${color}`}/>{label}<p className="font-mono mt-1">{money(value.toString(), config?.token_decimals)} DUSD</p></div>)}</div><p className="text-xs text-muted-foreground">仅统计已确认应用事件；待结算余额 = 累计赞助 − 奖金支付 − 退款。索引区块 {d?.indexed_block ?? "—"} / 链头 {d?.chain_head ?? "—"}，更新于 {dateTime(d?.observed_at || 0)}。</p></section>
+    <section className="border rounded-xl p-5"><h2 className="text-lg font-semibold mb-4">最近赛事</h2>{list.error && <p role="alert">{errorMessage(list.error)}</p>}{!list.data?.tournaments.length && !list.isLoading && <p className="text-muted-foreground">暂无赛事。组织者配置角色后可创建第一场赛事。</p>}<div className="space-y-3">{list.data?.tournaments.map(t => <Link href={`/tournaments/${t.id}`} key={t.id} className="flex flex-wrap items-center justify-between border rounded p-3 gap-2"><span>#{t.id} {t.title}</span><span className="text-sm text-muted-foreground">{STATUS_LABEL[t.status]} · {money(t.prize_pool, config?.token_decimals)} DUSD</span></Link>)}</div></section><p className="text-xs text-muted-foreground">DUSD 是课程演示代币，没有兑付承诺。此平台采用独立审计员审核结果，不提供观众投注。</p></div>;
 }

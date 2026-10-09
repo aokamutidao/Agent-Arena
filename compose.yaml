@@ -1,0 +1,54 @@
+# Public deployment template. Requires a real domain and a separately deployed testnet manager.
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.backend
+    restart: unless-stopped
+    environment:
+      JWT_SECRET: ${JWT_SECRET:?set a random JWT_SECRET of at least 32 bytes}
+      DATABASE_PATH: /data/course.db
+      AUTH_DOMAIN: ${SITE_DOMAIN:?set the public hostname}
+      CORS_ORIGINS: https://${SITE_DOMAIN}
+      TRUSTED_PROXY_CIDRS: ${TRUSTED_PROXY_CIDRS:-}
+      CHAIN_ID: ${CHAIN_ID:-11155111}
+      RPC_URL: ${RPC_URL:?set a read-only RPC URL}
+      TOURNAMENT_MANAGER_ADDRESS: ${TOURNAMENT_MANAGER_ADDRESS:?deploy the course manager first}
+      DEPLOYMENT_BLOCK: ${DEPLOYMENT_BLOCK:?record the manager deployment block}
+      CONFIRMATIONS: ${CONFIRMATIONS:-6}
+      CONTRACT_ABI_DIR: /app/contracts/abi
+      SIMULATION_ENABLED: ${SIMULATION_ENABLED:-true}
+      QWEN_API_KEY: ${QWEN_API_KEY:-}
+      PORT: "8080"
+    volumes:
+      - course_data:/data
+    expose:
+      - "8080"
+  frontend:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.frontend
+      args:
+        NEXT_PUBLIC_API_URL: ""
+    restart: unless-stopped
+    expose:
+      - "3000"
+  proxy:
+    image: caddy:2.10
+    restart: unless-stopped
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:?set the public hostname}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - backend
+      - frontend
+volumes:
+  course_data:
+  caddy_data:
+  caddy_config:

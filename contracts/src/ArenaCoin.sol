@@ -19,10 +19,7 @@ contract ArenaCoin is ERC20, Ownable {
 
     /// @notice 领取每日 AC（水龙头）
     function claimDaily() external {
-        require(
-            block.timestamp >= lastClaimTime[msg.sender] + 24 hours,
-            "Can only claim once per 24 hours"
-        );
+        require(block.timestamp >= lastClaimTime[msg.sender] + 24 hours, "Can only claim once per 24 hours");
 
         lastClaimTime[msg.sender] = block.timestamp;
         _mint(msg.sender, DAILY_CLAIM_AMOUNT);

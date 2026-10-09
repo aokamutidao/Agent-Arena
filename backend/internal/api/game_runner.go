@@ -3,7 +3,7 @@ package api
 import (
 	"context"
 	"crypto/sha256"
-	"encoding/binary"
+	"encoding/json"
 	"log"
 	"time"
 
@@ -282,7 +282,7 @@ func (r *GameRunner) run(gameID uint64) {
 
 			// 链上: FinishGame（提交结果 + 结算）— 异步执行，带重试
 			if r.chain != nil {
-				actionsHash := computeActionsHash(gameID, state.CurrentRound, state.AgentRed.HP, state.AgentBlue.HP)
+				actionsHash := computeActionsHash(state)
 				gameWinner := state.Winner
 				go func() {
 					ctx, cancel := context.WithTimeout(context.Background(), 180*time.Second)
@@ -333,15 +333,14 @@ func (r *GameRunner) run(gameID uint64) {
 	}
 }
 
-// computeActionsHash 计算对局动作哈希（用于链上验证）
-func computeActionsHash(gameID uint64, rounds uint8, hpRed, hpBlue uint8) [32]byte {
-	buf := make([]byte, 12)
-	binary.BigEndian.PutUint64(buf[0:8], gameID)
-	buf[8] = rounds
-	buf[9] = hpRed
-	buf[10] = hpBlue
-	buf[11] = 0 // padding
-	return sha256.Sum256(buf)
+// computeActionsHash commits to the full public game snapshot, including actions.
+// This is evidence integrity, not proof of a truthful operator or fair model.
+func computeActionsHash(state *engine.GameState) [32]byte {
+	data, err := json.Marshal(state)
+	if err != nil {
+		panic("engine.GameState must remain JSON serializable")
+	}
+	return sha256.Sum256(data)
 }
 
 // toTurnUpdateData 转换引擎回合记录为 WS 消息
