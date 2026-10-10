@@ -20,3 +20,6 @@ backend/tmp
 **/.DS_Store
 *.docx
 docs/archive
+deliverables
+docs/course-project/submission
+docs/course-project/submission-slides

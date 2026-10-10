@@ -16,5 +16,5 @@ COPY contracts/abi/ /app/contracts/abi/
 ENV DATABASE_PATH=/data/course.db CONTRACT_ABI_DIR=/app/contracts/abi PORT=8080
 USER arena
 EXPOSE 8080
-HEALTHCHECK --interval=30s --timeout=3s CMD wget -q -O /dev/null http://127.0.0.1:8080/health || exit 1
+HEALTHCHECK --interval=30s --timeout=3s CMD wget -q -O /dev/null "http://127.0.0.1:${PORT:-8080}/health" || exit 1
 ENTRYPOINT ["/app/course-server"]

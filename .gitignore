@@ -47,8 +47,11 @@ devlog/*
 !devlog/033-local-llm-demo.md
 !devlog/034-metamask-browser-acceptance.md
 !devlog/035-user-recorded-demo.md
+!devlog/036-course-submission.md
 tooling/__pycache__/
 
 # Narrated demo video outputs (sources and production notes are versioned)
 deliverables/demo-video/
 deliverables/demo-video-user/
+deliverables/course-submission/
+/backend/server
