@@ -1,12 +1,27 @@
 # 课程版测试与评价记录
 
-测试日期：2026-10-09，环境为本地 macOS / Go 1.25.4 / Node.js 24.11.1 / Foundry 1.5.1 / Solidity 0.8.24（optimizer 200）。本报告区分已执行证据与待验收项目。它不是外部安全审计，也不等于生产部署认证。
+初始测试日期：2026-10-09，后续检查按 2026-10-10 的各轮记录分列。环境为本地 macOS / Go 1.25.4 / Node.js 24.11.1 / Foundry 1.5.1 / Solidity 0.8.24（optimizer 200）。本报告区分已执行证据与待验收项目。它不是外部安全审计，也不等于生产部署认证。
 
-## 2026-10-10：MetaMask 浏览器验收（034，进行中）
+## 2026-10-10：MetaMask 主赛事验收（034，最终范围已通过）
 
-已保存[验收前快照](evidence/metamask-before-2026-10-10.json)，确认 API `18081` ready、真实模型配置及六角色余额。Chrome `localhost:3002/tournaments` 实际显示六场赛事；点击“连接钱包”并选择已安装的 MetaMask 后，页面等待扩展确认。
+已保存[验收前快照](evidence/metamask-before-2026-10-10.json)：API `18081` ready、前端 `localhost:3002`、RPC `18545` / chain ID `31337`。基线中的六场赛事与余额属于开始操作前状态。最初扩展确认页面不可操作的停点已接续；浏览器工具明确拒绝访问 `chrome-extension:`，用户亲手操作 MetaMask 账户与确认，助手仅操作本项目 localhost 页面，没有用 CLI 测试私钥代替本轮钱包签名。
 
-原生 Chrome 窗口读取超时，暂未读取到钱包扩展确认页面；已请用户解锁（如需要）并展开 MetaMask 标签页。本轮截至此记录未完成钱包连接、登录签名或新交易，未发起新模型比赛。完整角色与资金 UI 流程、回执及新视频仍待接续，详见 [034 记录](../../devlog/034-metamask-browser-acceptance.md)。
+| 阶段核查 | 已发生的结果 |
+| --- | --- |
+| 登录与 Agent | 红、蓝账户分别由用户确认登录；网页保存 `MetaMask Demo Red` / `MetaMask Demo Blue`，所有者与报名 hash 已核对 |
+| #7 钱包交易 | 创建、ERC20 授权、100 DUSD 赞助、红方报名、蓝方报名、开赛、提交、审核、领奖共 9 笔成功回执，全部已独立核查；总 gasUsed 1,195,013。覆盖 7 类赛事业务及 1 类 ERC20 授权，授权不是入金，两位参赛者报名不是两种业务类型 |
+| 资金与开赛 | 赞助者余额 800→700 DUSD，Escrow 0→100；两位参赛者与各自 Agent hash 一致。开赛回执在报名截止后 34 秒，仍有完整审核时间 |
+| 真实对战 #7 | 网页触发 `qwen3.5-plus`，19 回合、38 成功调用、0 失败调用；红 HP 0 / 蓝 HP 21，蓝方获胜。总 39,651 tokens（输入 38,993 / 输出 658） |
+| 耗时与动作 | 比赛保存时间戳相差 43 秒（秒精度）；双边调用累计 64,071 ms，因并行不等于墙钟。引擎记录红方第 4 回合一次 SKILL 因障碍阻挡视线失败；0 失败模型调用不等于所有动作成功 |
+| 证据 | schema 2 canonical hash、比赛快照、双方 Agent 所有者、19 回合与 38 次成功调用关联核验通过；hash 为 `0x9d07e71790db88b9e531e42e74e3742d36176170ab3c067512e40554787876aa` |
+| 提交与审核 | 链上提交 hash 与核验后的证据一致；审核窗口 60 秒，指定审核员在提交后 138 链上秒审核（晚于审核截止 78 秒），结果进入 Finalized。操作记录为自然等待，未调用时间快进；回执核查不审计全部时钟控制 RPC 历史 |
+| 领奖 | 蓝方亲手确认 MetaMask；网页、Transfer/PrizeClaimed 事件与固定回执区块余额一致：蓝方 200→300 DUSD，托管余额与负债 100→0，prizeClaimed=true。交易 `0xc2e5d23962d2c2666912afab07d2d0cf510cf039eda670f73e52ad5ba8d2a933`；重复领取仅做只读 eth_call，按预期拒绝，没有再发交易 |
+| 前端修复 | 修复已复现的旧 Agent 保存提示残留和 SSR hydration 误删登录会话。新增 4 项 Agent 与 8 项 auth 回归，最终全量 42/42 通过，typecheck、相关文件 lint 与生产构建（含全量 lint/类型及 15 页生成）通过；runtime-v4 已用于 3002，保留 API、链与数据库。Agent 提示新实现仅完成自动化回归，未另行重复跨账户保存的浏览器操作 |
+| 刷新登录恢复 | 将旧 v3 有效主办方会话 reload 到 v4，初始连接提示后自动恢复 Organizer、Sign out 与 `0x70…79C8`，没有新登录签名；现场浏览器复验通过，截图暂存 `.local/llm-demo/metamask-v4-reload-auth-preserved.jpg` |
+
+**最终范围：** 用户取消本轮独立退款演示，034 以 #7 主赛事完整流程为验收范围，已通过；未新建 #8，没有新增取消退款或争议钱包交易。这些分支仍保留 033 CLI / 既有合约测试证据，不能写成 MetaMask 退款通过。新版实操视频与云部署仍未交付。回执核查证明交易结果，签名应用来自用户操作与网页观察记录，不能仅凭 RPC 判断由 MetaMask 签名；模型调用记录也不是供应商账单或外部审计。
+
+已生成[主赛事公开证据摘要](evidence/metamask-main-flow-2026-10-10.json)。阶段原始 JSON / 截图暂存本地忽略目录：`metamask-ui-session.json`、`metamask-receipts.json`、`metamask-match-7-verification.json`、`metamask-claim-success.jpg`、`metamask-paid-complete.jpg`。最终前端测试与构建日志为 `.local/llm-demo/034-auth-tests.txt`、`034-frontend-v4-build.txt`；早期 34 项版本日志仍保留为 `034-frontend-tests.txt`、`034-frontend-build.txt`。详细回执、hydration 修复与 runtime-v4 刷新复验见 [034 记录](../../devlog/034-metamask-browser-acceptance.md)。033 的 #5/#6 仍属于 CLI 验收。
 
 ## 2026-10-10：真实模型与本地资金闭环（033）
 
@@ -29,7 +44,7 @@
 
 证据：[连通性](evidence/llm-connectivity-2026-10-10.json)、[本地业务与余额](evidence/local-llm-integration-2026-10-10.json)、[完整比赛证据](evidence/local-llm-match-5-2026-10-10.json)、[后端测试](evidence/backend-llm-tests-2026-10-10.txt)、[race](evidence/backend-llm-race-2026-10-10.txt)、[前端测试](evidence/frontend-llm-tests-2026-10-10.txt)、[构建](evidence/frontend-llm-build-2026-10-10.txt)、[手机画面](evidence/llm-mobile-2026-10-10.jpg)。`go vet` 退出 0 且没有诊断输出；race 保留 macOS 链接器既有警告，前端保留 WalletConnect 可选 `pino-pretty` 警告。
 
-全部署 Dashboard 现在有 6 场赛事，累计入金 450 DUSD、奖金 200、退款 250；其中包含旧演示，不能将它们全部归到本轮。本轮新增入金为 125、奖金 100、退款 25 DUSD。
+033 结束时的 Dashboard 快照有 6 场赛事，累计入金 450 DUSD、奖金 200、退款 250；其中包含旧演示，不能将它们全部归到 033。本轮新增入金为 125、奖金 100、退款 25 DUSD。后续 034 的新交易见本报告最前段。
 
 本轮共 4 次诊断 + 28 次比赛模型请求。成功调用和本地测试资金闭环不代表套餐允许一般应用后端使用、不代表公网部署、真实资产付款、供应商签名证明或外部独立审计。云端继续按已确认的 Render 免费方案准备；课程公网 URL、测试网部署与新版英文配音实操视频尚未在本轮完成。
 
@@ -194,7 +209,7 @@ node tooling/smoke-course.mjs
 
 首次后端编译与前端构建应预留空间。本次沙箱禁止 WebSocket 测试绑定本地端口，授权本地监听后相同 API 测试通过；这不是跳过测试。重复构建时复用了专用 Go 缓存，完成后已清理本轮缓存以释放空间。最后执行了全量 `go test -race -p 1 -count=1 ./...`，所有包通过、无数据竞争；macOS CGO 链接器输出 LC_DYSYMTAB warning，但测试退出码为 0，原始日志保留。
 
-## 实际浏览器与响应式检查
+## 2026-10-09 历史浏览器与响应式检查
 
 使用真实 Chrome，访问本地生产构建 `http://localhost:3001`，连接本轮独立 API 18080 / Anvil 18545（未连接已有的 3000/8545 服务）：
 
@@ -211,12 +226,12 @@ node tooling/smoke-course.mjs
 
 ## 待验收事项
 
-2026-10-10 体验准备只读核查：前端 3001、API 18080、Anvil 18545 进程运行，API `/ready` 正常，主办方/审核员/管理员链上角色有效；六个公开测试账户均有本地 ETH，赞助方余额 700 DUSD。#3 已超过最终结算期限，需到期取消及赞助者退款，不能作为新对战起点。[原始快照](evidence/experience-preflight-2026-10-10.json)、[操作指南](EXPERIENCE_GUIDE.md)。本轮没有重跑测试套件或通过 MetaMask 发送交易，下列待验收状态不变。
+历史体验准备快照使用前端 3001 / API 18080 / Anvil 18545，当时赞助者余额 700 DUSD、#3 待到期退款，见[原始快照](evidence/experience-preflight-2026-10-10.json)。它不是当前状态：#3 已取消并退款，033 完成真实模型与 CLI 资金闭环，034 完成 #7 MetaMask 主赛事；当前入口 3002 / 18081，实际进度见本报告最前两节和[操作指南](EXPERIENCE_GUIDE.md)。以下仅列仍未完成的验收范围。
 
 - 公有云 Docker 镜像构建、HTTPS、公开 URL、持久卷与云端恢复；当前机器没有 Docker CLI。
 - 新课程合约的 Sepolia 广播/验证、真实网络费用及确认深度行为。
-- MetaMask 实际扩展中的完整多角色流程、用户拒签、网络切换和移动端钱包体验。
-- 真实 Qwen 服务调用、模型错误率、成本与对局公平性；本次闭环使用确定性模拟。
+- MetaMask 取消退款、争议等分支没有在 034 执行；用户拒签、网络切换和移动端钱包体验仍未形成完整验收证据。用户已取消本轮独立退款演示，不属于 034 主赛事验收的剩余步骤。
+- 真实 Qwen 调用已在 033 及 034 阶段验证；较充分样本的模型错误率、费用与对局公平性评价仍待完成，历史确定性模拟不能替代这部分评价。
 - 多用户并发/长时间运行/资源耗尽/自动灾备测试；当前为单实例 SQLite 方案。
 - 真实利益相关者反馈与作业报告、Slides、个人贡献的最终版本。视频讲解版已于 032 产出；新增钱包签名的现场演示仍未录制。
 

@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAccount } from "wagmi";
 import {
   ArrowRight,
   Bot,
@@ -28,8 +29,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export default function AgentsPage() {
+  const { address, chainId } = useAccount();
+  const { token, user } = useAuth();
+  const accountToken =
+    address && user?.address.toLowerCase() === address.toLowerCase()
+      ? token
+      : null;
+  return (
+    <AgentWorkspace
+      key={`${address?.toLowerCase() || ""}:${chainId || ""}:${accountToken || ""}`}
+      token={accountToken}
+    />
+  );
+}
+
+function AgentWorkspace({ token }: { token: string | null }) {
   const { lang, l } = useI18n();
-  const { token } = useAuth();
   const profiles = useAuthenticatedResource<{
     agents: AgentProfile[];
     total: number;
@@ -40,10 +55,23 @@ export default function AgentsPage() {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<unknown>(null);
   const [savedName, setSavedName] = useState("");
+  const activeRequest = useRef<symbol | null>(null);
+
+  useEffect(() => {
+    // A completed request may persist its old wallet's profile, but must not update a new workspace.
+    return () => {
+      activeRequest.current = null;
+    };
+  }, []);
 
   async function create(e: React.FormEvent) {
     e.preventDefault();
-    if (!token || !name.trim() || !personality.trim()) return;
+    if (!token || activeRequest.current || !name.trim() || !personality.trim())
+      return;
+    const requestId = Symbol("agent-save");
+    const submittedName = name.trim();
+    const submittedPersonality = personality.trim();
+    activeRequest.current = requestId;
     setPending(true);
     setError(null);
     setSavedName("");
@@ -52,20 +80,25 @@ export default function AgentsPage() {
         method: "POST",
         headers: { Authorization: "Bearer " + token },
         body: JSON.stringify({
-          name: name.trim(),
-          personality: personality.trim(),
+          name: submittedName,
+          personality: submittedPersonality,
         }),
       });
-      setSavedName(name.trim());
+      if (activeRequest.current !== requestId) return;
+      setSavedName(submittedName);
       setName("");
       setPersonality("");
       await queryClient.invalidateQueries({
-        queryKey: ["course", "/api/agents/my"],
+        queryKey: ["course", "/api/agents/my", token],
+        exact: true,
       });
     } catch (err) {
-      setError(err);
+      if (activeRequest.current === requestId) setError(err);
     } finally {
-      setPending(false);
+      if (activeRequest.current === requestId) {
+        activeRequest.current = null;
+        setPending(false);
+      }
     }
   }
 

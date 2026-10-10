@@ -19,7 +19,10 @@ interface ProvidersProps {
 export default function WalletProviders({ children }: ProvidersProps) {
   const { lang } = useI18n();
   return (
-    <WagmiProvider config={config}>
+    <WagmiProvider
+      config={config}
+      initialState={{ ...config.state, status: "reconnecting" }}
+    >
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider locale={lang === "zh" ? "zh-CN" : "en-US"}>
           <AuthProvider>{children}</AuthProvider>

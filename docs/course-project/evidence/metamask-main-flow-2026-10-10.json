@@ -1,0 +1,571 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-10T12:21:31.328226Z",
+  "scope": "Tournament #7 MetaMask browser main flow only",
+  "baseline_file": "metamask-before-2026-10-10.json",
+  "network": {
+    "chain_id": 31337,
+    "rpc": "http://127.0.0.1:18545",
+    "api": "http://127.0.0.1:18081",
+    "application": "http://localhost:3002",
+    "contracts": {
+      "manager_address": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+      "registry_address": "0xcafac3dd18ac6c6e92c921884f9e4176737c052c",
+      "escrow_address": "0x9f1ac54bef0dd2f6f3462ea0fa94fc62300d3a8e",
+      "review_address": "0xbf9fbff01664500a33080da5d437028b07dfcc55",
+      "token_address": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+      "token_decimals": 6,
+      "confirmations": 0
+    }
+  },
+  "service_ready": true,
+  "tournament": {
+    "id": 7,
+    "title": "MetaMask Live Agent Cup",
+    "status": "finalized",
+    "prize_pool": "100000000",
+    "prize_paid": "100000000",
+    "prize_claimed": true,
+    "winner": "0x15d34aaf54267db7d7c367839aaf71a00a2c6a65",
+    "evidence_hash": "0x9d07e71790db88b9e531e42e74e3742d36176170ab3c067512e40554787876aa",
+    "review_period": 60,
+    "review_deadline": 1791634918
+  },
+  "public_model_configuration": {
+    "execution_mode": "llm",
+    "llm_configured": true,
+    "llm_provider": "qwen",
+    "llm_model": "qwen3.5-plus",
+    "llm_timeout_seconds": 30,
+    "llm_max_calls": 120,
+    "simulation_enabled": false
+  },
+  "transaction_summary": {
+    "transactions": 9,
+    "all_receipts_success": true,
+    "unique_transaction_types": [
+      "approve",
+      "approveResult",
+      "claimPrize",
+      "createTournament",
+      "fundTournament",
+      "registerParticipant",
+      "startTournament",
+      "submitResult"
+    ],
+    "unique_transaction_type_count": 8,
+    "total_gas_used": "1195013",
+    "total_gas_cost_wei": "1195013016730182",
+    "origin": "Root observed nine Chrome application flows completed after the user manually confirmed MetaMask. RPC verifies signers and outcomes, but cannot independently identify the signing application."
+  },
+  "transactions": [
+    {
+      "transaction_hash": "0x28b52eaae00785173632f38896c0e02138767b3f90735eba0f3c0deb630adffc",
+      "operation": "createTournament",
+      "from": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+      "to": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+      "receipt_status": "success",
+      "transaction_block_number": "28985",
+      "transaction_block_hash": "0x556d75bae7c95ab6edc56872b46994f41071a20a0548ca02508c4a45cdb4bce5",
+      "transaction_block_timestamp": "1791633819",
+      "gas_used": "185472",
+      "effective_gas_price_wei": "1000000014",
+      "gas_cost_wei": "185472002596608",
+      "root_observed_user_metamask_confirmation": true,
+      "receipt_event_calldata_and_pinned_state_verified": true,
+      "events": [
+        {
+          "event_name": "TournamentCreated",
+          "args": {
+            "tournamentId": "7",
+            "organizer": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "auditor": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "title": "MetaMask Live Agent Cup",
+            "metadataURI": "",
+            "registrationDeadline": "1791634685",
+            "settlementDeadline": "1791720185",
+            "reviewPeriod": "60"
+          },
+          "log_index": 0,
+          "address": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512"
+        }
+      ]
+    },
+    {
+      "transaction_hash": "0xdb2be60005199a33f5f1aec1d27172344991e217f7f45163659b03d06f7544fb",
+      "operation": "approve",
+      "from": "0x9965507d1a55bcc2695c58ba16fb37d819b0a4dc",
+      "to": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+      "receipt_status": "success",
+      "transaction_block_number": "29110",
+      "transaction_block_hash": "0x9534e1b8988321b8070a2de52872d0c138c0b1ae94e908dc3c8c23762f1d5e49",
+      "transaction_block_timestamp": "1791633943",
+      "gas_used": "29231",
+      "effective_gas_price_wei": "1000000014",
+      "gas_cost_wei": "29231000409234",
+      "root_observed_user_metamask_confirmation": true,
+      "receipt_event_calldata_and_pinned_state_verified": true,
+      "events": [
+        {
+          "event_name": "Approval",
+          "args": {
+            "owner": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+            "spender": "0x9f1ac54BEF0DD2f6f3462EA0fa94fC62300d3a8e",
+            "value": "100000000"
+          },
+          "log_index": 0,
+          "address": "0x5fbdb2315678afecb367f032d93f642f64180aa3"
+        }
+      ]
+    },
+    {
+      "transaction_hash": "0x04fe4f4edf4ac8bd0304c903f750f23662ada5a9736b36ae4fc5d5c62d602c20",
+      "operation": "fundTournament",
+      "from": "0x9965507d1a55bcc2695c58ba16fb37d819b0a4dc",
+      "to": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+      "receipt_status": "success",
+      "transaction_block_number": "29165",
+      "transaction_block_hash": "0xa8034af0f0d2be694a0e45d3d070978b7528b1c1d3abe3250913235136bd03c6",
+      "transaction_block_timestamp": "1791633998",
+      "gas_used": "183023",
+      "effective_gas_price_wei": "1000000014",
+      "gas_cost_wei": "183023002562322",
+      "root_observed_user_metamask_confirmation": true,
+      "receipt_event_calldata_and_pinned_state_verified": true,
+      "events": [
+        {
+          "event_name": "Transfer",
+          "args": {
+            "from": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+            "to": "0x9f1ac54BEF0DD2f6f3462EA0fa94fC62300d3a8e",
+            "value": "100000000"
+          },
+          "log_index": 0,
+          "address": "0x5fbdb2315678afecb367f032d93f642f64180aa3"
+        },
+        {
+          "event_name": "TournamentFunded",
+          "args": {
+            "tournamentId": "7",
+            "sponsor": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+            "amount": "100000000",
+            "totalFunded": "100000000"
+          },
+          "log_index": 1,
+          "address": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512"
+        }
+      ]
+    },
+    {
+      "transaction_hash": "0x4ae78ffee471c027ecaef80fbfc4bf2a4e29ca5a90ae2f7bb07ba1e078157fa2",
+      "operation": "registerParticipant",
+      "from": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "to": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+      "receipt_status": "success",
+      "transaction_block_number": "29425",
+      "transaction_block_hash": "0x7a800a41e47899a2a1e7514cacfdc0923077738b39ceb26993fe271c7813cf97",
+      "transaction_block_timestamp": "1791634258",
+      "gas_used": "108147",
+      "effective_gas_price_wei": "1000000014",
+      "gas_cost_wei": "108147001514058",
+      "root_observed_user_metamask_confirmation": true,
+      "receipt_event_calldata_and_pinned_state_verified": true,
+      "events": [
+        {
+          "event_name": "ParticipantRegistered",
+          "args": {
+            "tournamentId": "7",
+            "participant": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "agentHash": "0x7fb7105f6552e0fc32e494a2f752c7b3f39c95a5d632811111523288255295d2",
+            "slot": 1
+          },
+          "log_index": 0,
+          "address": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512"
+        }
+      ]
+    },
+    {
+      "transaction_hash": "0x59ce5ac76cab95d35333cdf0c34ed9c6fca63160359dc7ff4c7a53c88e9ce9ae",
+      "operation": "registerParticipant",
+      "from": "0x15d34aaf54267db7d7c367839aaf71a00a2c6a65",
+      "to": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+      "receipt_status": "success",
+      "transaction_block_number": "29551",
+      "transaction_block_hash": "0x481abd5063a7bffe73980f754aee1707dd0f5cf069ae4b6b3a572488dd8bdcc8",
+      "transaction_block_timestamp": "1791634384",
+      "gas_used": "108281",
+      "effective_gas_price_wei": "1000000014",
+      "gas_cost_wei": "108281001515934",
+      "root_observed_user_metamask_confirmation": true,
+      "receipt_event_calldata_and_pinned_state_verified": true,
+      "events": [
+        {
+          "event_name": "ParticipantRegistered",
+          "args": {
+            "tournamentId": "7",
+            "participant": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "agentHash": "0x38a8c92401a89a51412d8affd8549dfda0c0e6ca74046fd7a5bab47c965146bc",
+            "slot": 2
+          },
+          "log_index": 0,
+          "address": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512"
+        }
+      ]
+    },
+    {
+      "transaction_hash": "0x928e8e7030648fd5571a4af590fa26ce2670df7103d43cd00a7913edfd5e6fb7",
+      "operation": "startTournament",
+      "from": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+      "to": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+      "receipt_status": "success",
+      "transaction_block_number": "29884",
+      "transaction_block_hash": "0x0fdc35acaa028ac5a7c12902515647e44b1a09e6a14ebb88eb3307d53fa3d6b2",
+      "transaction_block_timestamp": "1791634719",
+      "gas_used": "84153",
+      "effective_gas_price_wei": "1000000014",
+      "gas_cost_wei": "84153001178142",
+      "root_observed_user_metamask_confirmation": true,
+      "receipt_event_calldata_and_pinned_state_verified": true,
+      "events": [
+        {
+          "event_name": "TournamentStarted",
+          "args": {
+            "tournamentId": "7"
+          },
+          "log_index": 0,
+          "address": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512"
+        }
+      ]
+    },
+    {
+      "transaction_hash": "0x9ec43729c037ccd929896c4b5c491ec2ad2a4bf266900afe1b1fc5d284449ef5",
+      "operation": "submitResult",
+      "from": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+      "to": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+      "receipt_status": "success",
+      "transaction_block_number": "30023",
+      "transaction_block_hash": "0x66f90dd429b07845b115acc1ea0cb6bdcd07343cea8e7146ff80a83e53035317",
+      "transaction_block_timestamp": "1791634858",
+      "gas_used": "233745",
+      "effective_gas_price_wei": "1000000014",
+      "gas_cost_wei": "233745003272430",
+      "root_observed_user_metamask_confirmation": true,
+      "receipt_event_calldata_and_pinned_state_verified": true,
+      "events": [
+        {
+          "event_name": "ResultSubmitted",
+          "args": {
+            "tournamentId": "7",
+            "submitter": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "proposedWinner": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "resultHash": "0x9d07e71790db88b9e531e42e74e3742d36176170ab3c067512e40554787876aa",
+            "reviewDeadline": "1791634918"
+          },
+          "log_index": 0,
+          "address": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512"
+        }
+      ]
+    },
+    {
+      "transaction_hash": "0xf892cc0660413a06e8402fc23f8969e3468a598c2a3c2e5079f3d4e7b8f152f3",
+      "operation": "approveResult",
+      "from": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+      "to": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+      "receipt_status": "success",
+      "transaction_block_number": "30158",
+      "transaction_block_hash": "0xeb5f89a5dea4cd4b415d61fb4dd3960f8b45b293b8aaaa16330ae7f46e5ec33b",
+      "transaction_block_timestamp": "1791634996",
+      "gas_used": "148327",
+      "effective_gas_price_wei": "1000000014",
+      "gas_cost_wei": "148327002076578",
+      "root_observed_user_metamask_confirmation": true,
+      "receipt_event_calldata_and_pinned_state_verified": true,
+      "events": [
+        {
+          "event_name": "ResultApproved",
+          "args": {
+            "tournamentId": "7",
+            "auditor": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "winner": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "resultHash": "0x9d07e71790db88b9e531e42e74e3742d36176170ab3c067512e40554787876aa"
+          },
+          "log_index": 0,
+          "address": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512"
+        }
+      ]
+    },
+    {
+      "transaction_hash": "0xc2e5d23962d2c2666912afab07d2d0cf510cf039eda670f73e52ad5ba8d2a933",
+      "operation": "claimPrize",
+      "from": "0x15d34aaf54267db7d7c367839aaf71a00a2c6a65",
+      "to": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+      "receipt_status": "success",
+      "transaction_block_number": "30244",
+      "transaction_block_hash": "0x51a538063066dd976284ca123aeec9dd7defdc605f6f363608a1346e5da041dc",
+      "transaction_block_timestamp": "1791635080",
+      "gas_used": "114634",
+      "effective_gas_price_wei": "1000000014",
+      "gas_cost_wei": "114634001604876",
+      "root_observed_user_metamask_confirmation": true,
+      "receipt_event_calldata_and_pinned_state_verified": true,
+      "events": [
+        {
+          "event_name": "Transfer",
+          "args": {
+            "from": "0x9f1ac54BEF0DD2f6f3462EA0fa94fC62300d3a8e",
+            "to": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "value": "100000000"
+          },
+          "log_index": 0,
+          "address": "0x5fbdb2315678afecb367f032d93f642f64180aa3"
+        },
+        {
+          "event_name": "PrizeClaimed",
+          "args": {
+            "tournamentId": "7",
+            "winner": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "amount": "100000000"
+          },
+          "log_index": 1,
+          "address": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512"
+        }
+      ]
+    }
+  ],
+  "llm": {
+    "status": "completed",
+    "mode": "llm",
+    "outcome": "blue",
+    "winner_address": "0x15d34aaf54267db7d7c367839aaf71a00a2c6a65",
+    "metrics": {
+      "rounds": 19,
+      "calls": 38,
+      "succeeded": 38,
+      "failed": 0,
+      "red_final_hp": 0,
+      "blue_final_hp": 21,
+      "provider": "qwen",
+      "model": "qwen3.5-plus",
+      "usage": {
+        "prompt_tokens": 38993,
+        "completion_tokens": 658,
+        "total_tokens": 39651
+      },
+      "cumulative_call_latency_ms": 64071,
+      "wall_clock_match_seconds": 43,
+      "wall_clock_resolution_seconds": 1,
+      "started_at_unix_seconds": 1791634228,
+      "completed_at_unix_seconds": 1791634271,
+      "request_id_present_calls": 38
+    },
+    "schema_version": 2,
+    "evidence_hash": "0x9d07e71790db88b9e531e42e74e3742d36176170ab3c067512e40554787876aa",
+    "canonical_utf8_bytes": 44075,
+    "verification_checks": {
+      "canonical_schema2": true,
+      "canonical_keccak_matches_match_and_api": true,
+      "canonical_snapshots_match_full_match": true,
+      "participant_wallet_and_immutable_agent_hash_alignment": true,
+      "every_executed_round_has_two_successful_call_proofs": true,
+      "all_calls_http200": true,
+      "token_and_latency_aggregates_match_journal": true
+    },
+    "participant_profiles": [
+      {
+        "side": "red",
+        "owner_address": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+        "name": "MetaMask Demo Red",
+        "agent_hash": "0x7fb7105f6552e0fc32e494a2f752c7b3f39c95a5d632811111523288255295d2",
+        "profile_id": "02b889440ef6753a63661faba1b092f67ef6bb3b2401af99",
+        "chain_binding_and_profile_match": true
+      },
+      {
+        "side": "blue",
+        "owner_address": "0x15d34aaf54267db7d7c367839aaf71a00a2c6a65",
+        "name": "MetaMask Demo Blue",
+        "agent_hash": "0x38a8c92401a89a51412d8affd8549dfda0c0e6ca74046fd7a5bab47c965146bc",
+        "profile_id": "8c3a48669ba3d522bdbbbe4b2f6104d7346cf680ac49596d",
+        "chain_binding_and_profile_match": true
+      }
+    ],
+    "engine_action_evaluation": {
+      "executed_action_count": 38,
+      "failed_actions": 1,
+      "failed_by_side": {
+        "red": 1,
+        "blue": 0
+      },
+      "failures": [
+        {
+          "round": 4,
+          "side": "red",
+          "action": {
+            "type": "SKILL",
+            "target": {
+              "x": 0,
+              "y": 0
+            },
+            "failed": true,
+            "fail_reason": "obstacle blocks line of sight"
+          }
+        }
+      ],
+      "distinction": "LLM success means the provider request and action protocol parse succeeded. A returned action may still fail game rules or be blocked by an obstacle; this is recorded by the engine and does not imply a failed model request.",
+      "not_a_zero_illegal_actions_claim": true
+    },
+    "metadata_truth_boundary": "Provider/model/request ID, latency and usage are safely recorded backend observations, not an independently audited provider bill."
+  },
+  "review": {
+    "previous_status": 2,
+    "status_at_receipt_block": 4,
+    "status_name": "Finalized",
+    "designated_auditor": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+    "auditor_distinct_from_organizer": true,
+    "winner": "0x15d34aaf54267db7d7c367839aaf71a00a2c6a65",
+    "canonical_hash_matches_submission": true,
+    "claimable_prize_raw": "100000000",
+    "token_decimals": 6,
+    "claimable_prize_dusd": "100",
+    "prize_not_yet_paid": true,
+    "review_period_seconds": "60",
+    "review_deadline_unix_seconds": "1791634918",
+    "approval_at_or_after_review_deadline": true,
+    "approval_before_settlement_deadline": true,
+    "elapsed_chain_seconds_since_submit": "138",
+    "elapsed_blocks_since_submit": "135",
+    "seconds_after_review_deadline": "78",
+    "natural_wait_context": "Root reports natural browser review waiting without clock adjustment; read-only verification confirms the full on-chain review period elapsed. Clock-control RPC history itself is not audited."
+  },
+  "payout": {
+    "winner": "0x15d34aaf54267db7d7c367839aaf71a00a2c6a65",
+    "amount_raw": "100000000",
+    "token_decimals": 6,
+    "amount_dusd": "100",
+    "previous_read_block": "30243",
+    "before_raw": {
+      "winner_balance": "200000000",
+      "escrow_balance": "100000000",
+      "liabilities": "100000000"
+    },
+    "after_raw": {
+      "winner_balance": "300000000",
+      "escrow_balance": "0",
+      "liabilities": "0"
+    },
+    "winner_balance_delta_raw": "100000000",
+    "escrow_balance_delta_raw": "-100000000",
+    "liabilities_delta_raw": "-100000000",
+    "actual_transfer_and_balance_deltas_match": true,
+    "prize_claimed": true,
+    "claimable_after_raw": "0",
+    "repeat_claim_read_only_eth_call_reverted": true,
+    "repeat_claim_error_class": "ContractFunctionExecutionError",
+    "repeat_claim_did_not_send_transaction": true,
+    "repeat_claim_decoded_contract_revert": true,
+    "repeat_claim_contract_error_name": "Error",
+    "repeat_claim_contract_reason": "prize already claimed"
+  },
+  "final_funds": {
+    "captured_at": "2026-10-10T12:21:30.800380Z",
+    "read_block": 30577,
+    "read_block_hash": "0x89092a88c9b92db3d76b079dd75b1f4e234b69405def48cc2c89f153fbb0937b",
+    "chain_timestamp": 1791635413,
+    "role_balances": {
+      "admin": {
+        "address": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+        "dusd_raw": "0",
+        "eth_wei": "9999987883843329801749",
+        "dusd_delta_from_before_raw": "0"
+      },
+      "organizer": {
+        "address": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+        "dusd_raw": "0",
+        "eth_wei": "9999996892773183507398",
+        "dusd_delta_from_before_raw": "0"
+      },
+      "auditor": {
+        "address": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "dusd_raw": "0",
+        "eth_wei": "9999999385023786409562",
+        "dusd_delta_from_before_raw": "0"
+      },
+      "red": {
+        "address": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+        "dusd_raw": "0",
+        "eth_wei": "9999999122959897312861",
+        "dusd_delta_from_before_raw": "0"
+      },
+      "blue": {
+        "address": "0x15d34aaf54267db7d7c367839aaf71a00a2c6a65",
+        "dusd_raw": "300000000",
+        "eth_wei": "9999998881592189824978",
+        "dusd_delta_from_before_raw": "100000000"
+      },
+      "sponsor": {
+        "address": "0x9965507d1a55bcc2695c58ba16fb37d819b0a4dc",
+        "dusd_raw": "700000000",
+        "eth_wei": "9999998213472508847714",
+        "dusd_delta_from_before_raw": "-100000000"
+      }
+    },
+    "escrow_address": "0x9f1ac54bef0dd2f6f3462ea0fa94fc62300d3a8e",
+    "escrow_balance_raw": "0",
+    "total_liabilities_raw": "0",
+    "dashboard": {
+      "active_tournaments": 0,
+      "chain_head": 30576,
+      "completed_tournaments": 3,
+      "escrow_in_raw": "550000000",
+      "event_count": 51,
+      "indexed_block": 30576,
+      "ledger_entries": 12,
+      "observed_at": 1791634890,
+      "prizes_paid_raw": "300000000",
+      "refunds_paid_raw": "250000000",
+      "registered_participants": 10,
+      "tournaments_total": 7
+    },
+    "dashboard_delta_from_before": {
+      "escrow_in_raw": "100000000",
+      "prizes_paid_raw": "100000000",
+      "refunds_paid_raw": "0"
+    },
+    "dusd_total_before_raw": "1000000000",
+    "dusd_total_after_raw": "1000000000",
+    "dusd_conserved": true,
+    "tournament": {
+      "id": 7,
+      "title": "MetaMask Live Agent Cup",
+      "status": "finalized",
+      "prize_pool": "100000000",
+      "prize_paid": "100000000",
+      "prize_claimed": true,
+      "winner": "0x15d34aaf54267db7d7c367839aaf71a00a2c6a65",
+      "evidence_hash": "0x9d07e71790db88b9e531e42e74e3742d36176170ab3c067512e40554787876aa",
+      "review_period": 60,
+      "review_deadline": 1791634918
+    }
+  },
+  "local_backup": {
+    "directory": ".local/llm-demo/metamask-after-20261010T122130Z",
+    "private_gitignored": true,
+    "directory_mode": "0700",
+    "file_mode": "0600",
+    "online_sqlite_backup_created": true,
+    "anvil_dump_state_created": true,
+    "restore_tested": false,
+    "restore_status": "Not rehearsed; backups were created but not restored.",
+    "distributed_atomic_snapshot": false
+  },
+  "limitations": [
+    "Local Anvil test funds only; no public-testnet or cloud deployment validation in this browser acceptance.",
+    "Only the main flow was demonstrated. No additional refund tournament or refund transaction was created after the user cancelled that scenario.",
+    "Nine transactions cover eight unique types; this browser flow alone does not demonstrate every coursework-required transaction type.",
+    "No new recording or demonstration video was produced in this acceptance.",
+    "A successful model request/parse does not guarantee a successful engine action: red round 4 SKILL was blocked by an obstacle.",
+    "Natural review waiting was observed by root; receipts independently verify 138 chain seconds elapsed and approval was after the deadline.",
+    "This is one functional acceptance run, not a production reliability, concurrency, model-quality or latency benchmark.",
+    "Backups may contain short-lived authentication state and remain private; recovery was not rehearsed.",
+    "No JWT, API key, private key, database content, raw .env, raw provider request or hidden reasoning content is included in this public summary."
+  ]
+}
