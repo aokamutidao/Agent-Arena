@@ -41,3 +41,4 @@ devlog/
 devlog/*
 !devlog/028-course-refactor.md
 !devlog/029-experience-guide.md
+!devlog/030-frontend-usability.md
