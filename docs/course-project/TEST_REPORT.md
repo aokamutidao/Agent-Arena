@@ -2,6 +2,12 @@
 
 测试日期：2026-10-09，环境为本地 macOS / Go 1.25.4 / Node.js 24.11.1 / Foundry 1.5.1 / Solidity 0.8.24（optimizer 200）。本报告区分已执行证据与待验收项目。它不是外部安全审计，也不等于生产部署认证。
 
+## 2026-10-10：MetaMask 浏览器验收（034，进行中）
+
+已保存[验收前快照](evidence/metamask-before-2026-10-10.json)，确认 API `18081` ready、真实模型配置及六角色余额。Chrome `localhost:3002/tournaments` 实际显示六场赛事；点击“连接钱包”并选择已安装的 MetaMask 后，页面等待扩展确认。
+
+原生 Chrome 窗口读取超时，暂未读取到钱包扩展确认页面；已请用户解锁（如需要）并展开 MetaMask 标签页。本轮截至此记录未完成钱包连接、登录签名或新交易，未发起新模型比赛。完整角色与资金 UI 流程、回执及新视频仍待接续，详见 [034 记录](../../devlog/034-metamask-browser-acceptance.md)。
+
 ## 2026-10-10：真实模型与本地资金闭环（033）
 
 本轮新建 #5 主赛事与 #6 取消退款赛事，继续使用已有 Anvil 31337 课程合约。新 API `18081` 使用原 SQLite 的在线备份，前端入口为 `http://localhost:3002/tournaments/5`；原链未重置。实际业务签名来自公开 Anvil 开发账户的 CLI 脚本，**没有将脚本验收记为 MetaMask 弹窗操作或新视频录制**。

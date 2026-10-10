@@ -1,0 +1,237 @@
+{
+  "schema_version": 1,
+  "snapshot_kind": "before_metamask_browser_acceptance",
+  "captured_at": "2026-10-10T11:24:14.229198Z",
+  "network": {
+    "api": "http://127.0.0.1:18081",
+    "rpc": "http://127.0.0.1:18545",
+    "chain_id": 31337,
+    "balance_and_contract_read_block": 27149,
+    "read_block_hash": "0x3819224e8e97993bf8076efdc0897d664000d062f813affdd2ce0dc7605123c1",
+    "chain_timestamp": 1791631976
+  },
+  "service": {
+    "health": {
+      "status": "ok"
+    },
+    "readiness": {
+      "ready": true,
+      "chain_configured": true,
+      "indexed_block": 27148,
+      "chain_head": 27148
+    },
+    "readiness_has_error": false
+  },
+  "public_configuration": {
+    "deployment_configured": true,
+    "deployment_block": 2,
+    "confirmations": 0,
+    "manager_address": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+    "escrow_address": "0x9f1ac54bef0dd2f6f3462ea0fa94fc62300d3a8e",
+    "registry_address": "0xcafac3dd18ac6c6e92c921884f9e4176737c052c",
+    "review_address": "0xbf9fbff01664500a33080da5d437028b07dfcc55",
+    "token_address": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+    "token_decimals": 6,
+    "auth_domain": "localhost:3002",
+    "execution_mode": "llm",
+    "llm_configured": true,
+    "llm_provider": "qwen",
+    "llm_model": "qwen3.5-plus",
+    "llm_timeout_seconds": 30,
+    "llm_max_calls": 120,
+    "simulation_enabled": false
+  },
+  "next_tournament_id": 7,
+  "role_balances": {
+    "admin": {
+      "address": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+      "dusd_raw": "0",
+      "eth_wei": "9999987883843329801749"
+    },
+    "organizer": {
+      "address": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+      "dusd_raw": "0",
+      "eth_wei": "9999997396143187030988"
+    },
+    "auditor": {
+      "address": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+      "dusd_raw": "0",
+      "eth_wei": "9999999533350787447851"
+    },
+    "red": {
+      "address": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "dusd_raw": "0",
+      "eth_wei": "9999999231106898069890"
+    },
+    "blue": {
+      "address": "0x15d34aaf54267db7d7c367839aaf71a00a2c6a65",
+      "dusd_raw": "200000000",
+      "eth_wei": "9999999104507191385383"
+    },
+    "sponsor": {
+      "address": "0x9965507d1a55bcc2695c58ba16fb37d819b0a4dc",
+      "dusd_raw": "800000000",
+      "eth_wei": "9999998425726510333492"
+    }
+  },
+  "escrow": {
+    "address": "0x9f1ac54bef0dd2f6f3462ea0fa94fc62300d3a8e",
+    "dusd_raw": "0",
+    "total_liabilities_raw": "0"
+  },
+  "dashboard": {
+    "active_tournaments": 0,
+    "chain_head": 27148,
+    "completed_tournaments": 2,
+    "escrow_in_raw": "450000000",
+    "event_count": 43,
+    "indexed_block": 27148,
+    "ledger_entries": 10,
+    "observed_at": 1791631453,
+    "prizes_paid_raw": "200000000",
+    "refunds_paid_raw": "250000000",
+    "registered_participants": 8,
+    "tournaments_total": 6
+  },
+  "tournament_count": 6,
+  "tournaments": [
+    {
+      "id": 1,
+      "title": "Course integration: audited prize",
+      "status": "finalized",
+      "organizer": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+      "auditor": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+      "participants": [
+        "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+        "0x15d34aaf54267db7d7c367839aaf71a00a2c6a65"
+      ],
+      "prize_pool": "100000000",
+      "prize_paid": "100000000",
+      "prize_claimed": true,
+      "winner": "0x15d34aaf54267db7d7c367839aaf71a00a2c6a65",
+      "evidence_hash": "0x4808de0b84133426319c3c62c034171b096e5375dc33933ebc90d2382565c334",
+      "registration_deadline": 1791548747,
+      "settlement_deadline": 1791555827,
+      "review_period": 60,
+      "review_deadline": 1791548807,
+      "read_block": 27149,
+      "confirmed": false
+    },
+    {
+      "id": 2,
+      "title": "Course integration: disputed result",
+      "status": "cancelled",
+      "organizer": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+      "auditor": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+      "participants": [
+        "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+        "0x15d34aaf54267db7d7c367839aaf71a00a2c6a65"
+      ],
+      "prize_pool": "25000000",
+      "prize_paid": "25000000",
+      "prize_claimed": false,
+      "winner": "",
+      "evidence_hash": "0xca24673ad98e363db526b9c8af58a5972d3a4a229f07513b6260629470c2c70e",
+      "registration_deadline": 1791548927,
+      "settlement_deadline": 1791556007,
+      "review_period": 60,
+      "review_deadline": 1791548987,
+      "read_block": 27149,
+      "confirmed": false
+    },
+    {
+      "id": 3,
+      "title": "学习演示：Agent 奖金托管",
+      "status": "cancelled",
+      "organizer": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+      "auditor": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+      "participants": [
+        "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+        "0x15d34aaf54267db7d7c367839aaf71a00a2c6a65"
+      ],
+      "prize_pool": "200000000",
+      "prize_paid": "200000000",
+      "prize_claimed": false,
+      "winner": "",
+      "evidence_hash": "",
+      "registration_deadline": 1791549107,
+      "settlement_deadline": 1791556187,
+      "review_period": 60,
+      "review_deadline": 0,
+      "read_block": 27149,
+      "confirmed": false
+    },
+    {
+      "id": 4,
+      "title": "test1",
+      "status": "cancelled",
+      "organizer": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+      "auditor": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+      "participants": [],
+      "prize_pool": "0",
+      "prize_paid": "0",
+      "prize_claimed": false,
+      "winner": "",
+      "evidence_hash": "",
+      "registration_deadline": 1791621740,
+      "settlement_deadline": 1791707960,
+      "review_period": 60,
+      "review_deadline": 0,
+      "read_block": 27149,
+      "confirmed": false
+    },
+    {
+      "id": 5,
+      "title": "Local LLM main 7a532afe-3c9",
+      "status": "finalized",
+      "organizer": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+      "auditor": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+      "participants": [
+        "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+        "0x15d34aaf54267db7d7c367839aaf71a00a2c6a65"
+      ],
+      "prize_pool": "100000000",
+      "prize_paid": "100000000",
+      "prize_claimed": true,
+      "winner": "0x15d34aaf54267db7d7c367839aaf71a00a2c6a65",
+      "evidence_hash": "0xe1accd4017c52ab6871f6b4de7c8df459e9c94b6aa09d3d01c58e22129ff5e33",
+      "registration_deadline": 1791630282,
+      "settlement_deadline": 1791637302,
+      "review_period": 60,
+      "review_deadline": 1791630404,
+      "read_block": 27149,
+      "confirmed": false
+    },
+    {
+      "id": 6,
+      "title": "Local LLM refund 7a532afe-3c9",
+      "status": "cancelled",
+      "organizer": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+      "auditor": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+      "participants": [],
+      "prize_pool": "25000000",
+      "prize_paid": "25000000",
+      "prize_claimed": false,
+      "winner": "",
+      "evidence_hash": "",
+      "registration_deadline": 1791630585,
+      "settlement_deadline": 1791637605,
+      "review_period": 60,
+      "review_deadline": 0,
+      "read_block": 27149,
+      "confirmed": false
+    }
+  ],
+  "unit_conventions": {
+    "dusd_raw": "ERC20 integer base units; token_decimals=6",
+    "eth_wei": "integer wei",
+    "timestamps": "Unix seconds unless explicitly ISO UTC"
+  },
+  "scope_and_limits": [
+    "Read-only public HTTP GET and JSON-RPC calls. No wallet login, signing, model call, transaction, mining or clock adjustment was performed.",
+    "Contract values and role balances use one pinned block; API dashboard and tournament responses are snapshots fetched shortly after that block.",
+    "Six public Anvil test identities are local demonstration accounts; no private keys or credentials are exported.",
+    "Existing dashboard totals include previous demonstrations and must be compared as before/after deltas for the new browser flow.",
+    "This is a local baseline snapshot with zero configured confirmation depth; it is not cloud, public-testnet or production-finality evidence."
+  ]
+}

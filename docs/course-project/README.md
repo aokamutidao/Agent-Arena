@@ -1,7 +1,7 @@
 # Agent Arena 课程版文档导航
 
 本轮重构开始于 2026-10-09。课程版定位：**AI 赛事奖金托管、结算与审计 DApp**。
-最新工作见 [033 真实模型与本地演示](../../devlog/033-local-llm-demo.md)。先运行和学习真实对战，请看 [本地 LLM 演示指南](LOCAL_LLM_DEMO.md)；实际通过范围以测试报告为准。
+最新工作见 [034 MetaMask 浏览器验收（进行中）](../../devlog/034-metamask-browser-acceptance.md)，当前待钱包扩展页面可操作后接续。已完成的真实模型与 CLI 本地闭环见 [033 记录](../../devlog/033-local-llm-demo.md)。先运行和学习真实对战，请看 [本地 LLM 演示指南](LOCAL_LLM_DEMO.md)；实际通过范围以测试报告为准。
 课程业务重构见 [进度记录](../../devlog/028-course-refactor.md)，界面与操作变化见 [易用性改造](../../devlog/030-frontend-usability.md) 和 [中英文切换](../../devlog/031-bilingual-interface.md)；视频制作见 [032 讲解视频记录](../../devlog/032-narrated-demo.md)。实际验证以 [测试报告](TEST_REPORT.md) 为准，不要把设计目标当成已完成的验证。
 
 ## 建议阅读顺序

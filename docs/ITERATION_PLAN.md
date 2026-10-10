@@ -1,4 +1,6 @@
-# 当前迭代：033 真实模型与本地功能演示
+# 当前迭代：034 MetaMask 浏览器验收（进行中）
+
+2026-10-10：[034 浏览器验收](../devlog/034-metamask-browser-acceptance.md)已保存余额基线，在 Chrome 发起 MetaMask 连接；目前待扩展页面可操作后继续。尚无本轮新交易或模型比赛，不能将 033 的 CLI 验收记作 MetaMask 全流程通过。
 
 2026-10-10：[033 开发记录](../devlog/033-local-llm-demo.md)补齐真实模型配置、调用元数据、失败中断、持久调用预算和本地分阶段业务验收。当前采用本地演示优先、Render 免费服务公网展示的交付方案；公网 URL 与新版实操视频仍须实际完成后留档。操作与学习入口：[本地 LLM 演示指南](course-project/LOCAL_LLM_DEMO.md)。
 
