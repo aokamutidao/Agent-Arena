@@ -36,7 +36,8 @@ devlog/
 .artifacts/
 *.db-wal
 *.db-shm
-# Keep this learning log visible; historical ignored logs stay ignored.
+# Keep course learning logs visible; historical ignored logs stay ignored.
 !devlog/
 devlog/*
 !devlog/028-course-refactor.md
+!devlog/029-experience-guide.md

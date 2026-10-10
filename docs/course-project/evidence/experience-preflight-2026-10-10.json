@@ -1,0 +1,202 @@
+{
+  "checked_at": "2026-10-10T07:08:33.158Z",
+  "method": "read-only HTTP and local RPC; no wallet UI transactions",
+  "frontend": "http://localhost:3001",
+  "rpc": "http://127.0.0.1:18545",
+  "ready": {
+    "chain_configured": true,
+    "chain_head": 11812,
+    "indexed_block": 11812,
+    "last_error": "",
+    "ready": true
+  },
+  "config": {
+    "auth_domain": "localhost:3001",
+    "chain_id": 31337,
+    "confirmations": 0,
+    "deployment_block": 2,
+    "deployment_configured": true,
+    "escrow_address": "0x9f1ac54bef0dd2f6f3462ea0fa94fc62300d3a8e",
+    "manager_address": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+    "registry_address": "0xcafac3dd18ac6c6e92c921884f9e4176737c052c",
+    "review_address": "0xbf9fbff01664500a33080da5d437028b07dfcc55",
+    "simulation_enabled": true,
+    "token_address": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+    "token_decimals": 6
+  },
+  "dashboard": {
+    "active_tournaments": 0,
+    "chain_head": 11812,
+    "completed_tournaments": 1,
+    "escrow_in_raw": "325000000",
+    "event_count": 25,
+    "indexed_block": 11812,
+    "ledger_entries": 5,
+    "observed_at": 1791616112,
+    "prizes_paid_raw": "100000000",
+    "refunds_paid_raw": "25000000",
+    "registered_participants": 6,
+    "tournaments_total": 3
+  },
+  "chain_timestamp": 1791616471,
+  "tournaments": {
+    "total": 3,
+    "tournaments": [
+      {
+        "id": 3,
+        "title": "学习演示：Agent 奖金托管",
+        "metadata_uri": "",
+        "organizer": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+        "auditor": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "token": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+        "entry_fee": "0",
+        "prize_pool": "200000000",
+        "prize_paid": "0",
+        "prize_claimed": false,
+        "max_participants": 2,
+        "registration_deadline": 1791549107,
+        "settlement_deadline": 1791556187,
+        "review_period": 60,
+        "review_deadline": 0,
+        "status": "open",
+        "participants": [
+          "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+          "0x15d34aaf54267db7d7c367839aaf71a00a2c6a65"
+        ],
+        "participant_agents": [
+          {
+            "address": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+            "agent_hash": "0xea8af958b4715bf6b8a2bf92f7e01ce88f5cb5b1dfbecc9e909b32c368782c28"
+          },
+          {
+            "address": "0x15d34aaf54267db7d7c367839aaf71a00a2c6a65",
+            "agent_hash": "0xfe5df007f9f1186e07e19a50bbaae56168b6c184bc70d68b1f76cf5f1b9ad533"
+          }
+        ],
+        "proposed_winner": "",
+        "winner": "",
+        "evidence_hash": "",
+        "chain_updated_at": 1791548630,
+        "read_block": 31,
+        "confirmed": true
+      },
+      {
+        "id": 2,
+        "title": "Course integration: disputed result",
+        "metadata_uri": "",
+        "organizer": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+        "auditor": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "token": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+        "entry_fee": "0",
+        "prize_pool": "25000000",
+        "prize_paid": "25000000",
+        "prize_claimed": false,
+        "max_participants": 2,
+        "registration_deadline": 1791548927,
+        "settlement_deadline": 1791556007,
+        "review_period": 60,
+        "review_deadline": 1791548987,
+        "status": "cancelled",
+        "participants": [
+          "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+          "0x15d34aaf54267db7d7c367839aaf71a00a2c6a65"
+        ],
+        "participant_agents": [
+          {
+            "address": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+            "agent_hash": "0xea8af958b4715bf6b8a2bf92f7e01ce88f5cb5b1dfbecc9e909b32c368782c28"
+          },
+          {
+            "address": "0x15d34aaf54267db7d7c367839aaf71a00a2c6a65",
+            "agent_hash": "0xfe5df007f9f1186e07e19a50bbaae56168b6c184bc70d68b1f76cf5f1b9ad533"
+          }
+        ],
+        "proposed_winner": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+        "winner": "",
+        "evidence_hash": "0xca24673ad98e363db526b9c8af58a5972d3a4a229f07513b6260629470c2c70e",
+        "chain_updated_at": 1791548628,
+        "read_block": 27,
+        "confirmed": true
+      },
+      {
+        "id": 1,
+        "title": "Course integration: audited prize",
+        "metadata_uri": "",
+        "organizer": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+        "auditor": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "token": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+        "entry_fee": "0",
+        "prize_pool": "100000000",
+        "prize_paid": "100000000",
+        "prize_claimed": true,
+        "max_participants": 2,
+        "registration_deadline": 1791548747,
+        "settlement_deadline": 1791555827,
+        "review_period": 60,
+        "review_deadline": 1791548807,
+        "status": "finalized",
+        "participants": [
+          "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+          "0x15d34aaf54267db7d7c367839aaf71a00a2c6a65"
+        ],
+        "participant_agents": [
+          {
+            "address": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+            "agent_hash": "0xea8af958b4715bf6b8a2bf92f7e01ce88f5cb5b1dfbecc9e909b32c368782c28"
+          },
+          {
+            "address": "0x15d34aaf54267db7d7c367839aaf71a00a2c6a65",
+            "agent_hash": "0xfe5df007f9f1186e07e19a50bbaae56168b6c184bc70d68b1f76cf5f1b9ad533"
+          }
+        ],
+        "proposed_winner": "0x15d34aaf54267db7d7c367839aaf71a00a2c6a65",
+        "winner": "0x15d34aaf54267db7d7c367839aaf71a00a2c6a65",
+        "evidence_hash": "0x4808de0b84133426319c3c62c034171b096e5375dc33933ebc90d2382565c334",
+        "chain_updated_at": 1791548628,
+        "read_block": 27,
+        "confirmed": true
+      }
+    ]
+  },
+  "accounts": [
+    {
+      "name": "admin",
+      "address": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      "eth": "9999.987883843329801749",
+      "dusd": "0",
+      "role_verified": true
+    },
+    {
+      "name": "organizer",
+      "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+      "eth": "9999.998417204194178415",
+      "dusd": "0",
+      "role_verified": true
+    },
+    {
+      "name": "auditor",
+      "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+      "eth": "9999.99968167778848614",
+      "dusd": "0",
+      "role_verified": true
+    },
+    {
+      "name": "red",
+      "address": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+      "eth": "9999.99960767690070588",
+      "dusd": "0"
+    },
+    {
+      "name": "blue",
+      "address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+      "eth": "9999.999327422192945788",
+      "dusd": "100"
+    },
+    {
+      "name": "sponsor",
+      "address": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+      "eth": "9999.99912726051524423",
+      "dusd": "700"
+    }
+  ]
+}

@@ -116,6 +116,8 @@ node tooling/smoke-course.mjs
 
 ## 待验收事项
 
+2026-10-10 体验准备只读核查：前端 3001、API 18080、Anvil 18545 进程运行，API `/ready` 正常，主办方/审核员/管理员链上角色有效；六个公开测试账户均有本地 ETH，赞助方余额 700 DUSD。#3 已超过最终结算期限，需到期取消及赞助者退款，不能作为新对战起点。[原始快照](evidence/experience-preflight-2026-10-10.json)、[操作指南](EXPERIENCE_GUIDE.md)。本轮没有重跑测试套件或通过 MetaMask 发送交易，下列待验收状态不变。
+
 - 公有云 Docker 镜像构建、HTTPS、公开 URL、持久卷与云端恢复；当前机器没有 Docker CLI。
 - 新课程合约的 Sepolia 广播/验证、真实网络费用及确认深度行为。
 - MetaMask 实际扩展中的完整多角色流程、用户拒签、网络切换和移动端钱包体验。
