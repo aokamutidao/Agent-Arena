@@ -1,0 +1,4 @@
+ok  	agent-arena/backend/internal/agent	1.469s
+# agent-arena/backend/internal/tournament.test
+ld: warning: '/private/var/folders/lh/fzsd83qj63992pqy5rqxtshh0000gn/T/go-link-4007265841/000029.o' has malformed LC_DYSYMTAB, expected 98 undefined symbols to start at index 1626, found 95 undefined symbols starting at index 1626
+ok  	agent-arena/backend/internal/tournament	2.544s

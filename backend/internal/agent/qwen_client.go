@@ -19,6 +19,7 @@ type LLMClient interface {
 // QwenClient Qwen API 客户端
 type QwenClient struct {
 	apiKey   string
+	provider string
 	model    string
 	endpoint string
 	timeout  time.Duration
@@ -28,6 +29,7 @@ type QwenClient struct {
 func NewQwenClient(apiKey string) *QwenClient {
 	return &QwenClient{
 		apiKey:   apiKey,
+		provider: "qwen",
 		model:    "qwen3-coder-plus",
 		endpoint: "https://coding.dashscope.aliyuncs.com/v1/chat/completions",
 		timeout:  10 * time.Second,
@@ -36,59 +38,8 @@ func NewQwenClient(apiKey string) *QwenClient {
 
 // Chat 调用 Qwen API
 func (c *QwenClient) Chat(ctx context.Context, prompt string) (string, error) {
-	ctx, cancel := context.WithTimeout(ctx, c.timeout)
-	defer cancel()
-
-	body := map[string]interface{}{
-		"model": c.model,
-		"messages": []map[string]string{
-			{"role": "system", "content": "你是一个战斗 AI。只回复一个动作指令，不要解释，不要多余文字。格式：MOVE(x,y) 或 ATTACK 或 SKILL 或 CHARGE 或 WAIT"},
-			{"role": "user", "content": prompt},
-		},
-		"max_tokens":  500,
-		"temperature": 0.7,
-	}
-
-	reqBody, err := json.Marshal(body)
-	if err != nil {
-		return "", fmt.Errorf("marshal request body: %w", err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, "POST", c.endpoint, bytes.NewReader(reqBody))
-	if err != nil {
-		return "", fmt.Errorf("create request: %w", err)
-	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+c.apiKey)
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return "", fmt.Errorf("send request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		var errBody []byte
-		errBody, _ = io.ReadAll(resp.Body)
-		return "", fmt.Errorf("qwen api returned status %d: %s", resp.StatusCode, string(errBody))
-	}
-
-	var result struct {
-		Choices []struct {
-			Message struct {
-				Content string `json:"content"`
-			} `json:"message"`
-		} `json:"choices"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return "", fmt.Errorf("decode response: %w", err)
-	}
-
-	if len(result.Choices) == 0 {
-		return "", fmt.Errorf("qwen api returned no choices")
-	}
-
-	return strings.TrimSpace(result.Choices[0].Message.Content), nil
+	response, err := c.ChatWithMetadata(ctx, prompt)
+	return response.Content, err
 }
 
 // ExternalAPIClient 外部 API 客户端（用于自定义 Agent）

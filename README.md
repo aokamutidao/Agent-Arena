@@ -23,7 +23,7 @@
 - [需求与作业映射](docs/course-project/REQUIREMENTS.md)
 - [架构与设计取舍](docs/course-project/ARCHITECTURE.md)
 - [合约与 13 类交易](docs/course-project/CONTRACT.md)、[后端 API](docs/course-project/API.md)
-- [运行与部署](docs/course-project/DEPLOYMENT.md)、[用户手册](docs/course-project/USER_GUIDE.md)
+- [运行与部署](docs/course-project/DEPLOYMENT.md)、[用户手册](docs/course-project/USER_GUIDE.md)、[本地真实模型演示](docs/course-project/LOCAL_LLM_DEMO.md)
 - [测试报告](docs/course-project/TEST_REPORT.md)、[代码学习路线](docs/course-project/LEARNING_GUIDE.md)
 - [报告与演示准备](docs/course-project/SUBMISSION_PLAN.md)、[本轮开发日志](devlog/028-course-refactor.md)
 
@@ -46,6 +46,8 @@ node tooling/smoke-course.mjs
 ## 状态与边界
 
 执行结果以[测试报告](docs/course-project/TEST_REPORT.md)为准。仓库提供云部署配置，但课程版的公网 URL、Sepolia 部署和真实用户验证仍需实际执行并留证；不应据此宣称已经达到生产级或完成所有课程交付。
+
+033 迭代补齐模型调用记录、失败中断、持续计数的调用预算与分阶段本地验收工具。模型配置不等于连通成功；比赛页面分别展示实际成功/失败次数、模型、耗时与返回的用量。当前课程交付选择本地演示优先、Render 免费服务作为公网展示，冷启动与 SQLite 重置限制需写入报告和视频。
 
 旧下注/PVE 写接口已经停用。历史资料见 [黑客松 README](docs/archive/HACKATHON_README.md) 与 `specs/`；旧 Sepolia 地址不适用于课程版，源代码修复不会改变已经部署的旧合约。
 

@@ -24,7 +24,7 @@ func ParseActionWithReasoning(response string) (engine.Action, string, error) {
 
 	// 提取 "思考:" 后面的推理文本
 	reasoning := ""
-	reasonRegex := regexp.MustCompile(`(?m)思考[:：]\s*(.+)`)
+	reasonRegex := regexp.MustCompile(`(?m)(?:思考|说明|NOTE|Note)[:：]\s*(.+)`)
 	if m := reasonRegex.FindStringSubmatch(cleaned); m != nil {
 		reasoning = strings.TrimSpace(m[1])
 		// 截断过长的推理

@@ -12,7 +12,7 @@ const loaded = new Module(file);
 loaded.filename = file;
 loaded.paths = Module._nodeModulePaths(path.dirname(file));
 loaded._compile(output, file);
-const { parseMoney, money, registrationOpen, reviewComplete, canExpire, verifyEvidence, receiptVerdict, dateTime, errorMessage, ApiError } = loaded.exports;
+const { parseMoney, money, registrationOpen, reviewComplete, canExpire, verifyEvidence, receiptVerdict, dateTime, errorMessage, ApiError, matchExecutionPresentation, canResumeMatch } = loaded.exports;
 
 test("token amounts preserve six-decimal integers beyond JavaScript's safe integer range", () => {
   assert.equal(parseMoney("9007199254740993.123456"), 9007199254740993123456n);
@@ -152,4 +152,36 @@ test("English provider errors use viem shortMessage without replacing diagnostic
     { message: error.message, shortMessage: error.shortMessage, details: error.details },
     original,
   );
+});
+
+test("LLM mode and historical completion do not prove successful model calls", () => {
+  for (const status of ["queued", "running", "interrupted", "failed", "completed"]) {
+    const historical = matchExecutionPresentation({ mode: "llm", status }, "en");
+    assert.match(historical.label, /calls unverified/);
+    assert.match(historical.hint, /does not verify a successful real call/);
+    const failedOnly = matchExecutionPresentation({
+      mode: "llm", status,
+      llm_summary: { attempted: 1, succeeded: 0, failed: 1 },
+    }, "en");
+    assert.match(failedOnly.label, /no successful calls/);
+    assert.doesNotMatch(failedOnly.label, /complete/);
+  }
+});
+
+test("completed real-model runs disclose earlier failed attempts and retries", () => {
+  const clean = { mode: "llm", status: "completed", llm_summary: { attempted: 4, succeeded: 4, failed: 0 } };
+  assert.equal(matchExecutionPresentation(clean, "en").label, "LLM match complete");
+  assert.match(matchExecutionPresentation({ ...clean, llm_summary: { attempted: 5, succeeded: 4, failed: 1 } }, "en").label, /includes retries/);
+  assert.match(matchExecutionPresentation({ ...clean, status: "running" }, "en").label, /successful calls recorded/);
+  assert.match(matchExecutionPresentation({ mode: "deterministic_simulation", status: "completed" }, "en").hint, /without an LLM/);
+});
+
+test("resuming requires the interrupted state and explicit backend permission", () => {
+  assert.equal(canResumeMatch(undefined), false);
+  assert.equal(canResumeMatch({ status: "interrupted" }), false);
+  assert.equal(canResumeMatch({ status: "interrupted", retry_allowed: false }), false);
+  assert.equal(canResumeMatch({ status: "interrupted", retry_allowed: true }), true);
+  for (const status of ["queued", "running", "failed", "completed"]) {
+    assert.equal(canResumeMatch({ status, retry_allowed: true }), false);
+  }
 });

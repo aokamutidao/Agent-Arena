@@ -9,13 +9,13 @@ import (
 
 // AgentDecisionInput Agent 决策所需的输入
 type AgentDecisionInput struct {
-	Self           engine.AgentState
-	Enemy          engine.AgentState
-	CurrentRound   uint8
-	MaxRounds      uint8
-	Obstacles      []engine.Position
-	Weights        engine.StrategyWeights
-	ActionHistory  []engine.TurnRecord // 最近回合记录（短期记忆）
+	Self          engine.AgentState
+	Enemy         engine.AgentState
+	CurrentRound  uint8
+	MaxRounds     uint8
+	Obstacles     []engine.Position
+	Weights       engine.StrategyWeights
+	ActionHistory []engine.TurnRecord // 最近回合记录（短期记忆）
 }
 
 // buildDecisionPrompt 构建决策 prompt
@@ -130,11 +130,11 @@ func buildDecisionPrompt(name, personality string, input AgentDecisionInput) str
 
 ## 输出格式（严格按此格式！）
 <动作>
-思考: <你的判断>
+NOTE: <简短说明动作目的，最多80个字符，不展开思维过程>
 
 示例:
 MOVE(%s)
-思考: 距离5，先向对手靠近`,
+NOTE: 距离5，先向对手靠近`,
 		chargeText,
 		name,
 		personality,

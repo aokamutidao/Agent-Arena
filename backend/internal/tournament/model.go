@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"agent-arena/backend/internal/agent"
 	"agent-arena/backend/internal/engine"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -34,6 +35,10 @@ type Config struct {
 	PollInterval      time.Duration
 	RoundInterval     time.Duration
 	SimulationEnabled bool
+	LLMProvider       string
+	LLMModel          string
+	LLMTimeoutSeconds int64
+	LLMMaxCalls       int
 	ABIPath           string
 }
 
@@ -55,6 +60,9 @@ func (c *Config) Defaults() {
 	}
 	if c.TokenDecimals == 0 {
 		c.TokenDecimals = 6
+	}
+	if c.LLMMaxCalls <= 0 {
+		c.LLMMaxCalls = 120
 	}
 }
 
@@ -162,6 +170,34 @@ type Round struct {
 	BlueReasoning string            `json:"blue_reasoning"`
 	RedState      engine.AgentState `json:"red_state"`
 	BlueState     engine.AgentState `json:"blue_state"`
+	RedLLMCallID  int               `json:"red_llm_call_id,omitempty"`
+	BlueLLMCallID int               `json:"blue_llm_call_id,omitempty"`
+}
+
+// DecisionCall is the persisted provider attempt journal, including retries.
+type DecisionCall struct {
+	Sequence int    `json:"sequence"`
+	Round    uint8  `json:"round"`
+	Side     string `json:"side"`
+	agent.CallMetadata
+}
+
+// UsageSummary keeps unknown aggregate token usage null rather than zero.
+type UsageSummary struct {
+	PromptTokens     *uint64 `json:"prompt_tokens"`
+	CompletionTokens *uint64 `json:"completion_tokens"`
+	TotalTokens      *uint64 `json:"total_tokens"`
+}
+
+type LLMSummary struct {
+	Provider      string       `json:"provider"`
+	Model         string       `json:"model"`
+	Attempted     int          `json:"attempted"`
+	Succeeded     int          `json:"succeeded"`
+	Failed        int          `json:"failed"`
+	LatencyMS     int64        `json:"latency_ms"`
+	Usage         UsageSummary `json:"usage"`
+	LastErrorCode string       `json:"last_error_code"`
 }
 
 type NoteEvidence struct {
@@ -196,6 +232,9 @@ type Match struct {
 	Error         string           `json:"error"`
 	RedAgent      AgentDefinition  `json:"red_agent"`
 	BlueAgent     AgentDefinition  `json:"blue_agent"`
+	LLMCalls      []DecisionCall   `json:"llm_calls,omitempty"`
+	LLMSummary    *LLMSummary      `json:"llm_summary,omitempty"`
+	RetryAllowed  bool             `json:"retry_allowed"`
 }
 type Evidence struct {
 	SchemaVersion  int              `json:"schema_version"`
@@ -211,6 +250,7 @@ type Evidence struct {
 	FinalState     engine.GameState `json:"final_state"`
 	Outcome        string           `json:"outcome"`
 	WinnerAddress  string           `json:"winner_address"`
+	LLMCalls       []DecisionCall   `json:"llm_calls,omitempty"`
 }
 
 func address(a string) string { return strings.ToLower(common.HexToAddress(a).Hex()) }

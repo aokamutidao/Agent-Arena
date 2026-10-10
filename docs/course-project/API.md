@@ -11,6 +11,27 @@ All addresses are lowercase Ethereum hex addresses; raw token amounts are **deci
 - `POST /api/auth/login` body `{address,nonce,signature}`: `{token,user:{address,roles:["participant",...]}}`. A nonce can be used once. Additional roles (`admin`, `organizer`, `auditor`) come from the configured manager's `hasRole`, never the request. Tokens expire after one hour and validate domain audience, chain ID and manager address on every authenticated request.
 - `GET /api/auth/profile`, `Authorization: Bearer <token>`: `{address,roles:string[]}`. Roles are checked again against the chain.
 
+## Real model execution and diagnostics (iteration 033)
+
+`GET /api/config` additionally returns `llm_configured`, `execution_mode` (`llm`, `deterministic_simulation`, or `unavailable`), `llm_provider`, `llm_model`, `llm_timeout_seconds`, and `llm_max_calls`. Configured means a server-side client exists; it is not a successful provider connectivity test. The API never returns its endpoint or API key.
+
+For real model matches, `Match` additionally includes:
+
+- `llm_calls`: a persisted attempt journal. Each entry has `sequence`, `round`, `side`, `provider`, `model`, `success`, `latency_ms`, and optional `http_status`, `request_id`, `usage`, `error_code`. A provider response is only a successful decision after action parsing succeeds. Missing token usage is unknown, not zero.
+- `llm_summary`: aggregate `provider`, `model`, `attempted`, `succeeded`, `failed`, cumulative `latency_ms`, nullable `usage.{prompt_tokens,completion_tokens,total_tokens}`, and `last_error_code`. The cumulative time sums both players' requests and is not match wall-clock duration.
+- `retry_allowed`: the server's current eligibility for resuming an interrupted run; the frontend also requires the correct organizer, on-chain running status, and a valid settlement deadline.
+- Each committed `Round` references its two decisions using `red_llm_call_id` and `blue_llm_call_id`.
+
+Both requests are reserved in the journal before sending. Failed HTTP calls or malformed action output interrupt the match without executing a replacement WAIT or submitting a winner. Previously committed rounds remain available; the organizer can explicitly resume eligible interruptions. Resuming consumes the same persisted attempt budget (default and maximum 120); it does not reset the count. No automatic provider retry occurs. An interrupted in-flight attempt whose response is lost remains a consumed attempt.
+
+The model protocol is one action (`MOVE(x,y)`, `ATTACK`, `SKILL`, `HEAL`, `CHARGE`, or `WAIT`) with an optional short `NOTE:` describing the action's purpose. It does not request internal chain-of-thought. Qwen 3 model requests explicitly set `enable_thinking=false`; other compatible model families do not receive this vendor-specific field. Invalid game moves are recorded as failed actions according to the game rules; they are distinct from HTTP or output-parsing failures.
+
+New model evidence that includes the attempt journal uses schema version 2. Existing saved evidence remains unchanged, and deterministic simulations without a journal retain schema version 1. A hash binds the recorded evidence; provider/model labels and request IDs are operational records, not cryptographic proof supplied by the model vendor.
+
+Server configuration uses `LLM_API_KEY`, `LLM_PROVIDER`, `LLM_MODEL`, `LLM_ENDPOINT`, `LLM_TIMEOUT_SECONDS`, and `LLM_MAX_CALLS`. Explicit `QWEN_API_KEY`, `QWEN_MODEL`, `QWEN_ENDPOINT`, and `QWEN_TIMEOUT_SECONDS` remain compatibility aliases. Default course settings use the general DashScope endpoint and `qwen-plus`. Provider credentials are never loaded automatically from the historical `backend/.env`.
+
+`backend/cmd/llm-check` performs a redacted configuration check by default. A real network request requires the explicit `-call` flag. Keep actual provider checks and their request counts separate from local mocked tests.
+
 ## Immutable Agent profiles
 
 - `GET /api/agents`: `{agents:AgentProfile[],total}`; returns the latest 100 profiles at most, with `total` equal to the returned count.

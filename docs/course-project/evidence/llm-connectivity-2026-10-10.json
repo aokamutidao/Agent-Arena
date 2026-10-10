@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-10",
+  "endpoint_host": "coding.dashscope.aliyuncs.com",
+  "scope": "Explicitly authorized project-local diagnostics; credentials omitted.",
+  "actual_provider_requests": 4,
+  "probes": [
+    {
+      "purpose": "single_connectivity_check",
+      "provider": "qwen",
+      "configured_model": "qwen3-coder-plus",
+      "credential_kind": "coding_plan",
+      "real_battle_verified": false,
+      "status": 400,
+      "error": "provider_http_error",
+      "latency_ms": 940
+    },
+    {
+      "purpose": "authorized_connectivity_diagnostic_2",
+      "configured_model": "qwen3-coder-plus",
+      "real_battle_verified": false,
+      "status": 400,
+      "error": {
+        "code": "invalid_parameter_error",
+        "type": "invalid_request_error",
+        "message": "model `qwen3-coder-plus` is not supported."
+      },
+      "latency_ms": 3164
+    },
+    {
+      "purpose": "authorized_connectivity_diagnostic_3",
+      "configured_model": "qwen3-coder-next",
+      "real_battle_verified": false,
+      "status": 400,
+      "error": {
+        "code": "invalid_parameter_error",
+        "type": "invalid_request_error",
+        "message": "model `qwen3-coder-next` is not supported."
+      },
+      "latency_ms": 825
+    },
+    {
+      "purpose": "authorized_connectivity_diagnostic_4",
+      "configured_model": "qwen3.5-plus",
+      "enable_thinking": false,
+      "real_battle_verified": false,
+      "status": 200,
+      "response_model": "qwen3.5-plus",
+      "request_id": "chatcmpl-af9d6840-2abc-98ae-906f-e68e2dfcf812",
+      "usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 42,
+        "completion_tokens_details": {
+          "text_tokens": 1
+        },
+        "prompt_tokens_details": {
+          "text_tokens": 42
+        },
+        "total_tokens": 43
+      },
+      "valid_wait_output": true,
+      "output": "WAIT",
+      "latency_ms": 1468
+    }
+  ],
+  "interpretation": "The current endpoint rejected the two Coder model names. qwen3.5-plus with enable_thinking=false returned a valid action. Connectivity alone is not a completed battle or a cloud deployment.",
+  "official_scope_reference": "https://help.aliyun.com/zh/model-studio/coding-plan-faq"
+}

@@ -11,6 +11,8 @@ import {
   type EngineAgentState,
   type TournamentStatus,
   shortAddress,
+  matchExecutionPresentation,
+  llmErrorMessage,
 } from "@/lib/course";
 import type { GameDetail, AgentInfo, AgentState } from "@/types/game";
 export function MatchReplay({
@@ -20,7 +22,15 @@ export function MatchReplay({
   match: MatchResult;
   settlementStatus: TournamentStatus;
 }) {
-  const { l } = useI18n();
+  const { lang, l } = useI18n();
+  const execution = matchExecutionPresentation(match, lang);
+  const summary = match.llm_summary;
+  const number = (value: number | null | undefined) =>
+    value == null
+      ? l("未返回", "Not reported")
+      : new Intl.NumberFormat(lang === "en" ? "en-GB" : "zh-CN").format(value);
+  const seconds = (milliseconds: number) =>
+    `${(milliseconds / 1000).toFixed(2)} ${l("秒", "s")}`;
   const [frame, setFrame] = useState<number | null>(null);
   const [playing, setPlaying] = useState(false);
   useEffect(() => {
@@ -135,16 +145,107 @@ export function MatchReplay({
         </span>
       </div>
       <p className="text-sm text-muted-foreground">
-        {match.mode === "llm"
-          ? l(
-              "由 LLM 模型决策，以下为实际记录的对战过程。",
-              "Decisions were made by an LLM. This replay shows the recorded match.",
-            )
-          : l(
-              "本场使用确定性模拟，没有调用 LLM；可用于体验赛事和奖金流程。",
-              "This match used a deterministic simulation without an LLM, for trying the tournament and prize flow.",
-            )}
+        <span className="font-semibold text-foreground">{execution.label}</span>
+        {" · "}{execution.hint}
       </p>
+      {match.mode === "llm" && summary && (
+        <div className="space-y-4 rounded-xl border bg-slate-50 p-4">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs font-medium text-muted-foreground">
+                {l("记录的模型", "Recorded model")}
+              </p>
+              <p className="break-words font-semibold">
+                {summary.model || l("模型名未记录", "Model name not recorded")}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {summary.provider || l("提供方未记录", "Provider not recorded")}
+              </p>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {l("累计调用耗时", "Cumulative call time")}{" "}
+              <span className="font-semibold text-foreground">
+                {seconds(summary.latency_ms)}
+              </span>
+            </p>
+          </div>
+          <dl className="grid grid-cols-3 gap-3">
+            {[
+              [l("调用次数", "Attempts"), summary.attempted],
+              [l("成功调用", "Successful calls"), summary.succeeded],
+              [l("失败调用", "Failed calls"), summary.failed],
+            ].map(([label, value]) => (
+              <div key={label} className="rounded-lg border bg-white p-3">
+                <dt className="text-xs text-muted-foreground">{label}</dt>
+                <dd className="mt-1 text-xl font-semibold">{number(Number(value))}</dd>
+              </div>
+            ))}
+          </dl>
+          <div className="text-xs text-muted-foreground">
+            <p>
+              {l("Token 用量（输入 / 输出 / 总计）", "Token usage (input / output / total)")}
+              {": "}{number(summary.usage.prompt_tokens)} / {number(summary.usage.completion_tokens)} / {number(summary.usage.total_tokens)}
+            </p>
+            <p className="mt-1">
+              {l("仅展示模型服务返回的统计；未返回的用量不会记作零，失败尝试也保留记录。", "Only provider-reported usage is shown. Missing usage is not counted as zero, and failed attempts remain in the record.")}
+            </p>
+          </div>
+          {summary.last_error_code && (
+            <p className="text-xs text-amber-800">
+              {l("最近记录的失败：", "Last recorded failure: ")}
+              {llmErrorMessage(summary.last_error_code, lang)}
+            </p>
+          )}
+          {!!match.llm_calls?.length && (
+            <details>
+              <summary className="cursor-pointer text-sm font-medium">
+                {l("查看每次模型调用", "Inspect individual model calls")}
+              </summary>
+              <div className="mt-3 max-h-72 overflow-auto rounded-lg border bg-white">
+                <table className="w-full min-w-[650px] text-left text-xs">
+                  <thead className="bg-slate-100 text-muted-foreground">
+                    <tr>
+                      <th className="p-3">{l("调用 / 回合", "Call / round")}</th>
+                      <th className="p-3">{l("参赛方 / 模型", "Side / model")}</th>
+                      <th className="p-3">{l("结果 / 耗时", "Result / time")}</th>
+                      <th className="p-3">{l("Token 用量", "Token usage")}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {match.llm_calls.map((call) => (
+                      <tr key={call.sequence} className="border-t align-top">
+                        <td className="p-3">#{call.sequence} / R{call.round}</td>
+                        <td className="p-3">
+                          <p className={call.side === "red" ? "text-rose-700" : "text-blue-700"}>
+                            {call.side === "red" ? l("红方", "Red") : l("蓝方", "Blue")}
+                          </p>
+                          <p className="mt-1 break-all">{call.model}</p>
+                        </td>
+                        <td className="p-3">
+                          <p className={call.success ? "text-emerald-700" : "text-red-700"}>
+                            {call.success ? l("成功", "Succeeded") : l("失败", "Failed")} · {seconds(call.latency_ms)}
+                          </p>
+                          {call.error_code && <p className="mt-1 max-w-xs">{llmErrorMessage(call.error_code, lang)}</p>}
+                          {(call.http_status != null || call.request_id) && (
+                            <details className="mt-1 text-muted-foreground">
+                              <summary className="cursor-pointer">{l("请求信息", "Request details")}</summary>
+                              {call.http_status != null && <p>HTTP {call.http_status}</p>}
+                              {call.request_id && <p className="max-w-xs break-all">{l("请求编号：", "Request ID: ")}{call.request_id}</p>}
+                            </details>
+                          )}
+                        </td>
+                        <td className="p-3 text-muted-foreground">
+                          {number(call.usage?.prompt_tokens)} / {number(call.usage?.completion_tokens)} / {number(call.usage?.total_tokens)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </details>
+          )}
+        </div>
+      )}
       {match.status === "completed" && (
         <p className="rounded-xl bg-muted p-4 text-sm">
           {match.winner_address
@@ -160,7 +261,10 @@ export function MatchReplay({
       )}
       {match.error && (
         <p role="alert" className="text-sm text-red-700">
-          {match.error}
+          {l("执行错误：", "Execution error: ")}
+          {summary?.last_error_code
+            ? llmErrorMessage(summary.last_error_code, lang)
+            : match.error}
         </p>
       )}
       <div className="grid gap-4 sm:grid-cols-2">

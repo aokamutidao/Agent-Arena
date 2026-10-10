@@ -2,6 +2,16 @@
 
 本文件是可复现操作说明。实际执行过的步骤见 [测试报告](TEST_REPORT.md)；Docker、云服务、测试网 URL 和真实钱包演示不能仅凭配置文件视为已验证。
 
+## 当前交付选择（2026-10-10）
+
+用户确认优先完成本地真实 LLM 对战和新赛事的资金演示，云端前后端均可使用 Render 免费 Web Services。免费服务闲置 15 分钟后休眠，唤醒通常约一分钟；重启、休眠或重新部署会丢失 SQLite 本地文件。用户接受这一演示限制，视频与报告必须如实说明。正式录制以本地服务为主，云端部署仍以实际 URL 和外网验收为准。
+
+本地 SQLite、链状态及对战证据需留档。链上事件可回填，但 Agent 定义、对战回放和审核理由不能仅从链上 hash 恢复。公网数据库重置后，已有报名可能找不到对应 Agent 定义；重新准备演示资料或恢复备份后再继续。
+
+Render 部署采用两个服务，分别使用 `deploy/Dockerfile.frontend` 和 `deploy/Dockerfile.backend`，构建上下文均为仓库根目录。前端构建时配置后端公开 HTTPS `NEXT_PUBLIC_API_URL`；后端 `AUTH_DOMAIN`/`CORS_ORIGINS` 对应前端域名。`compose.yaml` 中空 API 地址依赖 Caddy 同域反代，不能原样用于两个独立 Render 域名。免费云环境不运行本机 Anvil，仍需可访问的测试网 RPC 与新课程合约。
+
+来源：[Render 免费服务说明](https://render.com/docs/free)（查阅 2026-10-10）。后文持久化 Compose 模板保留，供后续长期部署学习使用。
+
 ## 1. 环境与第一次构建
 
 - Go 1.25.4、Node.js 24.11.1 / npm、Foundry 1.5.1、Solidity 0.8.24。
@@ -87,12 +97,15 @@ COURSE_SMOKE_RPC_PORT=18545 COURSE_SMOKE_API_PORT=18080 COURSE_SMOKE_UI_PORT=300
 | `CONFIRMATIONS` | 本地可为 0；测试网示例 6，需按风险选择 |
 | `CONTRACT_ABI_DIR` | 默认 `../contracts/abi` |
 | `SIMULATION_ENABLED` | 无模型配置时是否允许明确标注的确定性模拟 |
-| `QWEN_API_KEY` | 可选服务端模型凭据；设置真实模型时将 simulation 关闭 |
+| `LLM_API_KEY` | 服务端模型凭据；真实模型演示设置 `SIMULATION_ENABLED=false`；不自动读取旧 `backend/.env` |
+| `LLM_PROVIDER` / `LLM_MODEL` | 调用记录中的服务商标签 / 实际请求模型名称 |
+| `LLM_ENDPOINT` | 服务端配置的完整兼容接口地址，包含 `/chat/completions`；不通过 API 返回或由参赛者设置 |
+| `LLM_TIMEOUT_SECONDS` / `LLM_MAX_CALLS` | 单次请求超时 / 每场调用预算；后续重试仍累计预算 |
 | `NEXT_PUBLIC_API_URL` | 浏览器访问的 API 基地址；同域反代时可为空字符串 |
 
 `.env.course.example` 预填了本地 RPC，但 Manager 留空。必须填写 Manager，或同时清空 RPC 和 Manager 后进入未部署查看模式；只填写其中一个会拒绝启动。未部署时 `/health` 可用，`/ready` 返回 503，资金操作不可用。
 
-手工编译启动不自动加载任何 `.env`，需要明确导出配置。不要将 `PRIVATE_KEY`、`OWNER_PRIVATE_KEY` 或 `COURSE_DEPLOYER_KEY` 注入课程 API 容器。JWT secret 与 Qwen key 也不应进入 `NEXT_PUBLIC_*`。
+手工编译启动不自动加载任何 `.env`，需要明确导出配置。不要将 `PRIVATE_KEY`、`OWNER_PRIVATE_KEY` 或 `COURSE_DEPLOYER_KEY` 注入课程 API 容器。JWT secret 与模型 key 也不应进入 `NEXT_PUBLIC_*`。
 
 ## 5. 测试网合约部署
 

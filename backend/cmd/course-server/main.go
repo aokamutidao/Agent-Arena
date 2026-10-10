@@ -53,6 +53,17 @@ func run() error {
 		return fmt.Errorf("SIMULATION_ENABLED must be true or false")
 	}
 	cfg := tournament.Config{DatabasePath: os.Getenv("DATABASE_PATH"), JWTSecret: os.Getenv("JWT_SECRET"), AuthDomain: os.Getenv("AUTH_DOMAIN"), ChainID: chainID, ManagerAddress: os.Getenv("TOURNAMENT_MANAGER_ADDRESS"), DeploymentBlock: block, Confirmations: confirmations, SimulationEnabled: simulation, ABIPath: os.Getenv("CONTRACT_ABI_DIR"), PollInterval: time.Duration(poll) * time.Second, RoundInterval: time.Duration(round) * time.Millisecond}
+	llmConfig, err := agent.CourseLLMConfig(os.Getenv)
+	if err != nil {
+		return err
+	}
+	maxCalls, err := number("LLM_MAX_CALLS", 120)
+	if err != nil || maxCalls < 2 || maxCalls > 120 {
+		return fmt.Errorf("LLM_MAX_CALLS must be between 2 and 120 per match")
+	}
+	cfg.LLMProvider, cfg.LLMModel = llmConfig.Provider, llmConfig.Model
+	cfg.LLMTimeoutSeconds = int64(llmConfig.Timeout / time.Second)
+	cfg.LLMMaxCalls = int(maxCalls)
 	for _, origin := range strings.Split(os.Getenv("CORS_ORIGINS"), ",") {
 		if trimmed := strings.TrimSpace(origin); trimmed != "" {
 			cfg.CORSOrigins = append(cfg.CORSOrigins, trimmed)
@@ -86,9 +97,13 @@ func run() error {
 		log.Print("Course financial deployment is unconfigured; wallet financial actions remain disabled.")
 	}
 	var llm agent.LLMClient
-	if key := os.Getenv("QWEN_API_KEY"); key != "" {
-		llm = agent.NewQwenClient(key)
-		log.Print("Explicitly configured LLM mode enabled.")
+	if llmConfig.APIKey != "" {
+		llm, err = agent.NewConfiguredQwenClient(llmConfig)
+		if err != nil {
+			return err
+		}
+		log.Printf("Explicitly configured LLM mode enabled (provider %s, model %s).",
+			llmConfig.Provider, llmConfig.Model)
 	} else {
 		log.Printf("LLM unconfigured; deterministic simulation enabled=%t.", cfg.SimulationEnabled)
 	}

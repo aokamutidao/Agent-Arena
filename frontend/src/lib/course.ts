@@ -16,6 +16,11 @@ export interface CourseConfig {
     confirmations: number;
     simulation_enabled: boolean;
     auth_domain: string;
+    llm_configured?: boolean;
+    execution_mode?: "llm" | "deterministic_simulation" | "unavailable";
+    llm_provider?: string;
+    llm_model?: string;
+    llm_timeout_seconds?: number;
 }
 export interface Tournament {
     id: number;
@@ -114,6 +119,8 @@ export interface MatchRound {
     blue_reasoning?: string;
     red_state?: EngineAgentState;
     blue_state?: EngineAgentState;
+    red_llm_call_id?: number;
+    blue_llm_call_id?: number;
 }
 export interface EngineAgentState {
     hp: number;
@@ -142,6 +149,38 @@ export interface MatchResult {
     rounds: MatchRound[];
     state: Record<string, unknown>;
     error: string;
+    retry_allowed?: boolean;
+    llm_summary?: {
+        provider: string;
+        model: string;
+        attempted: number;
+        succeeded: number;
+        failed: number;
+        latency_ms: number;
+        usage: {
+            prompt_tokens: number | null;
+            completion_tokens: number | null;
+            total_tokens: number | null;
+        };
+        last_error_code: string;
+    };
+    llm_calls?: {
+        sequence: number;
+        round: number;
+        side: "red" | "blue";
+        provider: string;
+        model: string;
+        success: boolean;
+        latency_ms: number;
+        http_status?: number;
+        request_id?: string;
+        usage?: {
+            prompt_tokens?: number;
+            completion_tokens?: number;
+            total_tokens?: number;
+        };
+        error_code?: string;
+    }[];
     red_agent?: {
         name: string;
         personality: string;
@@ -150,6 +189,64 @@ export interface MatchResult {
         name: string;
         personality: string;
     };
+}
+/** A configured LLM mode alone is not evidence of a successful model call. */
+export function matchExecutionPresentation(
+    match: Pick<MatchResult, "mode" | "status" | "llm_summary">,
+    lang: "zh" | "en" = "zh",
+): { label: string; hint: string } {
+    const l = (zh: string, en: string) => lang === "en" ? en : zh;
+    if (match.mode === "deterministic_simulation") return {
+        label: l("确定性模拟", "Deterministic simulation"),
+        hint: l("本场使用确定性模拟，没有调用 LLM；可用于体验赛事和奖金流程。", "This match uses a deterministic simulation without an LLM, for trying the tournament and prize flow."),
+    };
+    if (match.mode !== "llm") return {
+        label: l("执行模式未确认", "Execution mode unverified"),
+        hint: l("本场未提供可识别的执行模式，请核查记录。", "This record does not identify a supported execution mode. Inspect the record before making model claims."),
+    };
+    const summary = match.llm_summary;
+    if (!summary) return {
+        label: l("历史 LLM · 调用未验证", "Historical LLM · calls unverified"),
+        hint: l("历史记录没有模型调用统计，不能仅凭 LLM 模式确认真实调用成功。", "This historical record has no model-call statistics. LLM mode alone does not verify a successful real call."),
+    };
+    if (summary.succeeded <= 0) return {
+        label: l("LLM · 尚无成功调用", "LLM · no successful calls yet"),
+        hint: summary.failed > 0
+            ? l("尚无成功模型调用，已记录失败；请查看错误原因。这不是模拟对战成功。", "No successful model call is recorded. Inspect the failures below; this does not count as a successful simulated or LLM match.")
+            : l("已选择 LLM 模式，正在等待成功调用记录；模型配置不代表调用已成功。", "LLM mode is selected; waiting for a successful call record. Configuration does not prove that a call succeeded."),
+    };
+    if (match.status === "completed") return {
+        label: summary.failed > 0
+            ? l("LLM 对战完成 · 含重试", "LLM match complete · includes retries")
+            : l("LLM 对战完成", "LLM match complete"),
+        hint: summary.failed > 0
+            ? l("对战已完成，包含此前失败及重试记录；成功回合来自已记录的模型决策。", "The match completed with earlier failures and retries retained. Successful rounds use the recorded model decisions.")
+            : l("对战已完成，模型成功调用已记录，未记录失败调用。审核与付款状态见赛事进度和资金区。", "The match completed with successful model calls and no recorded call failures. See the tournament progress and funds panel for review and payment status."),
+    };
+    return {
+        label: l("LLM · 已有成功调用", "LLM · successful calls recorded"),
+        hint: l("已收到成功模型决策，对战是否完成以执行状态为准。", "Successful model decisions are recorded. Check the execution status to see whether the match has completed."),
+    };
+}
+
+/** Resume only the interrupted state that the backend explicitly marks retryable. */
+export function canResumeMatch(match: Pick<MatchResult, "status" | "retry_allowed"> | undefined): boolean {
+    return match?.status === "interrupted" && match.retry_allowed === true;
+}
+
+export function llmErrorMessage(code: string, lang: "zh" | "en" = "zh"): string {
+    const labels: Record<string, [string, string]> = {
+        not_configured: ["模型未配置，请联系维护者。", "The model is not configured. Contact the maintainer."],
+        provider_error: ["模型服务请求失败，请检查服务后重试。", "The model provider request failed. Check the service before retrying."],
+        authentication_error: ["模型凭据被拒绝，请维护者检查配置。", "The model credentials were rejected. Ask the maintainer to check the configuration."],
+        rate_limited: ["模型服务限流，请稍后重试。", "The model service rate-limited the request. Try again later."],
+        timeout: ["模型请求超时。", "The model request timed out."],
+        cancelled: ["模型请求已中断。", "The model request was interrupted."],
+        invalid_response: ["模型返回无效响应，该调用失败。", "The model returned an invalid response and this call failed."],
+        response_too_large: ["模型响应超过大小限制，该调用失败。", "The model response exceeded the size limit and this call failed."],
+        parse_error: ["模型回复无法解析为有效动作。", "The model response could not be parsed as a valid action."],
+    };
+    return labels[code]?.[lang === "en" ? 1 : 0] || code;
 }
 export interface Evidence {
     evidence_hash: Hex;

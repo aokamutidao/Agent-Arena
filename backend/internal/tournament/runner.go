@@ -23,6 +23,7 @@ type Runner struct {
 }
 
 func NewRunner(cfg Config, s *Store, llm agent.LLMClient) *Runner {
+	cfg.Defaults()
 	return &Runner{store: s, cfg: cfg, llm: llm, jobs: map[uint64]bool{}}
 }
 func (r *Runner) Wait() { r.wg.Wait() }
@@ -75,6 +76,9 @@ func (r *Runner) Start(ctx context.Context, t *Tournament) (*Match, error) {
 		if (m.Mode == "llm" && r.llm == nil) || (m.Mode == "deterministic_simulation" && !r.cfg.SimulationEnabled) {
 			return nil, fmt.Errorf("original match execution mode is unavailable")
 		}
+		if m.Mode == "llm" && len(m.LLMCalls)+2 > r.cfg.LLMMaxCalls {
+			return nil, fmt.Errorf("LLM call budget exhausted; no additional model request is allowed")
+		}
 	} else {
 		mode := "llm"
 		if r.llm == nil {
@@ -88,6 +92,7 @@ func (r *Runner) Start(ctx context.Context, t *Tournament) (*Match, error) {
 		m = &Match{TournamentID: t.ID, Status: "queued", Mode: mode, RedAddress: t.Participants[0], BlueAddress: t.Participants[1], Rounds: []Round{}, State: *state, StartedAt: time.Now().Unix(), UpdatedAt: time.Now().Unix(), RedAgent: profiles[0].Definition(), BlueAgent: profiles[1].Definition()}
 	}
 	m.Status = "queued"
+	m.RetryAllowed = false
 	m.Error = ""
 	m.UpdatedAt = time.Now().Unix()
 	if err := r.store.SaveMatch(m, ""); err != nil {
@@ -107,15 +112,6 @@ func (r *Runner) Start(ctx context.Context, t *Tournament) (*Match, error) {
 	return response, nil
 }
 
-type boundLLM struct {
-	ctx    context.Context
-	client agent.LLMClient
-}
-
-func (b boundLLM) Chat(_ context.Context, prompt string) (string, error) {
-	return b.client.Chat(b.ctx, prompt)
-}
-
 func (r *Runner) run(ctx context.Context, m *Match) {
 	eng := engine.NewEngine()
 	m.Status = "running"
@@ -125,9 +121,8 @@ func (r *Runner) run(ctx context.Context, m *Match) {
 	}
 	var red, blue *agent.Agent
 	if m.Mode == "llm" {
-		client := boundLLM{ctx, r.llm}
-		red = agent.NewAgent(m.RedAgent.Name, m.RedAgent.Personality, client)
-		blue = agent.NewAgent(m.BlueAgent.Name, m.BlueAgent.Personality, client)
+		red = agent.NewAgent(m.RedAgent.Name, m.RedAgent.Personality, r.llm)
+		blue = agent.NewAgent(m.BlueAgent.Name, m.BlueAgent.Personality, r.llm)
 	}
 	fail := func(status, message string) {
 		m.Status = status
@@ -155,16 +150,48 @@ func (r *Runner) run(ctx context.Context, m *Match) {
 			}
 		}
 		var redAction, blueAction engine.Action
+		var redCallID, blueCallID int
 		redStyle, blueStyle := simulationStyle(m.RedAgent), simulationStyle(m.BlueAgent)
 		redReason, blueReason := "Deterministic baseline: "+redStyle+"; no LLM request.", "Deterministic baseline: "+blueStyle+"; no LLM request."
 		if m.Mode == "deterministic_simulation" {
 			redAction = simulationAction(eng, m.State.AgentRed, m.State.AgentBlue, m.State.Obstacles, redStyle)
 			blueAction = simulationAction(eng, m.State.AgentBlue, m.State.AgentRed, m.State.Obstacles, blueStyle)
 		} else {
+			if len(m.LLMCalls)+2 > r.cfg.LLMMaxCalls {
+				fail("failed", "LLM call budget exhausted; no result was generated.")
+				return
+			}
+			info := clientInfo(r.llm, r.cfg)
+			redCallID, blueCallID = len(m.LLMCalls)+1, len(m.LLMCalls)+2
+			for n, side := range []string{"red", "blue"} {
+				m.LLMCalls = append(m.LLMCalls, DecisionCall{
+					Sequence: redCallID + n, Round: m.State.CurrentRound + 1, Side: side,
+					CallMetadata: agent.CallMetadata{
+						Provider: info.Provider, Model: info.Model, ErrorCode: "in_progress",
+					},
+				})
+			}
+			m.LLMSummary = summarizeCalls(m.LLMCalls)
+			// Reserve the budget before the requests: a crash cannot reset spent attempts.
+			if err := r.store.SaveMatch(m, ""); err != nil {
+				fail("failed", "Persisting LLM attempts failed; no requests were sent.")
+				return
+			}
 			weights := engine.StrategyWeights{Aggressive: 34, Defensive: 33, Tricky: 33}
-			a, b := agent.DecideTurnsParallel(red, blue, agent.AgentDecisionInput{Self: m.State.AgentRed, Enemy: m.State.AgentBlue, CurrentRound: m.State.CurrentRound, MaxRounds: m.State.MaxRounds, Obstacles: m.State.Obstacles, Weights: weights, ActionHistory: m.State.History}, agent.AgentDecisionInput{Self: m.State.AgentBlue, Enemy: m.State.AgentRed, CurrentRound: m.State.CurrentRound, MaxRounds: m.State.MaxRounds, Obstacles: m.State.Obstacles, Weights: weights, ActionHistory: m.State.History})
+			a, b := agent.DecideTurnsStrictParallel(ctx, red, blue, agent.AgentDecisionInput{Self: m.State.AgentRed, Enemy: m.State.AgentBlue, CurrentRound: m.State.CurrentRound, MaxRounds: m.State.MaxRounds, Obstacles: m.State.Obstacles, Weights: weights, ActionHistory: m.State.History}, agent.AgentDecisionInput{Self: m.State.AgentBlue, Enemy: m.State.AgentRed, CurrentRound: m.State.CurrentRound, MaxRounds: m.State.MaxRounds, Obstacles: m.State.Obstacles, Weights: weights, ActionHistory: m.State.History})
+			m.LLMCalls[redCallID-1].CallMetadata = a.Metadata
+			m.LLMCalls[blueCallID-1].CallMetadata = b.Metadata
+			m.LLMSummary = summarizeCalls(m.LLMCalls)
+			if a.Err != nil || b.Err != nil {
+				code := a.Metadata.ErrorCode
+				if a.Err == nil {
+					code = b.Metadata.ErrorCode
+				}
+				fail("interrupted", "LLM decision interrupted ("+code+"); no round or result was committed. Organizer may retry.")
+				return
+			}
 			redAction, blueAction = a.Action, b.Action
-			redReason, blueReason = a.Reasoning, b.Reasoning
+			redReason, blueReason = a.Note, b.Note
 		}
 		if ctx.Err() != nil {
 			fail("interrupted", "Server stopped before the next round was committed.")
@@ -183,7 +210,7 @@ func (r *Runner) run(ctx context.Context, m *Match) {
 		}
 		turn.RedReasoning, turn.BlueReasoning = redReason, blueReason
 		m.State.History[len(m.State.History)-1] = *turn
-		m.Rounds = append(m.Rounds, Round{Round: turn.Round, RedAction: turn.RedAction, BlueAction: turn.BlueAction, RedHP: m.State.AgentRed.HP, BlueHP: m.State.AgentBlue.HP, RedPosition: m.State.AgentRed.Position, BluePosition: m.State.AgentBlue.Position, RedReasoning: redReason, BlueReasoning: blueReason, RedState: m.State.AgentRed, BlueState: m.State.AgentBlue})
+		m.Rounds = append(m.Rounds, Round{Round: turn.Round, RedAction: turn.RedAction, BlueAction: turn.BlueAction, RedHP: m.State.AgentRed.HP, BlueHP: m.State.AgentBlue.HP, RedPosition: m.State.AgentRed.Position, BluePosition: m.State.AgentBlue.Position, RedReasoning: redReason, BlueReasoning: blueReason, RedState: m.State.AgentRed, BlueState: m.State.AgentBlue, RedLLMCallID: redCallID, BlueLLMCallID: blueCallID})
 		m.CurrentRound = m.State.CurrentRound
 		m.UpdatedAt = time.Now().Unix()
 		if err := r.store.SaveMatch(m, ""); err != nil {
@@ -219,6 +246,10 @@ func BuildEvidence(cfg Config, m *Match) (Evidence, string, string, error) {
 	initial := engine.NewEngine().NewGame(m.TournamentID, m.RedAgent.Name, m.BlueAgent.Name, m.RedAgent.Personality, m.BlueAgent.Personality)
 	initial.Status = engine.StatusPlaying
 	e := Evidence{SchemaVersion: 1, EngineVersion: "agent-arena-grid-v1", ChainID: cfg.ChainID, ManagerAddress: address(cfg.ManagerAddress), TournamentID: m.TournamentID, Mode: m.Mode, RedAgent: m.RedAgent, BlueAgent: m.BlueAgent, InitialState: *initial, Rounds: m.Rounds, FinalState: m.State, Outcome: m.Outcome, WinnerAddress: m.WinnerAddress}
+	if len(m.LLMCalls) > 0 {
+		e.SchemaVersion = 2
+		e.LLMCalls = m.LLMCalls
+	}
 	b, err := json.Marshal(e)
 	if err != nil {
 		return e, "", "", err

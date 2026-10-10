@@ -1,5 +1,23 @@
 # 作业演示视频
 
+## 重录方向（2026-10-10 用户确认）
+
+033 本地功能验收已新增真实模型赛事 #5（qwen3.5-plus，14 回合、28 次成功调用、100 DUSD 领奖）与退款赛事 #6（25 DUSD）。见 [测试报告](TEST_REPORT.md)；此次验收使用 CLI 测试账户签名，尚未制作新现场操作成片，不能把现在的回放称为录像时新发起的比赛。
+
+下方 9 分 56 秒版本保留为讲解参考。用户要求下一版以新发生的本地业务操作为主：创建赛事、赞助、报名、真实 LLM 对战、结果审核与领奖，以及取消/退款。先完成真实功能验收，再重录；模型配置存在、旧比赛回放和 mocked 测试均不能当作真实调用成功。
+
+新视频继续使用英文配音及中英字幕。约 7 分钟展示实际操作，约 2 分钟解释架构和关键技术，剩余时间说明问题与限制。模型等待或本地审核时间若剪辑/快进，要在画面标注；真实平局不得指定假赢家。每个镜头对应保存的赛事 ID、交易回执或模型调用记录。CLI 测试签名与 MetaMask 界面签名须分别说明。
+
+用户已接受 Render 免费演示环境的数据重置与冷启动限制。重录时应加入以下对应旁白（公网尚未实际部署时使用将来时，不提前声称在线可用）：
+
+> The main demonstration runs locally. The planned public demo uses Render's free tier, which may sleep when idle and reset its local database after a restart or redeployment. This is a coursework demo, and its long-term availability has not been validated.
+
+> 主要功能在本地演示。计划中的公网演示使用 Render 免费实例，闲置后可能休眠，重启或重新部署后本地数据库可能重置。这是课程演示环境，其长期可用性尚未验证。
+
+实际部署成功后，补录公开 URL 的访问画面，并将 “planned public demo” 改为 “public demo”。本节是重录要求，尚不是新视频的完成记录。
+
+## 已有讲解版
+
 主查看文件为 [demo-captioned.mp4](../../deliverables/demo-video/demo-captioned.mp4)：英文配音与烧录的中英文双语字幕。建议用本地播放器全屏查看；课程系统提交前核对其格式、大小和上传规则。
 
 成片为 **596.400 秒（9 分 56 秒）、1920 × 1080、H.264 + AAC**，字幕版约 **30.3 MB**。英文配音使用 macOS Samantha 合成声音，语速参数 145。完整解码通过；50 组字幕与配音时间轴逐条对应，音视频时长差 8 毫秒。已抽查 14 个关键时点的画面与双语字幕排版。详见[媒体验证记录](evidence/demo-video-verification-2026-10-10.json)和[封面](evidence/demo-video-cover-2026-10-10.png)。

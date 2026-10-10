@@ -1,0 +1,11 @@
+?   	agent-arena/backend/cmd/course-server	[no test files]
+?   	agent-arena/backend/cmd/llm-check	[no test files]
+?   	agent-arena/backend/cmd/server	[no test files]
+ok  	agent-arena/backend/internal/agent	0.433s
+ok  	agent-arena/backend/internal/api	(cached)
+ok  	agent-arena/backend/internal/blockchain	(cached)
+?   	agent-arena/backend/internal/blockchain/bindings	[no test files]
+ok  	agent-arena/backend/internal/engine	(cached)
+ok  	agent-arena/backend/internal/tournament	0.909s
+ok  	agent-arena/backend/internal/user	(cached)
+?   	agent-arena/backend/scripts	[no test files]

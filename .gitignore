@@ -44,6 +44,8 @@ devlog/*
 !devlog/030-frontend-usability.md
 !devlog/031-bilingual-interface.md
 !devlog/032-narrated-demo.md
+!devlog/033-local-llm-demo.md
+tooling/__pycache__/
 
 # Narrated demo video outputs (sources and production notes are versioned)
 deliverables/demo-video/

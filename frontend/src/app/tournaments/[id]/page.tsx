@@ -19,7 +19,7 @@ import {
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useAccount, useBlock, useReadContract } from "wagmi";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { encodeFunctionData, zeroAddress, type Address } from "viem";
 import { tournamentManagerAbi, courseTokenAbi } from "@/lib/course-abi";
 import { useAuth } from "@/lib/auth";
@@ -37,6 +37,7 @@ import {
   reviewComplete as isReviewComplete,
   canExpire,
   verifyEvidence,
+  canResumeMatch,
   type Tournament,
   type AgentProfile,
   type AuditEvent,
@@ -92,10 +93,16 @@ export default function TournamentPage() {
     agents: AgentProfile[];
     total: number;
   }>("/api/agents/my", token);
-  const match = useCourseResource<MatchResult>(
-    `/api/tournaments/${id}/match`,
-    !!t && t.status !== "open",
-  );
+  const match = useQuery({
+    queryKey: ["course", `/api/tournaments/${id}/match`],
+    queryFn: () => request<MatchResult>(`/api/tournaments/${id}/match`),
+    enabled: !!t && t.status !== "open",
+    refetchInterval: (query) =>
+      ["queued", "running"].includes(query.state.data?.status || "")
+        ? 2000
+        : 10000,
+    retry: 1,
+  });
   const evidence = useCourseResource<Evidence>(
     `/api/tournaments/${id}/evidence`,
     match.data?.status === "completed",
@@ -275,14 +282,28 @@ export default function TournamentPage() {
     );
   }
   async function run() {
-    if (!token) return;
+    if (
+      !token ||
+      !organizer ||
+      !t ||
+      t.status !== "running" ||
+      now <= 0 ||
+      canExpire(t, now) ||
+      config?.execution_mode === "unavailable" ||
+      (match.data && !canResumeMatch(match.data))
+    )
+      return;
     setBusy(true);
     setError(null);
     try {
-      await request<MatchResult>(`/api/tournaments/${id}/run`, {
+      const result = await request<MatchResult>(`/api/tournaments/${id}/run`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });
+      queryClient.setQueryData(
+        ["course", `/api/tournaments/${id}/match`],
+        result,
+      );
       await queryClient.invalidateQueries({
         queryKey: ["course", `/api/tournaments/${id}/match`],
       });
@@ -826,46 +847,86 @@ export default function TournamentPage() {
     } else {
       const running = ["queued", "running"].includes(match.data?.status || "");
       const failed = match.data?.status === "failed";
+      const interrupted = match.data?.status === "interrupted";
+      const retryable = canResumeMatch(match.data);
+      const unavailable = config?.execution_mode === "unavailable";
       nextTitle = running
         ? l("Agent 正在对战", "Agents are playing the match")
         : failed
           ? l("对战执行失败", "Match execution failed")
-          : match.data?.status === "interrupted"
-            ? l(
-                "对战中断，可以继续执行",
-                "Match interrupted: execution can resume",
-              )
-            : l(
-                "比赛已开赛，现在运行 Agent 对战",
-                "Tournament started: run the Agent match",
-              );
+          : interrupted
+            ? retryable
+              ? l(
+                  "对战中断，可以继续执行",
+                  "Match interrupted: execution can resume",
+                )
+              : l("对战中断，暂不能恢复", "Match interrupted: resume unavailable")
+            : unavailable
+              ? l("比赛服务尚不可用", "Match execution is unavailable")
+              : l(
+                  "比赛已开赛，现在运行 Agent 对战",
+                  "Tournament started: run the Agent match",
+                );
       nextDescription = running
         ? l(
-            "回合记录会自动更新。你可以在下方观察对战进度。",
-            "Round records update automatically. Follow the match progress below.",
+            "回合和模型调用记录会自动更新。下方展示成功、失败和用量；配置了模型不代表已经调用成功。",
+            "Round and model-call records update automatically below, including successes, failures, and usage. Configuring a model does not prove a successful call.",
           )
-        : failed
+        : retryable
           ? l(
-              "请查看下方错误记录并联系维护者；最终期限到达后可走退款流程。",
-              "Check the error record below and contact the maintainer. The refund process becomes available after the final deadline.",
+              "后台允许从已保存的进度恢复；此前失败调用仍会保留，执行模式不变。先核对下方错误，模型凭据或服务有问题时请维护者修复。",
+              "The backend allows resuming the saved progress in the same mode. Earlier failed calls remain recorded. Inspect the error below and ask the maintainer to fix model credentials or service issues first.",
             )
-          : l(
-              "系统执行对战并保存回合记录。完成后，你还需要提交结果供审核。",
-              "The system runs the match and saves each round. You must then submit the result for review.",
-            );
+          : failed || interrupted
+            ? l(
+              "后台尚未允许恢复，请查看错误记录并联系维护者；最终期限到达后可按规则退款。",
+              "The backend has not allowed resuming. Inspect the error record and contact the maintainer; refunds become available under the rules after the final deadline.",
+            )
+            : unavailable
+              ? l(
+                  "未配置可用模型，且没有启用模拟。请维护者配置模型服务或显式启用演示模拟；页面不会把不可用模型当作成功对战。",
+                  "No model is configured and simulation is disabled. Ask the maintainer to configure a model or explicitly enable demo simulation; an unavailable model is not treated as a successful match.",
+                )
+              : l(
+                  "系统执行对战并保存回合记录。模型模式与成功调用将在下方明确展示；完成后仍需提交结果供审核。",
+                  "The system runs the match and saves each round. Its mode and successful calls are shown below; you must still submit the completed result for review.",
+                );
       nextContent = (
-        <Button
-          size="lg"
-          disabled={!token || busy || running || failed}
-          onClick={run}
-        >
-          <Play size={18} className="mr-2" />
-          {running
-            ? l("对战进行中…", "Match in progress…")
-            : match.data?.status === "interrupted"
-              ? l("恢复对战执行", "Resume match execution")
-              : l("运行 Agent 对战", "Run Agent match")}
-        </Button>
+        <div className="space-y-3">
+          {config?.execution_mode === "llm" && !match.data && (
+            <p className="text-sm">
+              {l("配置的模型：", "Configured model: ")}
+              <span className="font-semibold">{config.llm_model || l("名称待确认", "Name unconfirmed")}</span>
+              {config.llm_provider && ` · ${config.llm_provider}`}
+              {config.llm_timeout_seconds != null && l(` · 单次超时 ${config.llm_timeout_seconds} 秒`, ` · ${config.llm_timeout_seconds}s call timeout`)}
+            </p>
+          )}
+          {config?.execution_mode === "deterministic_simulation" && !match.data && (
+            <p className="text-sm text-amber-800">
+              {l("本次将运行确定性模拟，不调用 LLM。", "This run will use deterministic simulation, without calling an LLM.")}
+            </p>
+          )}
+          {match.data?.mode === "llm" && match.data.llm_summary && (
+            <p className="text-sm">
+              <span className="font-semibold">{match.data.llm_summary.model}</span>
+              {l(` · 成功 ${match.data.llm_summary.succeeded} 次 / 失败 ${match.data.llm_summary.failed} 次`, ` · ${match.data.llm_summary.succeeded} successful / ${match.data.llm_summary.failed} failed calls`)}
+            </p>
+          )}
+          <Button
+            size="lg"
+            disabled={!token || busy || running || unavailable || now <= 0 || (!!match.data && !retryable)}
+            onClick={run}
+          >
+            <Play size={18} className="mr-2" />
+            {busy
+              ? l("正在请求执行…", "Requesting execution…")
+              : running
+                ? l("对战进行中…", "Match in progress…")
+                : retryable
+                  ? l("恢复对战执行", "Resume match execution")
+                  : l("运行 Agent 对战", "Run Agent match")}
+          </Button>
+        </div>
       );
     }
   } else if (auditor && reviewState) {

@@ -34,6 +34,14 @@ type Server struct {
 
 func NewServer(cfg Config, store *Store, chain ChainReader, llm agent.LLMClient) (*Server, error) {
 	cfg.Defaults()
+	if cfg.LLMMaxCalls > 120 {
+		return nil, fmt.Errorf("LLM_MAX_CALLS cannot exceed 120 per match")
+	}
+	if llm != nil {
+		info := clientInfo(llm, cfg)
+		cfg.LLMProvider, cfg.LLMModel = info.Provider, info.Model
+		cfg.LLMTimeoutSeconds = info.TimeoutSeconds
+	}
 	if store == nil {
 		return nil, fmt.Errorf("persistent store is required")
 	}
@@ -186,7 +194,13 @@ func (s *Server) routes() {
 	})
 	api := s.router.Group("/api")
 	api.GET("/config", func(c *gin.Context) {
-		c.JSON(200, gin.H{"chain_id": s.cfg.ChainID, "deployment_configured": s.chain != nil && s.cfg.HasDeployment(), "manager_address": s.cfg.ManagerAddress, "escrow_address": s.cfg.EscrowAddress, "registry_address": s.cfg.RegistryAddress, "review_address": s.cfg.ReviewAddress, "token_address": s.cfg.TokenAddress, "token_decimals": s.cfg.TokenDecimals, "deployment_block": s.cfg.DeploymentBlock, "confirmations": s.cfg.Confirmations, "simulation_enabled": s.cfg.SimulationEnabled, "auth_domain": s.cfg.AuthDomain})
+		mode := "unavailable"
+		if s.runner.llm != nil {
+			mode = "llm"
+		} else if s.cfg.SimulationEnabled {
+			mode = "deterministic_simulation"
+		}
+		c.JSON(200, gin.H{"chain_id": s.cfg.ChainID, "deployment_configured": s.chain != nil && s.cfg.HasDeployment(), "manager_address": s.cfg.ManagerAddress, "escrow_address": s.cfg.EscrowAddress, "registry_address": s.cfg.RegistryAddress, "review_address": s.cfg.ReviewAddress, "token_address": s.cfg.TokenAddress, "token_decimals": s.cfg.TokenDecimals, "deployment_block": s.cfg.DeploymentBlock, "confirmations": s.cfg.Confirmations, "simulation_enabled": s.cfg.SimulationEnabled, "auth_domain": s.cfg.AuthDomain, "llm_configured": s.runner.llm != nil, "execution_mode": mode, "llm_provider": s.cfg.LLMProvider, "llm_model": s.cfg.LLMModel, "llm_timeout_seconds": s.cfg.LLMTimeoutSeconds, "llm_max_calls": s.cfg.LLMMaxCalls})
 	})
 	api.POST("/auth/nonce", func(c *gin.Context) {
 		var req struct {
@@ -305,7 +319,7 @@ func (s *Server) routes() {
 			apiError(c, 409, "run_unavailable", err.Error())
 			return
 		}
-		c.JSON(202, m)
+		c.JSON(202, s.runner.PublicMatch(m))
 	})
 	api.GET("/tournaments/:id/match", func(c *gin.Context) {
 		id, ok := tournamentID(c)
@@ -317,7 +331,7 @@ func (s *Server) routes() {
 			apiError(c, 404, "match_not_found", "No persisted match exists for this tournament.")
 			return
 		}
-		c.JSON(200, m)
+		c.JSON(200, s.runner.PublicMatch(m))
 	})
 	api.GET("/tournaments/:id/evidence", func(c *gin.Context) {
 		id, ok := tournamentID(c)
@@ -480,7 +494,7 @@ func (s *Server) ws(c *gin.Context) {
 		m, _, err := s.store.Match(id)
 		if err == nil {
 			_ = conn.SetWriteDeadline(time.Now().Add(5 * time.Second))
-			if err := conn.WriteJSON(gin.H{"type": "match_update", "data": m}); err != nil {
+			if err := conn.WriteJSON(gin.H{"type": "match_update", "data": s.runner.PublicMatch(m)}); err != nil {
 				return
 			}
 		}

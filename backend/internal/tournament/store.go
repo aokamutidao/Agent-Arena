@@ -439,6 +439,13 @@ func (s *Store) RecoverRuns() error {
 		m.Status = "interrupted"
 		m.Error = "Server restarted; organizer can resume the persisted round after chain validation."
 		m.UpdatedAt = time.Now().Unix()
+		for n := range m.LLMCalls {
+			if m.LLMCalls[n].ErrorCode == "in_progress" {
+				m.LLMCalls[n].ErrorCode = "cancelled"
+				m.LLMCalls[n].Success = false
+			}
+		}
+		m.LLMSummary = summarizeCalls(m.LLMCalls)
 		if err := s.SaveMatch(m, ""); err != nil {
 			return err
 		}
