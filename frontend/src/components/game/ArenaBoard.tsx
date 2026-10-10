@@ -1,5 +1,7 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
+
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { GameDetail } from "@/types/game";
@@ -24,6 +26,7 @@ const px = (gx: number) => gx * CELL_SIZE;
 const py = (gy: number) => (9 - gy) * CELL_SIZE;
 
 export function ArenaBoard({ gameState }: ArenaBoardProps) {
+  const { l } = useI18n();
   const [redPos, setRedPos] = useState({ x: 1, y: 1 });
   const [bluePos, setBluePos] = useState({ x: 8, y: 8 });
   const [shake, setShake] = useState({ x: 0, y: 0 });
@@ -240,8 +243,8 @@ export function ArenaBoard({ gameState }: ArenaBoardProps) {
                   animate={{ scale: 1, y: 0 }}
                   transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
                 >
-                  {(redDead && blueDead) ? "💀 同归于尽" :
-                    redDead ? "💀 红方阵亡" : "💀 蓝方阵亡"}
+                  {(redDead && blueDead) ? l("💀 同归于尽", "💀 Both agents defeated") :
+                    redDead ? l("💀 红方阵亡", "💀 Red defeated") : l("💀 蓝方阵亡", "💀 Blue defeated")}
                 </motion.div>
               </motion.div>
             )}

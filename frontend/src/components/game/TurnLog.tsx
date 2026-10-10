@@ -1,5 +1,7 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
+
 import type { TurnRecord } from "@/types/game";
 
 interface TurnLogProps {
@@ -35,10 +37,11 @@ function actionIcon(type: string): string {
 }
 
 export function TurnLog({ turns }: TurnLogProps) {
+  const { l } = useI18n();
   if (!turns || turns.length === 0) {
     return (
       <div className="text-sm text-muted-foreground text-center py-4">
-        暂无回合记录
+        {l("暂无回合记录", "No rounds recorded yet")}
       </div>
     );
   }

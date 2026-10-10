@@ -167,12 +167,54 @@ export interface EvidenceNote {
 export class ApiError extends Error {
     constructor(message: string, public status: number) { super(message); this.name = "ApiError"; }
 }
-export function errorMessage(error: unknown): string {
-    if (error instanceof Error) {
-        const brief = "shortMessage" in error && typeof error.shortMessage === "string" ? error.shortMessage : error.message;
-        return brief || "请求失败";
-    }
-    return typeof error === "string" ? error : "请求失败，请检查网络并重试。";
+const ENGLISH_ERRORS: Record<string, string> = {
+  请求失败: "Request failed.",
+  "请求失败，请检查网络并重试。":
+    "Request failed. Check your connection and try again.",
+  "服务未返回有效 JSON，请检查 API 地址。":
+    "The service returned invalid JSON. Check the API address.",
+  "代币精度配置无效。": "Invalid token decimal configuration.",
+  "金额超出合约范围。": "The amount exceeds the contract limit.",
+  "连接钱包并切换至已部署网络后，才能发送交易。":
+    "Connect your wallet and switch to the deployed network before sending a transaction.",
+  "目标地址没有合约代码，请检查部署配置。":
+    "There is no contract at the target address. Check the deployment configuration.",
+  "钱包或网络已变化，请重新估算。":
+    "Your wallet or network has changed. Estimate the transaction again.",
+  "原交易已被取消或替换为其他操作，请核查新交易回执后重试。":
+    "The original transaction was cancelled or replaced. Check the replacement receipt before trying again.",
+  "交易已上链但执行回滚；请查看交易回执。":
+    "The transaction was included on-chain but reverted. Check its receipt.",
+  "确认数不足，请稍后继续检查。":
+    "Not enough confirmations yet. Check again shortly.",
+  "原交易已被取消或替换为其他操作，请核查新交易回执。":
+    "The original transaction was cancelled or replaced. Check the replacement receipt.",
+  "交易回执显示执行回滚。": "The transaction receipt indicates a revert.",
+  "请先连接钱包。": "Connect your wallet first.",
+  "签名期间钱包或网络已变化，请重新登录。":
+    "Your wallet or network changed while signing. Sign in again.",
+};
+
+/** Translate known UI failures only; retain unknown service/provider diagnostics verbatim. */
+export function errorMessage(error: unknown, lang: "zh" | "en" = "zh"): string {
+  const brief =
+    error instanceof Error
+      ? ("shortMessage" in error && typeof error.shortMessage === "string"
+          ? error.shortMessage
+          : error.message) || "请求失败"
+      : typeof error === "string"
+        ? error
+        : "请求失败，请检查网络并重试。";
+  if (lang === "zh") return brief;
+  if (ENGLISH_ERRORS[brief]) return ENGLISH_ERRORS[brief];
+  const precision = brief.match(/^请输入非负金额，最多 (\d+) 位小数。$/);
+  if (precision)
+    return `Enter a non-negative amount with at most ${precision[1]} decimal places.`;
+  const http = brief.match(/^服务返回 HTTP (\d+)$/);
+  if (http) return `The service returned HTTP ${http[1]}.`;
+  if (brief.startsWith("交易状态待确认："))
+    return `Transaction status unconfirmed: ${errorMessage(brief.slice("交易状态待确认：".length), lang)}`;
+  return brief;
 }
 export async function request<T>(path: string, init?: RequestInit): Promise<T> {
     const res = await fetch(`${API_URL}${path}`, { ...init, signal: init?.signal ?? AbortSignal.timeout(20000), headers: { "Content-Type": "application/json", ...init?.headers } });
@@ -201,7 +243,7 @@ export function shortAddress(value: string | undefined): string { return value ?
 export function sameAddress(a?: string, b?: string): boolean { return !!a && !!b && a.toLowerCase() === b.toLowerCase(); }
 export const STATUS_LABEL: Record<TournamentStatus, string> = { open: "开放报名", running: "对战中", result_submitted: "结果审核", disputed: "存在异议", finalized: "已结算", cancelled: "已取消" };
 export function explorer(chainId: number, tx: string): string | null { return chainId === 11155111 ? `https://sepolia.etherscan.io/tx/${tx}` : null; }
-export function dateTime(seconds: number): string { return seconds ? new Date(seconds * 1000).toLocaleString("zh-CN") : "—"; }
+export function dateTime(seconds: number, lang: "zh" | "en" = "zh"): string { return seconds ? new Date(seconds * 1000).toLocaleString(lang === "zh" ? "zh-CN" : "en-GB") : "—"; }
 export function registrationOpen(t: Tournament, now: number): boolean { return t.status === "open" && now < t.registration_deadline; }
 export function reviewComplete(t: Tournament, now: number): boolean { return now >= t.review_deadline && now < t.settlement_deadline; }
 export function canExpire(t: Tournament, now: number): boolean {

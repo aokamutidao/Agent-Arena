@@ -1,13 +1,21 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 
-type Language = "en" | "zh";
+export type Language = "en" | "zh";
 
 interface I18nContextType {
   lang: Language;
   setLang: (lang: Language) => void;
   t: (key: string) => string;
+  /** Keep course UI translations together; user content is never translated. */
+  l: (zh: string, en: string) => string;
 }
 
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
@@ -26,7 +34,8 @@ const translations = {
 
     // 首页
     "home.title": "AI Agent Arena",
-    "home.subtitle": "Watch AI Agents battle, bet on winners, and influence strategies",
+    "home.subtitle":
+      "Watch AI Agents battle, bet on winners, and influence strategies",
     "home.activeGames": "Active Games",
     "home.noGames": "No active games",
     "home.startGame": "Start Game",
@@ -88,9 +97,11 @@ const translations = {
     "wallet.querying": "Querying...",
     "wallet.queryClaimable": "Query Claimable Bets",
     "wallet.connectToView": "Connect wallet to view claimable bets",
-    "wallet.clickToQuery": "Click 'Query Claimable Bets' button to check on-chain winnings",
+    "wallet.clickToQuery":
+      "Click 'Query Claimable Bets' button to check on-chain winnings",
     "wallet.queryingChain": "Querying on-chain data, please wait...",
-    "wallet.noClaimable": "No claimable bets. Place bets and win to claim winnings here",
+    "wallet.noClaimable":
+      "No claimable bets. Place bets and win to claim winnings here",
     "wallet.canClaim": "Claimable",
     "wallet.claiming": "Claiming...",
     "wallet.refreshing": "Refreshing...",
@@ -152,9 +163,11 @@ const translations = {
     "game.creating": "Creating...",
     "game.newGame": "🆕 New Game",
     "game.overtime": "⚡ Overtime!",
-    "game.overtimeDesc": "Both HP equal, Sudden Death — 10 damage each per round",
+    "game.overtimeDesc":
+      "Both HP equal, Sudden Death — 10 damage each per round",
     "game.archived": "🗄️ Archived (server restart)",
-    "game.archivedDesc": "Final result from database, turn details not persisted before restart.",
+    "game.archivedDesc":
+      "Final result from database, turn details not persisted before restart.",
     "game.viewHistory": "View full records in",
     "game.battleHistory": "Battle History",
     "game.turnLog": "📜 Turn Log",
@@ -176,11 +189,13 @@ const translations = {
     "history.redWins": "🔴 Red wins",
     "history.blueWins": "🔵 Blue wins",
     "history.refresh": "Refresh",
-    "history.noRecords": "No battle records yet. Complete a battle to see it here.",
+    "history.noRecords":
+      "No battle records yet. Complete a battle to see it here.",
     "history.details": "Details →",
     "history.viewOnEtherscan": "View on Sepolia Etherscan",
     "history.onChainRecord": "⛓️ On-chain record",
-    "history.offChainDesc": "History before contract redeployment, not on-chain",
+    "history.offChainDesc":
+      "History before contract redeployment, not on-chain",
     "history.offChain": "📝 Off-chain (legacy)",
     "history.syncingDesc": "On-chain transaction pending, refresh later",
     "history.syncing": "⏳ Syncing to chain",
@@ -191,15 +206,18 @@ const translations = {
     "pve.selectAgent": "Select Your Agent",
     "pve.selectOpponent": "Select Opponent",
     "pve.startChallenge": "Start Challenge",
-    "pve.berserkerDesc": "Aggressive warrior, shortest path attack, likes charge burst",
+    "pve.berserkerDesc":
+      "Aggressive warrior, shortest path attack, likes charge burst",
     "pve.medium": "Medium",
-    "pve.tacticianDesc": "Tactical master, controls distance, ranged skills, patient",
+    "pve.tacticianDesc":
+      "Tactical master, controls distance, ranged skills, patient",
     "pve.hard": "Hard",
     "pve.tricksterDesc": "Deceptive, fake retreat then charge, uses obstacles",
     "pve.difficulty": "Difficulty",
     "pve.challengeFee": "Challenge Fee",
     "pve.winReward": "Win Reward",
-    "pve.defenderDesc": "Iron defense, waits for opponent overextension, counter-attack expert",
+    "pve.defenderDesc":
+      "Iron defense, waits for opponent overextension, counter-attack expert",
     "pve.easy": "Easy",
 
     // 登录
@@ -356,7 +374,8 @@ const translations = {
     "game.creating": "创建中...",
     "game.newGame": "🆕 新建对局",
     "game.overtime": "⚡ 加时赛！",
-    "game.overtimeDesc": "双方 HP 相同，进入 Sudden Death — 每回合双方各受 10 点伤害",
+    "game.overtimeDesc":
+      "双方 HP 相同，进入 Sudden Death — 每回合双方各受 10 点伤害",
     "game.archived": "🗄️ 已归档（后端重启）",
     "game.archivedDesc": "最终结果来自数据库，回合明细在重启前未持久化。",
     "game.viewHistory": "完整链上记录请前往",
@@ -424,27 +443,51 @@ const translations = {
 };
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Language>("en");
+  const [lang, setLangState] = useState<Language>("zh");
 
   // 从 localStorage 读取语言偏好
   useEffect(() => {
-    const savedLang = localStorage.getItem("lang") as Language;
-    if (savedLang && (savedLang === "en" || savedLang === "zh")) {
-      setLangState(savedLang);
+    try {
+      const savedLang = localStorage.getItem("lang");
+      if (savedLang === "en" || savedLang === "zh") setLangState(savedLang);
+    } catch {
+      // Storage may be unavailable in a restricted browser; switching still works.
     }
   }, []);
 
+  useEffect(() => {
+    document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+    document.title =
+      lang === "zh"
+        ? "Agent Arena — 赛事奖金托管"
+        : "Agent Arena — Tournament Prize Escrow";
+    document.querySelector('meta[name="description"]')?.setAttribute(
+      "content",
+      lang === "zh"
+        ? "赛事奖金提前托管，比赛结果独立审核，领奖与退款全程可查。"
+        : "Tournament prizes held in escrow, independently reviewed results, and traceable prize claims and refunds.",
+    );
+  }, [lang]);
+
   const setLang = (newLang: Language) => {
     setLangState(newLang);
-    localStorage.setItem("lang", newLang);
+    try {
+      localStorage.setItem("lang", newLang);
+    } catch {
+      // A session-only preference is sufficient if persistence is blocked.
+    }
   };
 
   const t = (key: string): string => {
-    return translations[lang][key as keyof typeof translations[typeof lang]] || key;
+    return (
+      translations[lang][key as keyof (typeof translations)[typeof lang]] || key
+    );
   };
 
   return (
-    <I18nContext.Provider value={{ lang, setLang, t }}>
+    <I18nContext.Provider
+      value={{ lang, setLang, t, l: (zh, en) => (lang === "zh" ? zh : en) }}
+    >
       {children}
     </I18nContext.Provider>
   );

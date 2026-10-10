@@ -1,0 +1,61 @@
+
+> frontend@0.1.0 build
+> next build
+
+  ▲ Next.js 14.2.35
+  - Environments: .env.local
+
+   Creating an optimized production build ...
+ ⚠ Compiled with warnings
+
+./node_modules/pino/lib/tools.js
+Module not found: Can't resolve 'pino-pretty' in '/Users/mac/Desktop/hackathon/agent-arena/frontend/node_modules/pino/lib'
+
+Import trace for requested module:
+./node_modules/pino/lib/tools.js
+./node_modules/pino/pino.js
+./node_modules/@walletconnect/logger/dist/index.es.js
+./node_modules/@walletconnect/universal-provider/dist/index.es.js
+./node_modules/@walletconnect/ethereum-provider/dist/index.es.js
+./node_modules/wagmi/node_modules/@wagmi/connectors/dist/esm/walletConnect.js
+./node_modules/wagmi/node_modules/@wagmi/connectors/dist/esm/exports/index.js
+./node_modules/wagmi/dist/esm/exports/connectors.js
+./node_modules/@rainbow-me/rainbowkit/dist/index.js
+./src/components/layout/WalletConnect.tsx
+./src/app/agents/page.tsx
+
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/15) ...
+   Generating static pages (3/15)
+   Generating static pages (7/15)
+   Generating static pages (11/15)
+ ✓ Generating static pages (15/15)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+┌ ○ /                                    9.41 kB         150 kB
+├ ○ /_not-found                          880 B          90.1 kB
+├ ○ /agent/create                        168 B          89.4 kB
+├ ƒ /agent/edit/[id]                     168 B          89.4 kB
+├ ○ /agents                              9.82 kB         335 kB
+├ ○ /audit                               7.62 kB         145 kB
+├ ƒ /game/[id]                           168 B          89.4 kB
+├ ○ /guide                               11.1 kB         110 kB
+├ ○ /history                             168 B          89.4 kB
+├ ○ /marketplace                         168 B          89.4 kB
+├ ○ /profile                             168 B          89.4 kB
+├ ○ /pve                                 168 B          89.4 kB
+├ ○ /tournaments                         6.58 kB         351 kB
+├ ƒ /tournaments/[id]                    65.7 kB         410 kB
+└ ○ /wallet                              168 B          89.4 kB
++ First Load JS shared by all            89.2 kB
+  ├ chunks/2117-3e779e8101dfd559.js      31.9 kB
+  ├ chunks/fd9d1056-3ca12b63442747a7.js  53.6 kB
+  └ other shared chunks (total)          3.65 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand

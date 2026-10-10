@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useI18n } from "@/lib/i18n";
 import { Pause, Play, SkipBack, SkipForward } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ArenaBoard } from "@/components/game/ArenaBoard";
@@ -19,6 +20,7 @@ export function MatchReplay({
   match: MatchResult;
   settlementStatus: TournamentStatus;
 }) {
+  const { l } = useI18n();
   const [frame, setFrame] = useState<number | null>(null);
   const [playing, setPlaying] = useState(false);
   useEffect(() => {
@@ -37,10 +39,16 @@ export function MatchReplay({
   }, [frame, match.rounds.length]);
   const settlementNote =
     settlementStatus === "finalized"
-      ? "本场已链上结算，审定冠军见资金区"
+      ? l(
+          "本场已链上结算，审定冠军见资金区",
+          "Settled on-chain; see the funds panel for the approved winner",
+        )
       : settlementStatus === "cancelled"
-        ? "赛事已取消，不发放冠军奖金"
-        : "等待链上审核";
+        ? l(
+            "赛事已取消，不发放冠军奖金",
+            "Tournament cancelled; no winner payout",
+          )
+        : l("等待链上审核", "Awaiting on-chain review");
   const index =
     frame === null
       ? Math.max(0, match.rounds.length - 1)
@@ -72,10 +80,13 @@ export function MatchReplay({
   });
   const game: GameDetail = {
     game_id: match.tournament_id,
-    agent_red: agent(match.red_address, match.red_agent?.name || "红方 Agent"),
+    agent_red: agent(
+      match.red_address,
+      match.red_agent?.name || l("红方 Agent", "Red Agent"),
+    ),
     agent_blue: agent(
       match.blue_address,
-      match.blue_agent?.name || "蓝方 Agent",
+      match.blue_agent?.name || l("蓝方 Agent", "Blue Agent"),
     ),
     status:
       match.status === "completed" && index === match.rounds.length - 1
@@ -95,46 +106,56 @@ export function MatchReplay({
       round?.blue_hp,
       round?.blue_position || { x: 8, y: 8 },
     ),
-    history: match.rounds
-      .slice(0, index + 1)
-      .map((r) => ({
-        round: r.round,
-        red_action: r.red_action,
-        blue_action: r.blue_action,
-        red_hp_after: r.red_hp,
-        blue_hp_after: r.blue_hp,
-        red_reasoning: r.red_reasoning,
-        blue_reasoning: r.blue_reasoning,
-      })),
+    history: match.rounds.slice(0, index + 1).map((r) => ({
+      round: r.round,
+      red_action: r.red_action,
+      blue_action: r.blue_action,
+      red_hp_after: r.red_hp,
+      blue_hp_after: r.blue_hp,
+      red_reasoning: r.red_reasoning,
+      blue_reasoning: r.blue_reasoning,
+    })),
   };
   const matchLabel =
     (
       {
-        queued: "等待运行",
-        running: "对战进行中",
-        completed: "对战完成",
-        failed: "执行失败",
-        interrupted: "执行中断",
+        queued: l("等待运行", "Queued"),
+        running: l("对战进行中", "Match in progress"),
+        completed: l("对战完成", "Match complete"),
+        failed: l("执行失败", "Execution failed"),
+        interrupted: l("执行中断", "Interrupted"),
       } as Record<string, string>
     )[match.status] || match.status;
   return (
     <section className="rounded-2xl border bg-card p-5 sm:p-6 space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-lg font-bold">比赛回放</h2>
+        <h2 className="text-lg font-bold">{l("比赛回放", "Match replay")}</h2>
         <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium">
           {matchLabel}
         </span>
       </div>
       <p className="text-sm text-muted-foreground">
         {match.mode === "llm"
-          ? "由 LLM 模型决策，以下为实际记录的对战过程。"
-          : "本场使用确定性模拟，没有调用 LLM；可用于体验赛事和奖金流程。"}
+          ? l(
+              "由 LLM 模型决策，以下为实际记录的对战过程。",
+              "Decisions were made by an LLM. This replay shows the recorded match.",
+            )
+          : l(
+              "本场使用确定性模拟，没有调用 LLM；可用于体验赛事和奖金流程。",
+              "This match used a deterministic simulation without an LLM, for trying the tournament and prize flow.",
+            )}
       </p>
       {match.status === "completed" && (
         <p className="rounded-xl bg-muted p-4 text-sm">
           {match.winner_address
-            ? `对战胜者 ${shortAddress(match.winner_address)} · ${settlementNote}`
-            : "本场平局，没有冠军。"}
+            ? l(
+                `对战胜者 ${shortAddress(match.winner_address)} · ${settlementNote}`,
+                `Match winner ${shortAddress(match.winner_address)} · ${settlementNote}`,
+              )
+            : l(
+                "本场平局，没有冠军。",
+                "This match ended in a draw with no winner.",
+              )}
         </p>
       )}
       {match.error && (
@@ -165,9 +186,12 @@ export function MatchReplay({
         <div className="space-y-4 rounded-xl border p-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm font-semibold">
-              第 {round?.round} 回合{" "}
+              {l(`第 ${round?.round} 回合`, `Round ${round?.round}`)}{" "}
               <span className="font-normal text-muted-foreground">
-                / 已记录 {match.rounds.length} 回合
+                {l(
+                  `/ 已记录 ${match.rounds.length} 回合`,
+                  `/ ${match.rounds.length} rounds recorded`,
+                )}
               </span>
             </p>
             <div className="flex gap-2">
@@ -175,7 +199,7 @@ export function MatchReplay({
                 size="sm"
                 variant="outline"
                 disabled={index === 0}
-                aria-label="上一回合"
+                aria-label={l("上一回合", "Previous round")}
                 onClick={() => {
                   setPlaying(false);
                   setFrame(Math.max(0, index - 1));
@@ -198,13 +222,13 @@ export function MatchReplay({
                 ) : (
                   <Play size={15} className="mr-1" />
                 )}
-                {playing ? "暂停" : "播放回放"}
+                {playing ? l("暂停", "Pause") : l("播放回放", "Play replay")}
               </Button>
               <Button
                 size="sm"
                 variant="outline"
                 disabled={index === match.rounds.length - 1}
-                aria-label="下一回合"
+                aria-label={l("下一回合", "Next round")}
                 onClick={() => {
                   setPlaying(false);
                   setFrame(Math.min(match.rounds.length - 1, index + 1));
@@ -215,7 +239,7 @@ export function MatchReplay({
             </div>
           </div>
           <input
-            aria-label="选择回放回合"
+            aria-label={l("选择回放回合", "Choose replay round")}
             className="block w-full accent-emerald-600"
             type="range"
             min="0"
@@ -233,17 +257,23 @@ export function MatchReplay({
               setFrame(null);
             }}
           >
-            跟随最新回合
+            {l("跟随最新回合", "Follow latest round")}
           </button>
         </div>
       ) : (
         <p className="text-sm text-muted-foreground">
-          暂无回合记录，执行对战后自动更新。
+          {l(
+            "暂无回合记录，执行对战后自动更新。",
+            "No rounds recorded yet. This updates automatically when the match runs.",
+          )}
         </p>
       )}
       <details className="border-t pt-4">
         <summary className="cursor-pointer text-sm font-medium">
-          查看回合动作与决策记录
+          {l(
+            "查看回合动作与决策记录",
+            "View round actions and decision records",
+          )}
         </summary>
         <div className="mt-4">
           <TurnLog turns={game.history} />

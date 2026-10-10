@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { config } from "@/lib/wagmi";
 import { AuthProvider } from "@/lib/auth";
-import { I18nProvider } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n";
 
 import "@rainbow-me/rainbowkit/styles.css";
 
@@ -17,13 +17,12 @@ interface ProvidersProps {
 }
 
 export default function WalletProviders({ children }: ProvidersProps) {
+  const { lang } = useI18n();
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider locale="zh-CN">
-          <I18nProvider>
-            <AuthProvider>{children}</AuthProvider>
-          </I18nProvider>
+        <RainbowKitProvider locale={lang === "zh" ? "zh-CN" : "en-US"}>
+          <AuthProvider>{children}</AuthProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>

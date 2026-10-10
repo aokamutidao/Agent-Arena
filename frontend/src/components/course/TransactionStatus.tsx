@@ -15,35 +15,58 @@ import {
 import { formatEther } from "viem";
 import { useCourseConfig } from "@/hooks/useCourse";
 import type { useWalletTransaction } from "@/hooks/useWalletTransaction";
-import { explorer, shortAddress } from "@/lib/course";
+import { errorMessage, explorer, shortAddress } from "@/lib/course";
+import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 type Transaction = ReturnType<typeof useWalletTransaction>;
 
-const headings: Record<Transaction["stage"], string> = {
-  idle: "交易操作",
-  estimating: "正在检查这笔操作",
-  ready: "请确认本次操作",
-  signing: "请在钱包中签名",
-  confirming: "已发送，等待链上确认",
-  success: "交易已确认成功",
-  error: "本次操作未成功",
-  unknown: "交易状态需要核查",
-};
-
-const descriptions: Record<Transaction["stage"], string> = {
-  idle: "",
-  estimating: "正在模拟交易并估算网络费用，请稍候。",
-  ready: "核对操作与费用后，点击下方按钮，再到钱包中确认。",
-  signing: "钱包会展示交易详情。批准后才会发送，拒绝签名不会付款。",
-  confirming: "交易正在等待确认，请勿重复提交同一操作。",
-  success: "链上操作已完成。审计流水可能需要稍后才能同步。",
-  error: "查看下方原因，处理后重新选择操作并估算。",
-  unknown: "尚未确认最终结果。先检查回执，避免重复付款。",
-};
-
 export function TransactionStatus({ tx }: { tx: Transaction }) {
+  const { lang, l } = useI18n();
+  const headings: Record<Transaction["stage"], string> = {
+    idle: l("交易操作", "Transaction"),
+    estimating: l("正在检查这笔操作", "Checking this operation"),
+    ready: l("请确认本次操作", "Review this operation"),
+    signing: l("请在钱包中签名", "Sign with your wallet"),
+    confirming: l("已发送，等待链上确认", "Sent, awaiting confirmation"),
+    success: l("交易已确认成功", "Transaction confirmed"),
+    error: l("本次操作未成功", "Operation unsuccessful"),
+    unknown: l("交易状态需要核查", "Check transaction status"),
+  };
+
+  const descriptions: Record<Transaction["stage"], string> = {
+    idle: "",
+    estimating: l(
+      "正在模拟交易并估算网络费用，请稍候。",
+      "Simulating the transaction and estimating the network fee. Please wait.",
+    ),
+    ready: l(
+      "核对操作与费用后，点击下方按钮，再到钱包中确认。",
+      "Review the operation and fee, then use the button below and confirm in your wallet.",
+    ),
+    signing: l(
+      "钱包会展示交易详情。批准后才会发送，拒绝签名不会付款。",
+      "Your wallet will show the transaction details. It is sent only after approval; rejecting the request makes no payment.",
+    ),
+    confirming: l(
+      "交易正在等待确认，请勿重复提交同一操作。",
+      "The transaction is awaiting confirmation. Do not submit the same operation again.",
+    ),
+    success: l(
+      "链上操作已完成。审计流水可能需要稍后才能同步。",
+      "The on-chain operation is complete. Audit records may take a little longer to sync.",
+    ),
+    error: l(
+      "查看下方原因，处理后重新选择操作并估算。",
+      "Check the reason below, resolve the issue, then select and estimate the operation again.",
+    ),
+    unknown: l(
+      "尚未确认最终结果。先检查回执，避免重复付款。",
+      "The final result is not yet known. Check the receipt first to avoid a duplicate payment.",
+    ),
+  };
+
   const { data: config } = useCourseConfig();
   const dialog = useRef<HTMLDialogElement>(null);
   const primaryButton = useRef<HTMLButtonElement>(null);
@@ -146,7 +169,7 @@ export function TransactionStatus({ tx }: { tx: Transaction }) {
                 {headings[tx.stage]}
               </p>
               <p className="mt-1 truncate text-xs text-slate-500">
-                {tx.prepared?.label || "当前交易"}
+                {tx.prepared?.label || l("当前交易", "Current transaction")}
               </p>
             </div>
           </div>
@@ -157,10 +180,10 @@ export function TransactionStatus({ tx }: { tx: Transaction }) {
             onClick={() => setExpanded(true)}
           >
             {tx.stage === "ready"
-              ? "继续确认交易"
+              ? l("继续确认交易", "Continue transaction review")
               : tx.stage === "unknown"
-                ? "查看并检查回执"
-                : "查看交易进度"}
+                ? l("查看并检查回执", "View and check receipt")
+                : l("查看交易进度", "View transaction progress")}
           </Button>
         </div>
       )}
@@ -199,7 +222,9 @@ export function TransactionStatus({ tx }: { tx: Transaction }) {
               )}
             </span>
             <div>
-              <p className="text-xs font-medium text-slate-500">钱包交易</p>
+              <p className="text-xs font-medium text-slate-500">
+                {l("钱包交易", "Wallet transaction")}
+              </p>
               <h2
                 id={titleId}
                 className="mt-1 text-lg font-semibold tracking-tight"
@@ -211,7 +236,7 @@ export function TransactionStatus({ tx }: { tx: Transaction }) {
           <button
             type="button"
             onClick={close}
-            aria-label="关闭交易窗口"
+            aria-label={l("关闭交易窗口", "Close transaction window")}
             className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
           >
             <X className="h-5 w-5" aria-hidden="true" />
@@ -219,8 +244,15 @@ export function TransactionStatus({ tx }: { tx: Transaction }) {
         </div>
 
         <div className="space-y-5 px-5 py-5 sm:px-6">
-          <ol aria-label="交易步骤" className="flex gap-2">
-            {["检查与估算", "钱包签名", "链上确认"].map((label, index) => (
+          <ol
+            aria-label={l("交易步骤", "Transaction steps")}
+            className="flex gap-2"
+          >
+            {[
+              l("检查与估算", "Check & estimate"),
+              l("钱包签名", "Wallet signature"),
+              l("链上确认", "Confirmation"),
+            ].map((label, index) => (
               <li
                 key={label}
                 aria-current={index === step ? "step" : undefined}
@@ -266,17 +298,24 @@ export function TransactionStatus({ tx }: { tx: Transaction }) {
 
           {tx.prepared && (
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-              <p className="text-xs text-slate-500">本次操作</p>
+              <p className="text-xs text-slate-500">
+                {l("本次操作", "Operation")}
+              </p>
               <p className="mt-1 break-words text-base font-semibold text-slate-900">
                 {tx.prepared.label}
               </p>
               <div className="mt-4 border-t border-slate-200 pt-3">
-                <p className="text-xs text-slate-500">预估网络费</p>
+                <p className="text-xs text-slate-500">
+                  {l("预估网络费", "Estimated network fee")}
+                </p>
                 <p className="mt-1 break-all font-mono text-sm font-medium text-slate-800">
                   {formatEther(tx.prepared.fee)} ETH
                 </p>
                 <p className="mt-1 text-xs leading-5 text-slate-500">
-                  这是网络费用，不包含操作中的代币金额。实际费用以交易回执为准。
+                  {l(
+                    "这是网络费用，不包含操作中的代币金额。实际费用以交易回执为准。",
+                    "This is the network fee, excluding tokens involved in the operation. The receipt shows the actual fee.",
+                  )}
                 </p>
               </div>
             </div>
@@ -287,7 +326,7 @@ export function TransactionStatus({ tx }: { tx: Transaction }) {
               role="alert"
               className="break-words rounded-xl border border-red-200 bg-red-50 p-3 text-sm leading-6 text-red-800"
             >
-              {tx.error}
+              {errorMessage(tx.error, lang)}
             </p>
           )}
           {tx.stage === "ready" && !tx.canWrite && (
@@ -295,14 +334,17 @@ export function TransactionStatus({ tx }: { tx: Transaction }) {
               role="alert"
               className="rounded-lg bg-amber-50 p-3 text-sm text-amber-800"
             >
-              钱包或网络状态已变化，请恢复连接并重新估算。
+              {l(
+                "钱包或网络状态已变化，请恢复连接并重新估算。",
+                "The wallet or network has changed. Restore the connection and estimate again.",
+              )}
             </p>
           )}
 
           {tx.hash && (
             <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
               <span>
-                交易编号：
+                {l("交易编号：", "Transaction ID: ")}
                 <span className="font-mono" title={tx.hash}>
                   {shortAddress(tx.hash)}
                 </span>
@@ -314,7 +356,7 @@ export function TransactionStatus({ tx }: { tx: Transaction }) {
                   rel="noreferrer"
                   className="inline-flex items-center gap-1 rounded font-medium text-emerald-700 hover:underline"
                 >
-                  查看区块浏览器
+                  {l("查看区块浏览器", "View in block explorer")}
                   <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
                 </a>
               )}
@@ -324,38 +366,40 @@ export function TransactionStatus({ tx }: { tx: Transaction }) {
           {(tx.prepared || tx.hash) && (
             <details className="rounded-lg border border-slate-200 px-3 py-2 text-xs">
               <summary className="cursor-pointer font-medium text-slate-600">
-                交易详情
+                {l("交易详情", "Transaction details")}
               </summary>
               <dl className="mt-3 space-y-2 text-slate-500">
                 {tx.prepared && (
                   <>
                     <div>
-                      <dt>签名账户</dt>
+                      <dt>{l("签名账户", "Signing account")}</dt>
                       <dd className="mt-1 break-all font-mono text-slate-700">
                         {tx.prepared.account}
                       </dd>
                     </div>
                     <div>
-                      <dt>目标合约</dt>
+                      <dt>{l("目标合约", "Target contract")}</dt>
                       <dd className="mt-1 break-all font-mono text-slate-700">
                         {tx.prepared.to}
                       </dd>
                     </div>
                     <div>
-                      <dt>链 ID / Gas 上限</dt>
+                      <dt>{l("链 ID / Gas 上限", "Chain ID / Gas limit")}</dt>
                       <dd className="mt-1 font-mono text-slate-700">
                         {tx.prepared.chainId} / {tx.prepared.gas.toString()}
                       </dd>
                     </div>
                     <p className="leading-5">
-                      操作参数已在估算时固定。修改表单后，应重新估算再签名；Gas
-                      上限预留 20% 余量。
+                      {l(
+                        "操作参数已在估算时固定。修改表单后，应重新估算再签名；Gas 上限预留 20% 余量。",
+                        "The operation parameters were fixed at estimation. If you change the form, estimate again before signing. The gas limit includes a 20% buffer.",
+                      )}
                     </p>
                   </>
                 )}
                 {tx.hash && (
                   <div>
-                    <dt>完整交易编号</dt>
+                    <dt>{l("完整交易编号", "Full transaction ID")}</dt>
                     <dd className="mt-1 break-all font-mono text-slate-700">
                       {tx.hash}
                     </dd>
@@ -377,17 +421,17 @@ export function TransactionStatus({ tx }: { tx: Transaction }) {
               className="w-full"
             >
               <Wallet className="mr-1 h-4 w-4" aria-hidden="true" />
-              确认并在钱包签名
+              {l("确认并在钱包签名", "Confirm and sign in wallet")}
             </Button>
           )}
           {tx.stage === "estimating" && (
             <Button type="button" size="lg" disabled className="w-full">
-              正在检查与估算…
+              {l("正在检查与估算…", "Checking and estimating\u2026")}
             </Button>
           )}
           {tx.stage === "signing" && (
             <Button type="button" size="lg" disabled className="w-full">
-              等待钱包批准…
+              {l("等待钱包批准…", "Waiting for wallet approval\u2026")}
             </Button>
           )}
           {(tx.stage === "confirming" || tx.stage === "unknown") && (
@@ -405,12 +449,14 @@ export function TransactionStatus({ tx }: { tx: Transaction }) {
                   aria-hidden="true"
                 />
               )}
-              {checking ? "正在检查回执…" : "检查链上回执"}
+              {checking
+                ? l("正在检查回执…", "Checking receipt\u2026")
+                : l("检查链上回执", "Check transaction receipt")}
             </Button>
           )}
           {tx.stage === "success" && (
             <Button type="button" size="lg" onClick={close} className="w-full">
-              完成
+              {l("完成", "Done")}
             </Button>
           )}
           {tx.stage === "error" && (
@@ -421,18 +467,30 @@ export function TransactionStatus({ tx }: { tx: Transaction }) {
               onClick={close}
               className="w-full"
             >
-              返回并调整操作
+              {l("返回并调整操作", "Back to adjust operation")}
             </Button>
           )}
           <div className="flex items-center justify-between gap-3 text-xs text-slate-500">
             <span>
               {tx.stage === "confirming" || tx.stage === "unknown"
-                ? "关闭窗口不会取消已发送的交易。"
+                ? l(
+                    "关闭窗口不会取消已发送的交易。",
+                    "Closing this window does not cancel a sent transaction.",
+                  )
                 : tx.stage === "signing"
-                  ? "关闭此窗口后，钱包仍可能在等待签名。"
+                  ? l(
+                      "关闭此窗口后，钱包仍可能在等待签名。",
+                      "Your wallet may still be waiting for a signature after you close this window.",
+                    )
                   : tx.stage === "estimating" || tx.stage === "ready"
-                    ? "确认之前不会发送资金交易。"
-                    : "交易记录可在赛事和审计流水中查看。"}
+                    ? l(
+                        "确认之前不会发送资金交易。",
+                        "No transaction is sent before you confirm.",
+                      )
+                    : l(
+                        "交易记录可在赛事和审计流水中查看。",
+                        "Transaction records are available in the tournament and audit pages.",
+                      )}
             </span>
             {[
               "estimating",
@@ -446,7 +504,7 @@ export function TransactionStatus({ tx }: { tx: Transaction }) {
                 onClick={close}
                 className="shrink-0 rounded font-medium text-slate-600 underline underline-offset-2 hover:text-slate-900"
               >
-                收起窗口
+                {l("收起窗口", "Hide window")}
               </button>
             )}
           </div>

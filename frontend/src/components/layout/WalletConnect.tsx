@@ -6,8 +6,10 @@ import { Button } from "@/components/ui/button";
 import { useCourseConfig } from "@/hooks/useCourse";
 import { shortAddress } from "@/lib/course";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/lib/i18n";
 
 export function WalletConnect({ className }: { className?: string }) {
+  const { lang, l } = useI18n();
   const { data: config } = useCourseConfig();
   return (
     <ConnectButton.Custom>
@@ -31,10 +33,10 @@ export function WalletConnect({ className }: { className?: string }) {
           (chain.unsupported || (!!config && chain.id !== config.chain_id));
         const networkLabel =
           chain?.id === 31337
-            ? "本地链"
+            ? l("本地链", "Local chain")
             : chain?.id === 11155111
               ? "Sepolia"
-              : "选择网络";
+              : l("选择网络", "Select network");
         return (
           <div
             className={cn("flex flex-wrap items-center gap-2", className)}
@@ -48,7 +50,7 @@ export function WalletConnect({ className }: { className?: string }) {
             {!connected ? (
               <Button type="button" size="sm" onClick={openConnectModal}>
                 <Wallet className="mr-2 h-4 w-4" aria-hidden="true" />
-                连接钱包
+                {l("连接钱包", "Connect wallet")}
               </Button>
             ) : (
               <>
@@ -64,8 +66,11 @@ export function WalletConnect({ className }: { className?: string }) {
                   }
                   aria-label={
                     wrongNetwork
-                      ? "钱包网络不匹配，选择正确网络"
-                      : "更换钱包网络"
+                      ? l(
+                          "钱包网络不匹配，选择正确网络",
+                          "Wallet network mismatch; select the correct network",
+                        )
+                      : l("更换钱包网络", "Change wallet network")
                   }
                 >
                   {wrongNetwork && (
@@ -74,7 +79,9 @@ export function WalletConnect({ className }: { className?: string }) {
                       aria-hidden="true"
                     />
                   )}
-                  {wrongNetwork ? "切换网络" : networkLabel}
+                  {wrongNetwork
+                    ? l("切换网络", "Switch network")
+                    : networkLabel}
                   <ChevronDown
                     className="ml-1 h-3.5 w-3.5"
                     aria-hidden="true"
@@ -85,8 +92,15 @@ export function WalletConnect({ className }: { className?: string }) {
                   size="sm"
                   variant="outline"
                   onClick={openAccountModal}
-                  title="查看账户、切换账户或断开钱包"
-                  aria-label={`切换账户，当前 ${account.displayName}`}
+                  title={l(
+                    "查看账户、切换账户或断开钱包",
+                    "View or switch accounts, or disconnect your wallet",
+                  )}
+                  aria-label={
+                    lang === "zh"
+                      ? `切换账户，当前 ${account.displayName}`
+                      : `Switch account; current account ${account.displayName}`
+                  }
                   className="bg-white"
                 >
                   <Wallet

@@ -1,4 +1,6 @@
+"use client";
 import type { Tournament } from "@/lib/course";
+import { useI18n } from "@/lib/i18n";
 import {
   getTournamentPresentation,
   type PresentationTone,
@@ -26,12 +28,17 @@ export function TournamentStatusBadge({
   tournament,
   now,
 }: TournamentStatusBadgeProps) {
-  const { label, tone, hint } = getTournamentPresentation(tournament, now);
+  const { lang } = useI18n();
+  const { label, tone, hint } = getTournamentPresentation(
+    tournament,
+    now,
+    lang,
+  );
   return (
     <span
       className={`inline-flex max-w-full items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold leading-5 ${TONE_STYLES[tone]}`}
       title={hint}
-      aria-label={`${label}。${hint}`}
+      aria-label={`${label}${lang === "zh" ? "。" : ". "}${hint}`}
     >
       <span
         aria-hidden="true"

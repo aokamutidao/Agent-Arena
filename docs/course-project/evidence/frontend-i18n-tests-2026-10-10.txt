@@ -1,0 +1,39 @@
+
+> frontend@0.1.0 test
+> node --test tests/*.test.cjs
+
+✔ the registration boundary changes a full funded event to waiting for its organizer (3.057208ms)
+✔ every nonterminal event expires at the exact final deadline, with cancellation before refunds (0.397625ms)
+✔ settled and cancelled events do not become expired or pretend all money has been refunded (0.20975ms)
+✔ unknown chain time never invents a deadline or an available time-sensitive action (0.859959ms)
+✔ a zero or invalid prize pool cannot advertise an available start, while huge integers retain value (0.376459ms)
+✔ auditor decisions wait for the full review window (0.1765ms)
+✔ starting must leave strictly more than the full review period before settlement (0.398667ms)
+✔ the default global role is an ordinary user, not a registered tournament participant (0.2925ms)
+✔ English presentation preserves severity and on-chain data across all business states (2.871125ms)
+✔ English distinguishes pending claims from completed transfers and requires cancellation before refunds (1.020959ms)
+✔ English action guidance respects exact registration and review boundaries (0.876917ms)
+✔ English global roles do not imply entry in a tournament and preserve the role list (0.733666ms)
+✔ approval and dispute resolution identify the auditor rather than the winning beneficiary (0.4025ms)
+✔ prize claims identify the receiving winner and keep financial data unchanged (0.146083ms)
+✔ missing, malformed, and unrecorded operator fields never guess a wallet (2.158917ms)
+✔ sponsorship, participant actions, and role grants distinguish operator fields from other wallets (0.610166ms)
+✔ token amounts preserve six-decimal integers beyond JavaScript's safe integer range (2.91575ms)
+✔ invalid, excess-precision, exponential and overflowing amounts are rejected (0.836541ms)
+✔ registration and review respect exact deadline boundaries (0.22375ms)
+✔ timeouts protect underfilled events and cannot cancel terminal events (0.746584ms)
+✔ evidence verification rejects changed actions and whitespace (6.43625ms)
+✔ a successful cancellation receipt does not count as a successful financial action (0.244375ms)
+✔ English dates use British day-month ordering without inventing a missing timestamp (29.686709ms)
+✔ English amount-validation errors retain token precision and contract limits (4.366417ms)
+✔ English local errors keep signing, replacement, and revert outcomes distinct (0.826292ms)
+✔ English HTTP errors retain status codes and unknown backend diagnostics verbatim (0.441375ms)
+✔ English provider errors use viem shortMessage without replacing diagnostic detail (1.607125ms)
+ℹ tests 27
+ℹ suites 0
+ℹ pass 27
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1144.702167

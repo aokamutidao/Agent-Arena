@@ -159,6 +159,113 @@ test("the default global role is an ordinary user, not a registered tournament p
   );
 });
 
+test("English presentation preserves severity and on-chain data across all business states", () => {
+  const scenarios = [
+    ["registration with a place available", { participants: ["a"] }, 99],
+    ["full registration", {}, 99],
+    ["empty pool before registration closes", { prize_pool: "0" }, 99],
+    ["underfilled registration", { participants: ["a"] }, 100],
+    ["unexpected participant count", { participants: ["a", "b", "c"] }, 100],
+    ["ready to start", {}, 100],
+    ["last available start time", {}, 439],
+    ["insufficient review time", {}, 440],
+    ["match in progress", { status: "running" }, 150],
+    ["open review window", { status: "result_submitted" }, 199],
+    ["approval pending", { status: "result_submitted" }, 200],
+    ["dispute during review", { status: "disputed" }, 199],
+    ["resolution pending", { status: "disputed" }, 200],
+    ["settled without a claim", { status: "finalized" }, 1000],
+    ["claimed prize", { status: "finalized", prize_claimed: true }, 0],
+    ["cancelled with refunds to claim", { status: "cancelled" }, 1000],
+    ["large exact prize pool", { prize_pool: "9007199254740993123456" }, 100],
+  ];
+  for (const prize_pool of ["0", "000", "invalid"]) {
+    scenarios.push([`unfunded pool ${prize_pool}`, { prize_pool }, 100]);
+  }
+  for (const status of ["open", "running", "result_submitted", "disputed"]) {
+    scenarios.push([`${status} at final deadline`, { status }, 500]);
+    for (const now of [0, -1, NaN, Infinity]) {
+      scenarios.push([`${status} with unknown chain time ${now}`, { status }, now]);
+    }
+  }
+
+  for (const [name, overrides, now] of scenarios) {
+    const tournament = {
+      ...base,
+      ...overrides,
+      participants: [...(overrides.participants || base.participants)],
+    };
+    const before = JSON.parse(JSON.stringify(tournament));
+    Object.freeze(tournament.participants);
+    Object.freeze(tournament);
+    const zh = getTournamentPresentation(tournament, now, "zh");
+    const en = getTournamentPresentation(tournament, now, "en");
+    assert.doesNotMatch(`${en.label} ${en.hint}`, /\p{Script=Han}/u, name);
+    assert.match(en.label, /[A-Za-z]/, name);
+    assert.match(en.hint, /[A-Za-z]/, name);
+    assert.equal(en.tone, zh.tone, `${name}: language must not change severity`);
+    assert.deepEqual(tournament, before, `${name}: presentation must not change financial state`);
+  }
+});
+
+test("English distinguishes pending claims from completed transfers and requires cancellation before refunds", () => {
+  const settled = getTournamentPresentation({ ...base, status: "finalized" }, 1000, "en");
+  assert.match(settled.label, /Ready to claim/);
+  assert.match(settled.hint, /winner.*own wallet.*claim/i);
+  assert.doesNotMatch(settled.label, /claimed/i);
+  const claimed = getTournamentPresentation(
+    { ...base, status: "finalized", prize_claimed: true },
+    1000,
+    "en",
+  );
+  assert.match(claimed.label, /Prize claimed/);
+
+  const cancelled = getTournamentPresentation({ ...base, status: "cancelled" }, 1000, "en");
+  assert.match(cancelled.hint, /can claim.*remaining refundable contribution/i);
+  assert.match(cancelled.hint, /does not mean all refunds have been claimed/i);
+  assert.doesNotMatch(cancelled.label, /refunded|paid|claimed/i);
+  for (const status of ["open", "running", "result_submitted", "disputed"]) {
+    const expired = getTournamentPresentation({ ...base, status }, 500, "en");
+    assert.match(expired.label, /Refund pending/);
+    assert.match(expired.hint, /first trigger cancellation.*after confirmation.*claim.*refund/i);
+  }
+});
+
+test("English action guidance respects exact registration and review boundaries", () => {
+  assert.match(getTournamentPresentation(base, 99, "en").label, /Registration open/);
+  assert.match(getTournamentPresentation(base, 100, "en").label, /Ready to start/);
+  assert.match(getTournamentPresentation(base, 439, "en").label, /Ready to start/);
+  assert.match(getTournamentPresentation(base, 440, "en").label, /Cannot start/);
+  for (const status of ["result_submitted", "disputed"]) {
+    const reviewing = getTournamentPresentation({ ...base, status }, 199, "en");
+    assert.match(reviewing.hint, /after.*window closes/i);
+    const reviewed = getTournamentPresentation({ ...base, status }, 200, "en");
+    assert.match(reviewed.label, /Awaiting (approval|resolution)/);
+    assert.match(reviewed.hint, /window is closed/i);
+    const unknown = getTournamentPresentation({ ...base, status }, 0, "en");
+    assert.match(unknown.hint, /Waiting for network time/);
+    assert.doesNotMatch(unknown.label, /Awaiting|Ready|Can cancel|Refund pending/);
+  }
+  for (const prize_pool of ["0", "000", "invalid"]) {
+    const unfunded = getTournamentPresentation({ ...base, prize_pool }, 100, "en");
+    assert.match(unfunded.label, /Cannot start/);
+    assert.doesNotMatch(unfunded.hint, /continue sponsoring|fund the prize pool/i);
+  }
+});
+
+test("English global roles do not imply entry in a tournament and preserve the role list", () => {
+  for (const roles of [[], ["participant"], ["unknown", "participant"]]) {
+    const before = [...roles];
+    Object.freeze(roles);
+    assert.equal(globalRoleLabel(roles, "en"), "Standard user");
+    assert.doesNotMatch(globalRoleLabel(roles, "en"), /participant/i);
+    assert.deepEqual(roles, before);
+  }
+  const roles = Object.freeze(["auditor", "participant", "admin", "organizer", "admin"]);
+  assert.equal(globalRoleLabel(roles, "en"), "Admin · Organizer · Auditor");
+  assert.deepEqual(roles, ["auditor", "participant", "admin", "organizer", "admin"]);
+});
+
 test("approval and dispute resolution identify the auditor rather than the winning beneficiary", () => {
   const auditor = "0x1111111111111111111111111111111111111111";
   const winner = "0x2222222222222222222222222222222222222222";

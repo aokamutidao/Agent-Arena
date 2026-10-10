@@ -1,5 +1,7 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
+
 import type { AgentInfo, AgentState } from "@/types/game";
 import { cn } from "@/lib/utils";
 
@@ -11,6 +13,7 @@ interface AgentCardProps {
 }
 
 export function AgentCard({ agent, state, side, showStats = true }: AgentCardProps) {
+  const { l } = useI18n();
   const hp = state?.hp ?? 100;
   const maxHp = state?.max_hp ?? 100;
   const hpPercent = Math.round((hp / maxHp) * 100);
@@ -50,7 +53,7 @@ export function AgentCard({ agent, state, side, showStats = true }: AgentCardPro
       {/* Position */}
       {state?.position && (
         <p className="text-xs text-muted-foreground mt-2">
-          位置: ({state.position.x}, {state.position.y})
+          {l("位置", "Position")}: ({state.position.x}, {state.position.y})
         </p>
       )}
 
@@ -70,7 +73,7 @@ export function AgentCard({ agent, state, side, showStats = true }: AgentCardPro
 
       {/* Stats */}
       {showStats && <div className="text-xs text-muted-foreground mt-2">
-        胜率: {agent.win_rate.toFixed(1)}% ({agent.wins}W {agent.losses}L)
+        {l("胜率", "Win rate")}: {agent.win_rate.toFixed(1)}% ({agent.wins}W {agent.losses}L)
       </div>}
     </div>
   );

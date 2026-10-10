@@ -8,30 +8,33 @@ import { WalletConnect } from "./WalletConnect";
 import { LoginButton } from "@/components/auth/LoginButton";
 import { useCourseConfig } from "@/hooks/useCourse";
 import { cn } from "@/lib/utils";
-
-const links = [
-  ["/", "资金概览"],
-  ["/tournaments", "奖金赛事"],
-  ["/audit", "审计流水"],
-  ["/agents", "我的 Agent"],
-  ["/guide", "使用指南"],
-] as const;
+import { useI18n } from "@/lib/i18n";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 export function Navbar() {
+  const { l } = useI18n();
+  const links = [
+    ["/", l("资金概览", "Overview")],
+    ["/tournaments", l("奖金赛事", "Tournaments")],
+    ["/audit", l("审计流水", "Audit")],
+    ["/agents", l("我的 Agent", "My Agents")],
+    ["/guide", l("使用指南", "Guide")],
+  ] as const;
+
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const { data: config, error } = useCourseConfig();
   const networkLabel = error
-    ? "服务未连接"
+    ? l("服务未连接", "Service offline")
     : !config
-      ? "连接服务中"
+      ? l("连接服务中", "Connecting")
       : !config.deployment_configured
-        ? "尚未部署"
+        ? l("尚未部署", "Not deployed")
         : config.chain_id === 31337
-          ? "本地演示"
+          ? l("本地演示", "Local demo")
           : config.chain_id === 11155111
-            ? "Sepolia 测试网"
-            : `网络 ${config.chain_id}`;
+            ? l("Sepolia 测试网", "Sepolia testnet")
+            : l(`网络 ${config.chain_id}`, `Network ${config.chain_id}`);
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
@@ -43,7 +46,10 @@ export function Navbar() {
             <Link
               href="/"
               className="flex shrink-0 items-center gap-2.5 rounded-lg"
-              aria-label="Agent Arena 赛事奖金托管首页"
+              aria-label={l(
+                "Agent Arena 赛事奖金托管首页",
+                "Agent Arena prize escrow home",
+              )}
             >
               <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-white">
                 <ShieldCheck className="h-6 w-6" aria-hidden="true" />
@@ -53,13 +59,13 @@ export function Navbar() {
                   Agent Arena
                 </span>
                 <span className="block text-xs text-slate-500">
-                  赛事奖金托管
+                  {l("赛事奖金托管", "Tournament prize escrow")}
                 </span>
               </span>
             </Link>
             <span
               className={cn(
-                "hidden items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium sm:inline-flex lg:hidden xl:inline-flex",
+                "hidden items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium sm:inline-flex xl:hidden",
                 error
                   ? "bg-red-50 text-red-700"
                   : config && !config.deployment_configured
@@ -82,8 +88,8 @@ export function Navbar() {
             </span>
           </div>
           <nav
-            aria-label="主导航"
-            className="hidden items-center gap-1 lg:flex"
+            aria-label={l("主导航", "Main navigation")}
+            className="hidden items-center gap-1 xl:flex"
           >
             {links.map(([href, label]) => (
               <Link
@@ -103,11 +109,15 @@ export function Navbar() {
           </nav>
           <button
             type="button"
-            aria-label={open ? "收起导航" : "打开导航"}
+            aria-label={
+              open
+                ? l("收起导航", "Close navigation")
+                : l("打开导航", "Open navigation")
+            }
             aria-expanded={open}
             aria-controls="mobile-navigation"
             onClick={() => setOpen(!open)}
-            className="rounded-lg border border-slate-200 p-2 text-slate-600 hover:bg-slate-50 lg:hidden"
+            className="rounded-lg border border-slate-200 p-2 text-slate-600 hover:bg-slate-50 xl:hidden"
           >
             {open ? (
               <X size={20} aria-hidden="true" />
@@ -115,7 +125,8 @@ export function Navbar() {
               <Menu size={20} aria-hidden="true" />
             )}
           </button>
-          <div className="flex w-full flex-wrap items-center justify-end gap-2 border-t border-slate-100 pt-3 lg:w-auto lg:border-0 lg:pt-0">
+          <div className="flex w-full flex-wrap items-center justify-end gap-2 border-t border-slate-100 pt-3 xl:w-auto xl:border-0 xl:pt-0">
+            <LanguageSwitcher />
             <LoginButton />
             <WalletConnect />
           </div>
@@ -123,8 +134,8 @@ export function Navbar() {
         {open && (
           <nav
             id="mobile-navigation"
-            aria-label="移动端导航"
-            className="grid grid-cols-2 gap-1 border-t border-slate-100 py-3 lg:hidden"
+            aria-label={l("移动端导航", "Mobile navigation")}
+            className="grid grid-cols-2 gap-1 border-t border-slate-100 py-3 xl:hidden"
           >
             {links.map(([href, label]) => (
               <Link

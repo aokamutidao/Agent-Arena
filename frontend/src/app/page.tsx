@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useI18n } from "@/lib/i18n";
 import { useBlock } from "wagmi";
 import {
   ArrowRight,
@@ -26,6 +27,7 @@ import {
 import { getTournamentPresentation } from "@/lib/course-presentation";
 
 export default function DashboardPage() {
+  const { lang, l } = useI18n();
   const dashboard = useCourseResource<Dashboard>("/api/dashboard");
   const list = useCourseResource<{ tournaments: Tournament[]; total: number }>(
     "/api/tournaments?limit=20&offset=0",
@@ -55,15 +57,31 @@ export default function DashboardPage() {
   const refunded = BigInt(d?.refunds_paid_raw || "0");
   const remaining = funded - paid - refunded;
   const amounts = [
-    ["已发奖金", paid, "bg-emerald-500"],
-    ["已退赞助", refunded, "bg-amber-400"],
-    ["托管中", remaining, "bg-sky-500"],
+    [l("已发奖金", "Prizes paid"), paid, "bg-emerald-500"],
+    [l("已退赞助", "Sponsorship refunded"), refunded, "bg-amber-400"],
+    [l("托管中", "Held in escrow"), remaining, "bg-sky-500"],
   ] as const;
   const process = [
-    { label: "赞助预存", description: "奖金先进入托管", Icon: Wallet },
-    { label: "Agent 比赛", description: "两位参赛者对战", Icon: Swords },
-    { label: "独立审核", description: "查看证据与异议", Icon: ShieldCheck },
-    { label: "领奖 / 退款", description: "由本人钱包领取", Icon: Trophy },
+    {
+      label: l("赞助预存", "Fund the prize pool"),
+      description: l("奖金先进入托管", "Funds are deposited in escrow"),
+      Icon: Wallet,
+    },
+    {
+      label: l("Agent 比赛", "Agent match"),
+      description: l("两位参赛者对战", "Two participants compete"),
+      Icon: Swords,
+    },
+    {
+      label: l("独立审核", "Independent review"),
+      description: l("查看证据与异议", "Review evidence and disputes"),
+      Icon: ShieldCheck,
+    },
+    {
+      label: l("领奖 / 退款", "Claim prize / refund"),
+      description: l("由本人钱包领取", "Claim with your own wallet"),
+      Icon: Trophy,
+    },
   ];
 
   return (
@@ -76,11 +94,13 @@ export default function DashboardPage() {
               Agent Arena
             </span>
             <h1 className="mt-5 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
-              AI 赛事奖金托管
+              {l("AI 赛事奖金托管", "AI tournament prize escrow")}
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-8 text-slate-600">
-              赞助方预存奖金，让两个 Agent
-              参赛。独立审核后冠军领奖；赛事取消后，赞助方自行领取退款。
+              {l(
+                "赞助方预存奖金，让两个 Agent 参赛。独立审核后冠军领奖；赛事取消后，赞助方自行领取退款。",
+                "Sponsors fund a prize pool for two agents to compete. The winner claims the prize after independent review; sponsors claim refunds if the tournament is cancelled.",
+              )}
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               {featured && (
@@ -89,28 +109,35 @@ export default function DashboardPage() {
                   className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 font-semibold text-white shadow-sm hover:bg-emerald-700"
                 >
                   <Play size={18} />
-                  {watchable ? "先看一场比赛回放" : "先看一场赛事"}
+                  {watchable
+                    ? l("先看一场比赛回放", "Watch a match replay")
+                    : l("先看一场赛事", "Explore a tournament")}
                 </Link>
               )}
               <Link
                 href="/tournaments"
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-3 font-semibold text-slate-700 hover:border-emerald-300"
               >
-                我要参赛 / 赞助 <ArrowRight size={18} />
+                {l("我要参赛 / 赞助", "Compete / Sponsor")}{" "}
+                <ArrowRight size={18} />
               </Link>
             </div>
             <p className="mt-3 text-sm text-slate-500">
-              观看无需钱包 · 免费报名 · 奖金由合约托管
+              {l(
+                "观看无需钱包 · 免费报名 · 奖金由合约托管",
+                "No wallet needed to watch · Free registration · Prizes held in a smart contract",
+              )}
             </p>
           </div>
           <div className="min-w-0 rounded-2xl border border-slate-200 bg-slate-50 p-5 sm:p-6 lg:col-span-2">
             <p className="flex items-center gap-2 text-sm font-semibold text-emerald-700">
               <Play size={16} />
-              从一场实际赛事开始
+
+              {l("从一场实际赛事开始", "Start with an existing tournament")}
             </p>
             {list.isLoading && (
               <p role="status" className="mt-6 text-slate-500">
-                正在读取赛事…
+                {l("正在读取赛事…", "Loading tournaments…")}
               </p>
             )}
             {featured ? (
@@ -122,38 +149,59 @@ export default function DashboardPage() {
                   {featured.title}
                 </h2>
                 <p className="mt-2 text-sm text-slate-500">
-                  赛事 #{featured.id} · {featured.participants.length} / 2
-                  位参赛者
+                  {l(
+                    "赛事 #" +
+                      featured.id +
+                      " · " +
+                      featured.participants.length +
+                      " / 2 位参赛者",
+                    "Tournament #" +
+                      featured.id +
+                      " · " +
+                      featured.participants.length +
+                      " / 2 participants",
+                  )}
                 </p>
                 <p className="mt-5 text-3xl font-bold tabular-nums text-slate-900">
                   {money(featured.prize_pool, config?.token_decimals)}{" "}
                   <span className="text-sm font-medium text-slate-500">
-                    DUSD 奖金
+                    {l("DUSD 奖金", "DUSD prize pool")}
                   </span>
                 </p>
                 {featuredMatch.data && (
                   <p className="mt-4 rounded-lg bg-white px-3 py-2 text-sm text-slate-600">
                     {featuredMatch.data.mode === "llm"
-                      ? "本场由 LLM 模型决策"
-                      : "本场为确定性模拟（非 LLM）"}
+                      ? l(
+                          "本场由 LLM 模型决策",
+                          "This match uses LLM decisions",
+                        )
+                      : l(
+                          "本场为确定性模拟（非 LLM）",
+                          "This match is a deterministic simulation (no LLM)",
+                        )}
                   </p>
                 )}
                 <Link
                   href={"/tournaments/" + featured.id}
                   className="mt-5 inline-flex items-center gap-2 font-semibold text-emerald-700"
                 >
-                  {watchable ? "看回放与结果" : "查看赛事详情"}{" "}
+                  {watchable
+                    ? l("看回放与结果", "View replay and result")
+                    : l("查看赛事详情", "View tournament details")}{" "}
                   <ArrowRight size={17} />
                 </Link>
               </>
             ) : !list.isLoading && !list.error ? (
               <p className="mt-5 text-slate-500">
-                还没有赛事。主办方可以创建第一场，其他用户可报名或赞助。
+                {l(
+                  "还没有赛事。主办方可以创建第一场，其他用户可报名或赞助。",
+                  "No tournaments yet. An organizer can create the first one; other users can register or sponsor.",
+                )}
               </p>
             ) : null}
             {list.error && (
               <p role="alert" className="mt-4 text-sm text-red-700">
-                {errorMessage(list.error)}
+                {errorMessage(list.error, lang)}
               </p>
             )}
           </div>
@@ -182,17 +230,20 @@ export default function DashboardPage() {
         <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 className="text-2xl font-bold text-slate-900">
-              奖金去哪里了？
+              {l("奖金去哪里了？", "Where are the funds?")}
             </h2>
             <p className="mt-2 text-slate-500">
-              看实际入金、支付和退款，未付金额继续留在托管中。
+              {l(
+                "看实际入金、支付和退款，未付金额继续留在托管中。",
+                "Track confirmed deposits, payouts and refunds. Unpaid funds remain in escrow.",
+              )}
             </p>
           </div>
           <Link
             href="/audit"
             className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-700"
           >
-            查看资金流水 <ArrowRight size={16} />
+            {l("查看资金流水", "View fund records")} <ArrowRight size={16} />
           </Link>
         </div>
         {dashboard.error && (
@@ -200,15 +251,34 @@ export default function DashboardPage() {
             role="alert"
             className="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700"
           >
-            {errorMessage(dashboard.error)}
+            {errorMessage(dashboard.error, lang)}
           </p>
         )}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            ["累计赞助", funded, "所有赛事已到账奖金"],
-            ["已发奖金", paid, "冠军已经领取"],
-            ["已退赞助", refunded, "赞助方已经取回"],
-            ["托管中", remaining, "尚未支付的奖金或退款"],
+            [
+              l("累计赞助", "Total sponsorship"),
+              funded,
+              l(
+                "所有赛事已到账奖金",
+                "Confirmed deposits across all tournaments",
+              ),
+            ],
+            [
+              l("已发奖金", "Prizes paid"),
+              paid,
+              l("冠军已经领取", "Prizes claimed by winners"),
+            ],
+            [
+              l("已退赞助", "Sponsorship refunded"),
+              refunded,
+              l("赞助方已经取回", "Funds claimed back by sponsors"),
+            ],
+            [
+              l("托管中", "Held in escrow"),
+              remaining,
+              l("尚未支付的奖金或退款", "Prizes or refunds yet to be claimed"),
+            ],
           ].map(([title, value, hint]) => (
             <article
               key={String(title)}
@@ -228,13 +298,19 @@ export default function DashboardPage() {
         <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-5">
           {remaining < BigInt(0) && (
             <p role="alert" className="mb-3 text-red-700">
-              资金记录不一致，请核查流水与同步状态。
+              {l(
+                "资金记录不一致，请核查流水与同步状态。",
+                "The fund records are inconsistent. Check the event log and synchronization status.",
+              )}
             </p>
           )}
           <div
             className="flex h-4 overflow-hidden rounded-full bg-slate-100"
             role="img"
-            aria-label="已发奖金、已退赞助与托管中资金的占比"
+            aria-label={l(
+              "已发奖金、已退赞助与托管中资金的占比",
+              "Proportions of paid prizes, refunded sponsorship and funds held in escrow",
+            )}
           >
             {amounts.map(([label, value, color]) => (
               <div
@@ -264,11 +340,26 @@ export default function DashboardPage() {
             ))}
           </div>
           <details className="mt-4 text-sm text-slate-500">
-            <summary className="cursor-pointer">数据更新时间与计算方式</summary>
+            <summary className="cursor-pointer">
+              {l("数据更新时间与计算方式", "Data freshness and calculation")}
+            </summary>
             <p className="mt-2 leading-6">
-              仅统计已确认记录。托管中 = 累计赞助 − 已发奖金 −
-              已退赞助。同步区块 {d?.indexed_block ?? "—"} / 链头{" "}
-              {d?.chain_head ?? "—"}；更新于 {dateTime(d?.observed_at || 0)}。
+              {l(
+                "仅统计已确认记录。托管中 = 累计赞助 − 已发奖金 − 已退赞助。同步区块 " +
+                  (d?.indexed_block ?? "—") +
+                  " / 链头 " +
+                  (d?.chain_head ?? "—") +
+                  "；更新于 " +
+                  dateTime(d?.observed_at || 0, lang) +
+                  "。",
+                "Only confirmed records are counted. Escrow balance = total sponsorship − paid prizes − refunds. Indexed block " +
+                  (d?.indexed_block ?? "—") +
+                  " / chain head " +
+                  (d?.chain_head ?? "—") +
+                  "; updated at " +
+                  dateTime(d?.observed_at || 0, lang) +
+                  ".",
+              )}
             </p>
           </details>
         </div>
@@ -276,12 +367,18 @@ export default function DashboardPage() {
 
       <section>
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-2xl font-bold text-slate-900">选择一场赛事</h2>
+          <h2 className="text-2xl font-bold text-slate-900">
+            {l("选择一场赛事", "Choose a tournament")}
+          </h2>
           <Link
             href="/tournaments"
             className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-700"
           >
-            全部 {list.data?.total ?? "—"} 场赛事 <ArrowRight size={16} />
+            {l(
+              "全部 " + (list.data?.total ?? "—") + " 场赛事",
+              "All " + (list.data?.total ?? "—") + " tournaments",
+            )}{" "}
+            <ArrowRight size={16} />
           </Link>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
@@ -298,17 +395,24 @@ export default function DashboardPage() {
                 {t.title}
               </h3>
               <p className="mt-2 text-sm text-slate-500">
-                #{t.id} · {t.participants.length} / 2 位参赛者
+                {l(
+                  "#" + t.id + " · " + t.participants.length + " / 2 位参赛者",
+                  "#" +
+                    t.id +
+                    " · " +
+                    t.participants.length +
+                    " / 2 participants",
+                )}
               </p>
               <p className="mt-4 text-xl font-bold text-slate-900">
                 {money(t.prize_pool, config?.token_decimals)}{" "}
                 <span className="text-sm font-normal text-slate-500">DUSD</span>
               </p>
               <p className="mt-3 flex-1 text-sm leading-6 text-slate-600">
-                {getTournamentPresentation(t, now).hint}
+                {getTournamentPresentation(t, now, lang).hint}
               </p>
               <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-emerald-700">
-                查看赛事{" "}
+                {l("查看赛事", "View tournament")}{" "}
                 <ArrowRight
                   size={16}
                   className="transition-transform group-hover:translate-x-1"
@@ -319,36 +423,48 @@ export default function DashboardPage() {
         </div>
         {!tournaments.length && !list.isLoading && !list.error && (
           <p className="rounded-xl border border-dashed border-slate-300 bg-white p-6 text-slate-500">
-            目前没有赛事，可由主办方创建。
+            {l(
+              "目前没有赛事，可由主办方创建。",
+              "No tournaments yet. An organizer can create one.",
+            )}
           </p>
         )}
       </section>
 
       <section>
         <h2 className="mb-4 text-2xl font-bold text-slate-900">
-          你想怎么参与？
+          {l("你想怎么参与？", "How would you like to participate?")}
         </h2>
         <div className="grid gap-4 md:grid-cols-3">
           {[
             {
-              title: "我是参赛者",
-              text: "创建自己的 Agent，免费报名。获胜并通过审核后领取奖金。",
+              title: l("我是参赛者", "I want to compete"),
+              text: l(
+                "创建自己的 Agent，免费报名。获胜并通过审核后领取奖金。",
+                "Create your agent and register for free. Win the match and pass review to claim the prize.",
+              ),
               href: "/agents",
-              action: "准备我的 Agent",
+              action: l("准备我的 Agent", "Prepare my agent"),
               Icon: Swords,
             },
             {
-              title: "我是赞助方",
-              text: "普通钱包就能赞助：先授权，再把 DUSD 存入奖池。取消后自己领取退款。",
+              title: l("我是赞助方", "I want to sponsor"),
+              text: l(
+                "普通钱包就能赞助：先授权，再把 DUSD 存入奖池。取消后自己领取退款。",
+                "Any eligible wallet can sponsor: approve DUSD, then deposit into the prize pool. Claim your refund if the tournament is cancelled.",
+              ),
               href: "/tournaments",
-              action: "选择要赞助的赛事",
+              action: l("选择要赞助的赛事", "Choose a tournament to sponsor"),
               Icon: Coins,
             },
             {
-              title: "我是主办方 / 审核员",
-              text: "主办方创建并运行比赛，指定审核员核对证据。管理身份由管理员授予。",
+              title: l("我是主办方 / 审核员", "I am an organizer / auditor"),
+              text: l(
+                "主办方创建并运行比赛，指定审核员核对证据。管理身份由管理员授予。",
+                "Organizers create and run tournaments; the designated auditor reviews evidence. An administrator grants these roles.",
+              ),
               href: "/tournaments",
-              action: "进入赛事工作台",
+              action: l("进入赛事工作台", "Open tournaments"),
               Icon: BadgeCheck,
             },
           ].map(({ title, text, href, action, Icon }) => (
@@ -369,8 +485,10 @@ export default function DashboardPage() {
           ))}
         </div>
         <p className="mt-4 text-sm text-slate-500">
-          指定审核员不能赞助自己审核的比赛。课程演示使用测试代币
-          DUSD；每场比赛会明确显示 LLM 或模拟模式。
+          {l(
+            "指定审核员不能赞助自己审核的比赛。课程演示使用测试代币 DUSD；每场比赛会明确显示 LLM 或模拟模式。",
+            "The designated auditor cannot sponsor their own tournament. The course demo uses DUSD test tokens, and each match clearly identifies LLM or simulation mode.",
+          )}
         </p>
       </section>
     </div>
