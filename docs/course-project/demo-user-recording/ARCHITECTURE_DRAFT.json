@@ -1,0 +1,57 @@
+{
+  "title": "Closing architecture narration",
+  "language": "English voiceover with aligned Chinese subtitles",
+  "english_word_count": 224,
+  "scope": "Source-verified current course implementation. No public cloud deployment claim.",
+  "segments": [
+    {
+      "id": "architecture-01",
+      "en": "The workflow we have just seen connects four layers: a Next.js frontend, a Go backend, persistent SQLite storage, and Solidity smart contracts. The interface uses wagmi and RainbowKit to connect MetaMask and guide users through each transaction.",
+      "zh": "刚才展示的完整流程连接了四个层次：Next.js 前端、Go 后端、SQLite 持久化存储，以及 Solidity 智能合约。界面通过 wagmi 和 RainbowKit 连接 MetaMask，引导用户完成每笔交易。",
+      "visual": "Four-layer architecture overview; wallet visibly connected to frontend and blockchain."
+    },
+    {
+      "id": "architecture-02",
+      "en": "On the blockchain, Tournament Manager coordinates three dedicated modules. Tournament Registry stores registration and lifecycle state. Prize Escrow holds sponsored tokens and processes prize claims or refunds. Result Review manages submitted results, review windows, and dispute decisions.",
+      "zh": "链上由 Tournament Manager 协调三个专用模块。Tournament Registry 保存报名信息和赛事状态；Prize Escrow 托管赞助代币，处理领奖与退款；Result Review 管理结果提交、审核窗口和争议裁决。",
+      "visual": "Expand Manager into Registry, Escrow and Review; connect token to Escrow."
+    },
+    {
+      "id": "architecture-03",
+      "en": "The Go service exposes REST APIs for Agent profiles, match execution, evidence, and dashboard queries. Its blockchain reader indexes confirmed events into SQLite, alongside stored Agent definitions, round records, and review notes. Wallets sign the financial transactions.",
+      "zh": "Go 服务通过 REST API 提供 Agent 管理、对战执行、证据和看板查询。链上读取器把已确认事件索引到 SQLite；数据库同时保存 Agent 定义、回合记录和审核说明。资金交易由用户钱包签名。",
+      "visual": "REST and read-only chain-event arrows; SQLite data categories."
+    },
+    {
+      "id": "architecture-04",
+      "en": "During a match, each language model Agent receives the game state and proposes an action. The game engine applies the rules and updates the arena. Each round is saved, creating the replay and the evidence record you saw on screen.",
+      "zh": "对战时，大模型 Agent 接收游戏状态并提出动作，游戏引擎根据规则执行并更新竞技场。每个回合都会保存，形成刚才画面中展示的回放和证据记录。",
+      "visual": "State → Agent decisions → game engine → persisted round → replay."
+    },
+    {
+      "id": "architecture-05",
+      "en": "Registration binds each participant to an Agent definition hash. Result submission anchors an evidence hash on chain. The auditor can inspect the corresponding replay and evidence before approving the winner, connecting the match record with the settlement process.",
+      "zh": "报名时，参赛者与其 Agent 定义哈希绑定；提交结果时，证据哈希写入链上。审核员可以检查对应回放和证据，再确认赢家，把对局记录与结算过程连接起来。",
+      "visual": "Agent hash and evidence hash connect saved records to on-chain registration and review."
+    },
+    {
+      "id": "architecture-06",
+      "en": "Security controls include single-use login nonces, contract role checks, reentrancy protection, safe token transfers, and duplicate-claim prevention. Together, these components support a traceable path from sponsorship to competition, review, and the winner's confirmed prize claim.",
+      "zh": "安全控制包括一次性登录 nonce、合约角色校验、重入保护、安全代币转账和防重复领取。这些组件共同形成了从赞助、对战、审核，到冠军确认领奖的可追溯流程。",
+      "visual": "Security controls around final lifecycle strip; close on completed prize claim."
+    }
+  ],
+  "verified_sources": [
+    "frontend/package.json",
+    "backend/internal/tournament/http.go",
+    "backend/internal/tournament/chain.go",
+    "backend/internal/tournament/store.go",
+    "backend/internal/tournament/runner.go",
+    "backend/internal/tournament/auth.go",
+    "contracts/src/TournamentManager.sol",
+    "contracts/src/TournamentRegistry.sol",
+    "contracts/src/PrizeEscrow.sol",
+    "contracts/src/ResultReview.sol",
+    "docs/course-project/ARCHITECTURE.md"
+  ]
+}

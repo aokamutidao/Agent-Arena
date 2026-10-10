@@ -1,0 +1,136 @@
+{
+  "checked_at": "2026-10-10T13:49:47.764553+00:00",
+  "output": "deliverables/demo-video-user/Agent-Arena-Demo-EN-ZH.mp4",
+  "sha256": "1e6b08547b5f34b33181ac855d784b70e7f274dd06ef922acec5fb88e5d1bae7",
+  "media": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "index": 0,
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1920,
+        "height": 1080,
+        "pix_fmt": "yuv420p",
+        "r_frame_rate": "30/1",
+        "start_time": "0.000000",
+        "duration": "600.000000",
+        "nb_frames": "18000"
+      },
+      {
+        "index": 1,
+        "codec_name": "aac",
+        "codec_type": "audio",
+        "r_frame_rate": "0/0",
+        "start_time": "0.000000",
+        "duration": "600.000000",
+        "nb_frames": "28126"
+      }
+    ],
+    "format": {
+      "duration": "600.000000",
+      "size": "35930445"
+    }
+  },
+  "full_audio_video_decode": {
+    "file": "deliverables/demo-video-user/Agent-Arena-Demo-EN-ZH.mp4",
+    "exit_code": 0,
+    "stderr": "",
+    "checked_at": "2026-10-10T21:46:38.072222"
+  },
+  "audio_analysis": {
+    "integrated_loudness_lufs": -16.02,
+    "true_peak_dbtp": -1.49,
+    "loudness_range_lu": 2.9,
+    "measured_file": "deliverables/demo-video-user/narration.m4a"
+  },
+  "timeline": {
+    "duration_seconds": 600,
+    "chapters": 27,
+    "subtitle_cues": 90,
+    "cues_in_bounds": true,
+    "cues_non_overlapping": true,
+    "av_start_offset_seconds": 0,
+    "av_duration_difference_seconds": 0
+  },
+  "visual_qa": {
+    "method": "Ten clean-video frames with exact final ASS subtitles, then five actual final encoded frames inspected by main editor and independent reviewer.",
+    "initial_timestamps_seconds": [
+      6,
+      90,
+      170,
+      195,
+      265,
+      387,
+      408,
+      411,
+      480,
+      594
+    ],
+    "final_encoded_timestamps_seconds": [
+      21,
+      198.7,
+      408,
+      480,
+      594
+    ],
+    "subtitle_strip_readable": true,
+    "sampled_ui_and_caption_overlap": false,
+    "sponsorship_timing": "Corrected cue to begin at 198.0 seconds; funded 100 DUSD state and caption verified at 198.7 seconds.",
+    "status": "passed",
+    "scope": "Sampled visual review plus complete audio/video decode; not a frame-by-frame human viewing."
+  },
+  "originals": {
+    "sources": [
+      {
+        "file": "1赛事准备.mov",
+        "sha256": "b37f54b8043f877878e2ffef88b0ffec7429b9b660dba8c525a5462a3e11c21c",
+        "duration": "165.833333",
+        "size": "306170846"
+      },
+      {
+        "file": "2 开始对战.mov",
+        "sha256": "fe7ca3d77021df0cd7a4df6d95079e8ccd388fd9e9df8e30474c46b31e9d878a",
+        "duration": "123.433333",
+        "size": "235476232"
+      },
+      {
+        "file": "3审计检查.mov",
+        "sha256": "d590fa6de321a7679661d2aa15720ee5aeb96a2a6210303d3f558549e79265d8",
+        "duration": "67.850000",
+        "size": "184421492"
+      },
+      {
+        "file": "4 领取奖励.mov",
+        "sha256": "95eb7141e9c8340a40ebe397e8df4650e87fb2f455ac2a72fc203b698f756104",
+        "duration": "36.000000",
+        "size": "65043198"
+      }
+    ],
+    "original_files_unchanged": true
+  },
+  "generation": {
+    "voice": "macOS Samantha",
+    "voice_language": "English",
+    "subtitle_languages": [
+      "English",
+      "Simplified Chinese"
+    ],
+    "source_playback_speed": 1.0,
+    "raw_recording_audio_removed": true,
+    "local_only": true
+  },
+  "business_actions_this_edit": {
+    "wallet_transactions": 0,
+    "model_requests": 0,
+    "refunds_executed": 0,
+    "main_tournament": 13,
+    "refund_history_tournament": 6
+  },
+  "checks": {
+    "python_source_compile": "passed using compile(..., exec), without bytecode cache",
+    "capture_color_range": "Converted captured full-range JPEG data to limited-range yuv420p; all 27 scene encodes validated.",
+    "narration_content": "Cross-checked with supplied footage, read-only app views, and current course source code."
+  }
+}
