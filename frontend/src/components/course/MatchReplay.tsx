@@ -1,23 +1,254 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Pause, Play, SkipBack, SkipForward } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { ArenaBoard } from "@/components/game/ArenaBoard";
 import { AgentCard } from "@/components/game/AgentCard";
 import { TurnLog } from "@/components/game/TurnLog";
-import { type MatchResult, type EngineAgentState, type TournamentStatus, shortAddress } from "@/lib/course";
+import {
+  type MatchResult,
+  type EngineAgentState,
+  type TournamentStatus,
+  shortAddress,
+} from "@/lib/course";
 import type { GameDetail, AgentInfo, AgentState } from "@/types/game";
-export function MatchReplay({ match, settlementStatus }: {
-    match: MatchResult;
-    settlementStatus: TournamentStatus;
+export function MatchReplay({
+  match,
+  settlementStatus,
+}: {
+  match: MatchResult;
+  settlementStatus: TournamentStatus;
 }) {
-    const [frame, setFrame] = useState<number | null>(null);
-    const settlementNote = settlementStatus === "finalized" ? "本场已链上结算，审定冠军见资金区" : settlementStatus === "cancelled" ? "赛事已取消，不发放冠军奖金" : "等待链上审核";
-    const index = frame === null ? Math.max(0, match.rounds.length - 1) : Math.min(frame, Math.max(0, match.rounds.length - 1));
-    const round = match.rounds[index];
-    const agent = (address: string, name: string): AgentInfo => ({ id: address, name, personality: shortAddress(address), wins: 0, losses: 0, win_rate: 0, description: "" });
-    const replayState = (state: EngineAgentState | undefined, hp: number | undefined, position: {
-        x: number;
-        y: number;
-    }): AgentState => ({ hp: state?.hp ?? hp ?? 100, max_hp: state?.max_hp ?? 100, position: state?.position || position, status: state?.status?.map(effect => effect.type) || [], skill_cooldown: state?.skill_cooldown || 0, is_charging: state?.is_charging || false });
-    const game: GameDetail = { game_id: match.tournament_id, agent_red: agent(match.red_address, match.red_agent?.name || "红方 Agent"), agent_blue: agent(match.blue_address, match.blue_agent?.name || "蓝方 Agent"), status: match.status === "completed" && index === match.rounds.length - 1 ? "finished" : "playing", current_round: round?.round || 0, max_rounds: 30, total_bet_red: "0", total_bet_blue: "0", agent_red_state: replayState(round?.red_state, round?.red_hp, round?.red_position || { x: 1, y: 1 }), agent_blue_state: replayState(round?.blue_state, round?.blue_hp, round?.blue_position || { x: 8, y: 8 }), history: match.rounds.slice(0, index + 1).map(r => ({ round: r.round, red_action: r.red_action, blue_action: r.blue_action, red_hp_after: r.red_hp, blue_hp_after: r.blue_hp, red_reasoning: r.red_reasoning, blue_reasoning: r.blue_reasoning })) };
-    return <section className="border rounded-xl p-5 space-y-4"><div className="flex flex-wrap justify-between gap-3"><h2 className="text-lg font-semibold">对战与回合回放</h2><p className="text-sm">{match.mode === "llm" ? "LLM 模型决策" : "确定性模拟（非 LLM）"} · {match.status}</p></div>{match.status === "completed" && <p className="text-sm">对战结果：{match.winner_address ? `拟冠军 ${shortAddress(match.winner_address)}（${settlementNote}）` : "平局，没有冠军"}</p>}{match.error && <p role="alert" className="text-red-500">{match.error}</p>}<div className="grid md:grid-cols-2 gap-4"><AgentCard agent={game.agent_red} state={game.agent_red_state} side="red" showStats={false}/><AgentCard agent={game.agent_blue} state={game.agent_blue_state} side="blue" showStats={false}/></div><div className="overflow-x-auto flex justify-start md:justify-center"><ArenaBoard gameState={game}/></div>{match.rounds.length > 0 && <label className="block text-sm">回放回合：{round?.round}<input aria-label="回放回合" className="block w-full mt-2" type="range" min="0" max={match.rounds.length - 1} value={index} onChange={e => setFrame(Number(e.target.value))}/><button className="underline text-xs mt-2" onClick={() => setFrame(null)}>跟随最新回合</button></label>}<TurnLog turns={game.history}/></section>;
+  const [frame, setFrame] = useState<number | null>(null);
+  const [playing, setPlaying] = useState(false);
+  useEffect(() => {
+    if (!playing) return;
+    const timer = window.setInterval(
+      () =>
+        setFrame((current) =>
+          Math.min((current ?? 0) + 1, Math.max(0, match.rounds.length - 1)),
+        ),
+      900,
+    );
+    return () => window.clearInterval(timer);
+  }, [playing, match.rounds.length]);
+  useEffect(() => {
+    if (frame !== null && frame >= match.rounds.length - 1) setPlaying(false);
+  }, [frame, match.rounds.length]);
+  const settlementNote =
+    settlementStatus === "finalized"
+      ? "本场已链上结算，审定冠军见资金区"
+      : settlementStatus === "cancelled"
+        ? "赛事已取消，不发放冠军奖金"
+        : "等待链上审核";
+  const index =
+    frame === null
+      ? Math.max(0, match.rounds.length - 1)
+      : Math.min(frame, Math.max(0, match.rounds.length - 1));
+  const round = match.rounds[index];
+  const agent = (address: string, name: string): AgentInfo => ({
+    id: address,
+    name,
+    personality: shortAddress(address),
+    wins: 0,
+    losses: 0,
+    win_rate: 0,
+    description: "",
+  });
+  const replayState = (
+    state: EngineAgentState | undefined,
+    hp: number | undefined,
+    position: {
+      x: number;
+      y: number;
+    },
+  ): AgentState => ({
+    hp: state?.hp ?? hp ?? 100,
+    max_hp: state?.max_hp ?? 100,
+    position: state?.position || position,
+    status: state?.status?.map((effect) => effect.type) || [],
+    skill_cooldown: state?.skill_cooldown || 0,
+    is_charging: state?.is_charging || false,
+  });
+  const game: GameDetail = {
+    game_id: match.tournament_id,
+    agent_red: agent(match.red_address, match.red_agent?.name || "红方 Agent"),
+    agent_blue: agent(
+      match.blue_address,
+      match.blue_agent?.name || "蓝方 Agent",
+    ),
+    status:
+      match.status === "completed" && index === match.rounds.length - 1
+        ? "finished"
+        : "playing",
+    current_round: round?.round || 0,
+    max_rounds: 30,
+    total_bet_red: "0",
+    total_bet_blue: "0",
+    agent_red_state: replayState(
+      round?.red_state,
+      round?.red_hp,
+      round?.red_position || { x: 1, y: 1 },
+    ),
+    agent_blue_state: replayState(
+      round?.blue_state,
+      round?.blue_hp,
+      round?.blue_position || { x: 8, y: 8 },
+    ),
+    history: match.rounds
+      .slice(0, index + 1)
+      .map((r) => ({
+        round: r.round,
+        red_action: r.red_action,
+        blue_action: r.blue_action,
+        red_hp_after: r.red_hp,
+        blue_hp_after: r.blue_hp,
+        red_reasoning: r.red_reasoning,
+        blue_reasoning: r.blue_reasoning,
+      })),
+  };
+  const matchLabel =
+    (
+      {
+        queued: "等待运行",
+        running: "对战进行中",
+        completed: "对战完成",
+        failed: "执行失败",
+        interrupted: "执行中断",
+      } as Record<string, string>
+    )[match.status] || match.status;
+  return (
+    <section className="rounded-2xl border bg-card p-5 sm:p-6 space-y-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-lg font-bold">比赛回放</h2>
+        <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium">
+          {matchLabel}
+        </span>
+      </div>
+      <p className="text-sm text-muted-foreground">
+        {match.mode === "llm"
+          ? "由 LLM 模型决策，以下为实际记录的对战过程。"
+          : "本场使用确定性模拟，没有调用 LLM；可用于体验赛事和奖金流程。"}
+      </p>
+      {match.status === "completed" && (
+        <p className="rounded-xl bg-muted p-4 text-sm">
+          {match.winner_address
+            ? `对战胜者 ${shortAddress(match.winner_address)} · ${settlementNote}`
+            : "本场平局，没有冠军。"}
+        </p>
+      )}
+      {match.error && (
+        <p role="alert" className="text-sm text-red-700">
+          {match.error}
+        </p>
+      )}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <AgentCard
+          agent={game.agent_red}
+          state={game.agent_red_state}
+          side="red"
+          showStats={false}
+        />
+        <AgentCard
+          agent={game.agent_blue}
+          state={game.agent_blue_state}
+          side="blue"
+          showStats={false}
+        />
+      </div>
+      <div className="overflow-x-auto">
+        <div className="flex min-w-max justify-center rounded-xl bg-slate-50 p-3">
+          <ArenaBoard gameState={game} />
+        </div>
+      </div>
+      {match.rounds.length > 0 ? (
+        <div className="space-y-4 rounded-xl border p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm font-semibold">
+              第 {round?.round} 回合{" "}
+              <span className="font-normal text-muted-foreground">
+                / 已记录 {match.rounds.length} 回合
+              </span>
+            </p>
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={index === 0}
+                aria-label="上一回合"
+                onClick={() => {
+                  setPlaying(false);
+                  setFrame(Math.max(0, index - 1));
+                }}
+              >
+                <SkipBack size={16} />
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => {
+                  if (playing) setPlaying(false);
+                  else {
+                    setFrame(index === match.rounds.length - 1 ? 0 : index);
+                    setPlaying(true);
+                  }
+                }}
+              >
+                {playing ? (
+                  <Pause size={15} className="mr-1" />
+                ) : (
+                  <Play size={15} className="mr-1" />
+                )}
+                {playing ? "暂停" : "播放回放"}
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={index === match.rounds.length - 1}
+                aria-label="下一回合"
+                onClick={() => {
+                  setPlaying(false);
+                  setFrame(Math.min(match.rounds.length - 1, index + 1));
+                }}
+              >
+                <SkipForward size={16} />
+              </Button>
+            </div>
+          </div>
+          <input
+            aria-label="选择回放回合"
+            className="block w-full accent-emerald-600"
+            type="range"
+            min="0"
+            max={match.rounds.length - 1}
+            value={index}
+            onChange={(e) => {
+              setPlaying(false);
+              setFrame(Number(e.target.value));
+            }}
+          />
+          <button
+            className="text-xs font-medium text-primary underline"
+            onClick={() => {
+              setPlaying(false);
+              setFrame(null);
+            }}
+          >
+            跟随最新回合
+          </button>
+        </div>
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          暂无回合记录，执行对战后自动更新。
+        </p>
+      )}
+      <details className="border-t pt-4">
+        <summary className="cursor-pointer text-sm font-medium">
+          查看回合动作与决策记录
+        </summary>
+        <div className="mt-4">
+          <TurnLog turns={game.history} />
+        </div>
+      </details>
+    </section>
+  );
 }
