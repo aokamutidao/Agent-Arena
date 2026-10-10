@@ -20,7 +20,7 @@ export default function WalletProviders({ children }: ProvidersProps) {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>
+        <RainbowKitProvider locale="zh-CN">
           <I18nProvider>
             <AuthProvider>{children}</AuthProvider>
           </I18nProvider>
