@@ -43,3 +43,7 @@ devlog/*
 !devlog/029-experience-guide.md
 !devlog/030-frontend-usability.md
 !devlog/031-bilingual-interface.md
+!devlog/032-narrated-demo.md
+
+# Narrated demo video outputs (sources and production notes are versioned)
+deliverables/demo-video/

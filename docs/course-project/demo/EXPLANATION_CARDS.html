@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agent Arena — Project explanation</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --background: #071827;
+        --panel: #102a3b;
+        --panel-light: #15364a;
+        --line: #315266;
+        --text: #f1f7fa;
+        --muted: #bdd0db;
+        --green: #79e4b6;
+        --green-dark: #123d38;
+        --amber: #f9d68c;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; width: 1280px; height: 720px; overflow: hidden; }
+      body {
+        background: var(--background);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .card {
+        width: 1280px;
+        height: 720px;
+        padding: 34px 42px 24px;
+        display: flex;
+        flex-direction: column;
+        background: radial-gradient(ellipse at 100% 0%, #143a43 0, transparent 45%), var(--background);
+      }
+      .card[hidden] { display: none; }
+      header { display: flex; align-items: center; justify-content: space-between; height: 80px; flex-shrink: 0; }
+      .eyebrow { margin: 0 0 8px; color: var(--green); font-size: 17px; font-weight: 650; letter-spacing: 1px; }
+      h1 { margin: 0; font-size: 42px; letter-spacing: -1.2px; line-height: 1.12; }
+      .scope { padding: 10px 15px; border: 1px solid #447364; border-radius: 999px; background: #14362f; color: var(--green); font-size: 17px; font-weight: 650; }
+      main { flex: 1; min-height: 0; margin: 22px 0 18px; }
+      footer { display: flex; justify-content: space-between; gap: 16px; color: var(--muted); font-size: 15px; line-height: 22px; flex-shrink: 0; }
+      footer .explanation { color: #d5e6ec; }
+      .architecture { display: grid; grid-template-columns: 810px 362px; gap: 24px; }
+      .diagram { display: flex; flex-direction: column; }
+      .node { border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+      .browser { display: flex; align-items: center; justify-content: space-between; height: 66px; padding: 12px 18px; }
+      .browser strong { font-size: 24px; }
+      .browser span { color: var(--green); font-size: 18px; }
+      .arrow { height: 26px; display: flex; justify-content: center; align-items: center; gap: 10px; color: var(--muted); font-size: 17px; }
+      .arrow b { font-size: 24px; color: var(--green); font-weight: 500; }
+      .contracts { padding: 12px 16px; border-color: #447b69; background: #0d2c32; }
+      .section-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px; }
+      .section-heading strong { font-size: 22px; }
+      .section-heading span { color: var(--green); font-size: 17px; }
+      .manager { display: flex; align-items: center; justify-content: space-between; height: 45px; padding: 8px 15px; background: var(--green-dark); border: 1px solid #548e77; border-radius: 8px; }
+      .manager strong { font-size: 23px; }
+      .manager span { font-size: 18px; color: #d4e9df; }
+      .branches { height: 15px; position: relative; }
+      .branches::before { content: ""; position: absolute; top: 0; left: 50%; height: 8px; border-left: 1px solid #69a98e; }
+      .branches::after { content: ""; position: absolute; top: 8px; left: 16.5%; right: 16.5%; height: 7px; border: 1px solid #69a98e; border-bottom: 0; }
+      .module-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      .module { padding: 9px 8px; text-align: center; background: #12373e; border: 1px solid #39665f; border-radius: 8px; }
+      .module strong { display: block; font-size: 21px; }
+      .module span { display: block; margin-top: 4px; color: var(--muted); font-size: 17px; }
+      .token { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 10px; height: 36px; color: var(--muted); font-size: 17px; }
+      .token strong { padding: 6px 16px; border: 1px solid #447b69; border-radius: 8px; color: var(--green); font-size: 19px; background: #11312f; }
+      .backend { padding: 11px 15px; display: grid; grid-template-columns: 1fr 24px 1fr 24px 1fr; align-items: center; text-align: center; min-height: 76px; }
+      .backend strong { display: block; font-size: 21px; }
+      .backend span { display: block; margin-top: 4px; color: var(--muted); font-size: 17px; }
+      .backend .connector { color: var(--green); font-size: 24px; }
+      .runner { display: flex; align-items: center; justify-content: space-between; padding: 12px 17px; margin-top: 11px; min-height: 62px; }
+      .runner strong { font-size: 21px; }
+      .runner p { margin: 0; color: var(--muted); font-size: 18px; }
+      .boundary { display: flex; flex-direction: column; gap: 14px; }
+      .boundary h2 { margin: 0 0 1px; font-size: 23px; }
+      .boundary-item { padding: 18px 19px; border: 1px solid var(--line); border-radius: 13px; background: var(--panel); flex: 1; }
+      .boundary-item strong { display: block; color: var(--green); font-size: 23px; line-height: 1.18; }
+      .boundary-item p { margin: 11px 0 0; font-size: 19px; line-height: 1.4; color: #d5e2e9; }
+      .validation { display: grid; grid-template-columns: 570px 602px; gap: 24px; }
+      .recorded { display: flex; flex-direction: column; gap: 13px; }
+      .record { display: flex; align-items: center; gap: 22px; padding: 16px 22px; border: 1px solid #396958; border-radius: 14px; background: #10342f; flex: 1; }
+      .record .number { font-size: 49px; line-height: 1; min-width: 134px; font-weight: 750; letter-spacing: -1.4px; color: var(--green); }
+      .record h2 { margin: 0 0 8px; font-size: 25px; }
+      .record p { margin: 5px 0 0; font-size: 18px; line-height: 1.33; color: #d1e8dd; }
+      .record .date { color: #9fc6b5; }
+      .record.go .number { font-size: 43px; }
+      .limits { display: flex; flex-direction: column; gap: 13px; }
+      .limits h2 { font-size: 25px; margin: 0 0 1px; }
+      .pending { display: flex; align-items: center; justify-content: space-between; padding: 15px 19px; border: 1px solid var(--line); border-radius: 11px; background: var(--panel); }
+      .pending strong { font-size: 21px; }
+      .pending span { color: var(--amber); font-size: 17px; }
+      .truth { margin-top: auto; padding: 21px 22px; border: 1px solid #827047; border-radius: 14px; background: #302b21; }
+      .truth strong { display: block; font-size: 28px; color: var(--amber); }
+      .truth p { margin: 10px 0 0; font-size: 20px; line-height: 1.4; color: #eee4ce; }
+    </style>
+  </head>
+  <body>
+    <section class="card" id="architecture" aria-labelledby="architecture-title">
+      <header>
+        <div>
+          <p class="eyebrow">AGENT ARENA • COURSE PROJECT</p>
+          <h1 id="architecture-title">Architecture overview</h1>
+        </div>
+        <span class="scope">Wallet-controlled prize escrow</span>
+      </header>
+      <main class="architecture">
+        <div class="diagram" aria-label="Browser and wallet call the manager, its three modules and DUSD token. Go indexes chain events and serves SQLite data and match evidence.">
+          <div class="node browser">
+            <strong>Browser · Next.js + wallet</strong>
+            <span>User-signed transactions</span>
+          </div>
+          <div class="arrow"><b aria-hidden="true">↓</b> Wallet calls contracts</div>
+          <div class="node contracts">
+            <div class="section-heading">
+              <strong>5 smart contracts</strong>
+              <span>≥3 interacting contracts: satisfied</span>
+            </div>
+            <div class="manager"><strong>TournamentManager</strong><span>Roles + lifecycle coordination</span></div>
+            <div class="branches" aria-hidden="true"></div>
+            <div class="module-row">
+              <div class="module"><strong>Registry</strong><span>Entries, deadlines, state</span></div>
+              <div class="module"><strong>PrizeEscrow</strong><span>Isolated funds, claims</span></div>
+              <div class="module"><strong>ResultReview</strong><span>Review, dispute, decision</span></div>
+            </div>
+            <div class="token"><strong>DUSD</strong><span>ERC-20 test token used by PrizeEscrow</span></div>
+          </div>
+          <div class="arrow"><b aria-hidden="true">↓</b> Events + read-only RPC</div>
+          <div class="node backend">
+            <div><strong>Go REST API</strong><span>Read data / run matches</span></div>
+            <div class="connector" aria-hidden="true">↔</div>
+            <div><strong>SQLite</strong><span>Profiles, evidence, ledger</span></div>
+            <div class="connector" aria-hidden="true">←</div>
+            <div><strong>Event indexer</strong><span>Confirmed projections</span></div>
+          </div>
+          <div class="node runner"><strong>Match runner</strong><p>Deterministic baseline · Optional LLM</p></div>
+        </div>
+        <aside class="boundary" aria-label="Trust boundaries">
+          <h2>Three trust boundaries</h2>
+          <div class="boundary-item"><strong>Funds only via wallet</strong><p>Deposits, payouts and refunds require user-signed transactions.</p></div>
+          <div class="boundary-item"><strong>API reads the chain</strong><p>Go serves REST and indexes events. No operating key moves funds.</p></div>
+          <div class="boundary-item"><strong>Off-chain evidence → on-chain hash</strong><p>SQLite keeps match records. Contracts commit the evidence hash.</p></div>
+        </aside>
+      </main>
+      <footer>
+        <span>Source: docs/course-project/ARCHITECTURE.md + TEST_REPORT.md</span>
+        <span class="explanation">Project explanation • not a live transaction screen</span>
+      </footer>
+    </section>
+
+    <section class="card" id="validation" hidden aria-labelledby="validation-title">
+      <header>
+        <div>
+          <p class="eyebrow">AGENT ARENA • COURSE PROJECT</p>
+          <h1 id="validation-title">Validation &amp; current limits</h1>
+        </div>
+        <span class="scope">Scope: local environment only</span>
+      </header>
+      <main class="validation">
+        <div class="recorded" aria-label="Recorded test evidence">
+          <div class="record">
+            <div class="number">27/27</div>
+            <div><h2>Frontend tests</h2><p>English / Chinese regression</p><p class="date">Recorded 10 Oct 2026</p></div>
+          </div>
+          <div class="record">
+            <div class="number">49</div>
+            <div><h2>Contract tests</h2><p>Includes fuzz + invariant tests</p><p class="date">Recorded 9 Oct 2026<br />Historical run; not rerun for this video</p></div>
+          </div>
+          <div class="record go">
+            <div class="number">Go</div>
+            <div><h2>test · race · vet</h2><p>Recorded checks passed</p><p class="date">9 Oct 2026 • Historical evidence</p></div>
+          </div>
+        </div>
+        <aside class="limits" aria-label="Pending validation and limits">
+          <h2>Still to validate</h2>
+          <div class="pending"><strong>Public cloud + Sepolia</strong><span>Pending</span></div>
+          <div class="pending"><strong>Stakeholder validation</strong><span>Pending</span></div>
+          <div class="pending"><strong>Actual LLM execution</strong><span>Pending</span></div>
+          <div class="truth"><strong>Hash integrity ≠ truth</strong><p>A matching hash detects changed evidence. It does not prove the match result is correct.</p></div>
+        </aside>
+      </main>
+      <footer>
+        <span>Source: docs/course-project/TEST_REPORT.md • No external certification</span>
+        <span class="explanation">Project explanation • not a live transaction screen</span>
+      </footer>
+    </section>
+    <script>
+      function showCard() {
+        const selected = location.hash === "#validation" ? "validation" : "architecture";
+        for (const id of ["architecture", "validation"]) {
+          document.getElementById(id).hidden = id !== selected;
+        }
+        document.title = selected === "validation"
+          ? "Validation & current limits — Agent Arena"
+          : "Architecture overview — Agent Arena";
+        // Prevent the hash target from moving the fixed recording canvas.
+        window.scrollTo(0, 0);
+      }
+      window.addEventListener("hashchange", showCard);
+      showCard();
+    </script>
+  </body>
+</html>

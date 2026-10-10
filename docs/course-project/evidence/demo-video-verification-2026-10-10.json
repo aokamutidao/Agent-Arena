@@ -1,0 +1,372 @@
+{
+  "date": "2026-10-10",
+  "scope": "Media artifact validation; no new application or wallet transactions",
+  "duration_seconds": 596.4,
+  "narration_duration_seconds": 596.391813,
+  "video": {
+    "codec_name": "h264",
+    "width": 1920,
+    "height": 1080,
+    "pix_fmt": "yuvj420p",
+    "avg_frame_rate": "30/1",
+    "duration": "596.400000",
+    "nb_frames": "17892"
+  },
+  "audio": {
+    "codec_name": "aac",
+    "sample_rate": "48000",
+    "channels": 1,
+    "duration": "596.392000"
+  },
+  "full_decode": {
+    "exit_code": 0,
+    "stderr": ""
+  },
+  "sample_frames_seconds": [
+    15,
+    100,
+    135,
+    210,
+    250,
+    312,
+    380,
+    422,
+    448,
+    485,
+    515,
+    540,
+    569,
+    590
+  ],
+  "visual_review": {
+    "status": "passed_sampled_layout",
+    "method": "14 timestamped frames reviewed as contact sheet; cover and 100s / 448s at full size",
+    "findings": "English and Chinese subtitles visible within the dedicated strip; no sampled blank or missing-font frames; real UI and labelled explanation cards present. The replay is shown through its scrollable viewport, not the entire page at once."
+  },
+  "files": {
+    "demo-captioned.mp4": {
+      "bytes": 30305416,
+      "sha256": "7b0b8a19af97b6c122e34699467902020e9891fedf0ebbcce24dcce9c3620af7"
+    },
+    "demo-clean.mp4": {
+      "bytes": 25652182,
+      "sha256": "b085e24b320e2ea68a128fa440f90b076c461afaa97f37149aabbbe06508dc7d"
+    },
+    "audio.m4a": {
+      "bytes": 12779807,
+      "sha256": "5ad73604abcbd363f22b7c49ab00f5b19a1190a271fffda9a76eb200eff36e7b"
+    },
+    "subtitles-bilingual.srt": {
+      "bytes": 17779,
+      "sha256": "613d1eb81daf67648cf06dc5d1a2c73de71427efc3411d019a744c6b77f4a291"
+    },
+    "subtitles-en.srt": {
+      "bytes": 10731,
+      "sha256": "cd1f4ef12221eccb447f30a8f7f4639bba0bfa20e97679bb13489ec95116e86e"
+    },
+    "subtitles-zh.srt": {
+      "bytes": 8738,
+      "sha256": "662160c1392ba2511a29274cefadbfa99432fba0490388dcf0a46c0de83f3d6f"
+    },
+    "subtitles.ass": {
+      "bytes": 28475,
+      "sha256": "bcc0f9477df3c932d1385b69dcf98251aa9f50b2c99918ba92b12d4a580dbc09"
+    },
+    "cover.png": {
+      "bytes": 604645,
+      "sha256": "4b630a5d1652f7ae39c58bc02ed84f9735da806d881a324999703eadc5319daa"
+    }
+  },
+  "preflight": {
+    "version": 1,
+    "checked_at": "2026-10-10T09:47:43.400993+00:00",
+    "status": "passed",
+    "scope": "Metadata, narration text/timing and SRT validation; narration-only volume detection. Video full decode and frame sampling excluded.",
+    "narration": {
+      "source": ".local/demo-video/narration.json",
+      "voice": "Samantha",
+      "rate": 145,
+      "silence_seconds": 0.25,
+      "chapters": 10,
+      "cues": 50,
+      "timeline_duration_seconds": 596.391813,
+      "all_source_text_matches_timeline": true,
+      "all_cached_spoken_text_matches_source": true,
+      "all_cue_wav_durations_match_timeline": true,
+      "chapter_and_cue_timing_valid": true
+    },
+    "subtitles": {
+      "bilingual": {
+        "cue_count": 50,
+        "first_start_seconds": 0.0,
+        "last_end_seconds": 596.142,
+        "max_timing_rounding_seconds": 0.0005,
+        "text_matches_source": true,
+        "ordered_nonoverlapping_within_audio": true
+      },
+      "en": {
+        "cue_count": 50,
+        "first_start_seconds": 0.0,
+        "last_end_seconds": 596.142,
+        "max_timing_rounding_seconds": 0.0005,
+        "text_matches_source": true,
+        "ordered_nonoverlapping_within_audio": true
+      },
+      "zh": {
+        "cue_count": 50,
+        "first_start_seconds": 0.0,
+        "last_end_seconds": 596.142,
+        "max_timing_rounding_seconds": 0.0005,
+        "text_matches_source": true,
+        "ordered_nonoverlapping_within_audio": true
+      }
+    },
+    "media": {
+      "clean": {
+        "path": "deliverables/demo-video/demo-clean.mp4",
+        "codec": "h264",
+        "width": 1920,
+        "height": 1080,
+        "fps": "30/1",
+        "pixel_format": "yuvj420p",
+        "color_range": "pc",
+        "video_duration_seconds": 596.4,
+        "audio_duration_seconds": 596.392,
+        "container_duration_seconds": 596.4,
+        "file_size_bytes": 25652182,
+        "audio_codec": "aac",
+        "sample_rate": 48000,
+        "channels": 1
+      },
+      "audio": {
+        "path": "deliverables/demo-video/audio.m4a",
+        "codec": "aac",
+        "sample_rate": 48000,
+        "channels": 1,
+        "duration_seconds": 596.392,
+        "file_size_bytes": 12779807
+      }
+    },
+    "duration_comparison": {
+      "clean_video_minus_audio_seconds": 0.008,
+      "audio_minus_timeline_seconds": 0.000187,
+      "video_audio_gap_below_one_frame": true
+    },
+    "audio_volume": {
+      "method": "ffmpeg volumedetect on audio.m4a (no playback)",
+      "decoded_samples": 28626944,
+      "mean_volume_db": -15.9,
+      "peak_volume_db": -1.5,
+      "full_scale_peak_observed": false
+    }
+  },
+  "captures": {
+    "source": "Actual browser viewport screenshots captured with UI actions",
+    "target_capture_fps": 5,
+    "chapters": [
+      {
+        "id": "01",
+        "capture_duration": 47.178,
+        "frame_count": 234,
+        "actions": [
+          {
+            "t": 22.156,
+            "note": "Scroll from product purpose to confirmed fund totals"
+          },
+          {
+            "t": 24.074,
+            "note": "Continue toward the fund dashboard"
+          },
+          {
+            "t": 26.094,
+            "note": "Reveal the fund summary"
+          }
+        ],
+        "notes": ""
+      },
+      {
+        "id": "02",
+        "capture_duration": 44.081,
+        "frame_count": 218,
+        "actions": [
+          {
+            "t": 10.303,
+            "note": "Show sponsorship and participant paths"
+          },
+          {
+            "t": 23.323,
+            "note": "Show the independent auditor requirements"
+          },
+          {
+            "t": 34.338,
+            "note": "Open administrator-role guidance"
+          }
+        ],
+        "notes": ""
+      },
+      {
+        "id": "03",
+        "capture_duration": 45.136,
+        "frame_count": 221,
+        "actions": [
+          {
+            "t": 2.314,
+            "note": "Open the actual wallet connection dialog"
+          },
+          {
+            "t": 12.307,
+            "note": "Close the dialog without selecting a wallet or signing"
+          },
+          {
+            "t": 28.206,
+            "note": "Open tournaments"
+          },
+          {
+            "t": 32.556,
+            "note": "Reveal organizer permission required for creation"
+          }
+        ],
+        "notes": ""
+      },
+      {
+        "id": "04",
+        "capture_duration": 42.48877812194824,
+        "frame_count": 211,
+        "actions": [],
+        "notes": "Recovered original capture timing from file timestamps after browser action timeout; no image content changed."
+      },
+      {
+        "id": "05",
+        "capture_duration": 44.111,
+        "frame_count": 218,
+        "actions": [
+          {
+            "t": 2.186,
+            "note": "Play the persisted match replay"
+          },
+          {
+            "t": 6.161,
+            "note": "Pause on a recorded turn"
+          },
+          {
+            "t": 12.202,
+            "note": "Step forward one round"
+          },
+          {
+            "t": 16.246,
+            "note": "Step back one round"
+          },
+          {
+            "t": 21.288,
+            "note": "Resume the replay to its recorded outcome"
+          },
+          {
+            "t": 34.232,
+            "note": "Expand persisted actions and decision records"
+          }
+        ],
+        "notes": ""
+      },
+      {
+        "id": "06",
+        "capture_duration": 44.163,
+        "frame_count": 218,
+        "actions": [
+          {
+            "t": 5.126,
+            "note": "Expand canonical match evidence"
+          },
+          {
+            "t": 22.265,
+            "note": "Reveal evidence hashes and verification explanation"
+          },
+          {
+            "t": 33.415,
+            "note": "Return to evidence summary"
+          }
+        ],
+        "notes": ""
+      },
+      {
+        "id": "07",
+        "capture_duration": 44.123,
+        "frame_count": 219,
+        "actions": [
+          {
+            "t": 6.171,
+            "note": "Inspect result submission event details"
+          },
+          {
+            "t": 18.224,
+            "note": "Filter independent approval record"
+          },
+          {
+            "t": 29.079,
+            "note": "Filter confirmed prize payment"
+          },
+          {
+            "t": 37.116,
+            "note": "Expand prize payment transaction hash"
+          }
+        ],
+        "notes": ""
+      },
+      {
+        "id": "08",
+        "capture_duration": 44.047,
+        "frame_count": 216,
+        "actions": [
+          {
+            "t": 9.223,
+            "note": "Show confirmed 200 DUSD sponsor refund"
+          },
+          {
+            "t": 20.079,
+            "note": "Inspect refund event details"
+          },
+          {
+            "t": 29.15,
+            "note": "Switch to prepared disputed-result fixture refund"
+          },
+          {
+            "t": 37.242,
+            "note": "Show complete dispute, resolution, cancellation and refund history"
+          }
+        ],
+        "notes": ""
+      },
+      {
+        "id": "09",
+        "capture_duration": 46.173,
+        "frame_count": 229,
+        "actions": [
+          {
+            "t": 37.164,
+            "note": "Show documented test evidence and remaining validation"
+          }
+        ],
+        "notes": ""
+      },
+      {
+        "id": "10",
+        "capture_duration": 54.135,
+        "frame_count": 262,
+        "actions": [
+          {
+            "t": 3.403,
+            "note": "Switch the real product interface to Chinese"
+          },
+          {
+            "t": 14.625,
+            "note": "Explain current validation limits"
+          },
+          {
+            "t": 49.616,
+            "note": "Close on the actual platform homepage"
+          }
+        ],
+        "notes": ""
+      }
+    ]
+  }
+}

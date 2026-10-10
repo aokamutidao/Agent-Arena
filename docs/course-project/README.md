@@ -1,7 +1,7 @@
 # Agent Arena 课程版文档导航
 
 本轮重构开始于 2026-10-09。课程版定位：**AI 赛事奖金托管、结算与审计 DApp**。
-课程业务重构见 [进度记录](../../devlog/028-course-refactor.md)，界面与操作变化见 [易用性改造](../../devlog/030-frontend-usability.md) 和 [中英文切换](../../devlog/031-bilingual-interface.md)；实际验证以 [测试报告](TEST_REPORT.md) 为准，不要把设计目标当成已完成的验证。
+课程业务重构见 [进度记录](../../devlog/028-course-refactor.md)，界面与操作变化见 [易用性改造](../../devlog/030-frontend-usability.md) 和 [中英文切换](../../devlog/031-bilingual-interface.md)；视频制作见 [032 讲解视频记录](../../devlog/032-narrated-demo.md)。实际验证以 [测试报告](TEST_REPORT.md) 为准，不要把设计目标当成已完成的验证。
 
 ## 建议阅读顺序
 
@@ -24,6 +24,9 @@
 7. [测试报告](TEST_REPORT.md)：已执行的检查、可复现命令、限制和待验收事项。
 8. [学习路线](LEARNING_GUIDE.md)：代码阅读顺序、练习、答辩问题。
 9. [报告与演示准备](SUBMISSION_PLAN.md)：10–15 页报告分配、图示、评价实验与十分钟演示脚本。
+10. [讲解视频与制作说明](DEMO_VIDEO.md)：十章本地界面演示及说明卡、英文合成配音与中英字幕；9 分 56 秒成片已完成解码、字幕时间轴与关键画面检查。
+
+学习或重录视频时，可对照 [双语脚本](demo/SCRIPT.en-zh.md)、[旁白 JSON](demo/NARRATION.en-zh.json) 和 [架构与验证说明卡](demo/EXPLANATION_CARDS.html)。本次镜头查看已有本地赛事与链上记录，不代表现场新增钱包签名或转账；媒体文件另行保存，Git 保留文案、说明卡和生成工具。
 
 ## 版本边界
 
